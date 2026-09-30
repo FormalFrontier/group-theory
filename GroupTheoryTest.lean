@@ -1,3 +1,4 @@
 module
 
 public import GroupTheoryTest.CyclicNorm
+public import GroupTheoryTest.FGScalarSurjectivity
