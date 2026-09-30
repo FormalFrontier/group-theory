@@ -3,16 +3,15 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
-    A finite cyclic norm exactness criterion: ker(∑_{i<m} σ^i) = range(1 - σ)
-    for an additive commutative group and endomorphism σ, with a natural number
-    m > 0 satisfying σ^m = 1 (not necessarily exact order), injectivity of
-    multiplication by this same m, and elementwise lifting of fixed classes
-    modulo mA.
+    An exactness criterion for the finite cyclic norm of an endomorphism of
+    an additive commutative group, requiring a positive natural period m with
+    sigma^m = 1 (not necessarily exact order), injective multiplication by
+    that same m, and elementwise lifting of fixed classes modulo mA.
 
-    For finitely generated abelian groups, surjectivity of the actual n-scalar
-    map with n ≥ 2 forces finiteness, coprimality of n with the group order,
-    and a uniform two-sided integer-scalar inverse. The converse criteria
-    characterize actual scalar surjectivity and bijectivity.
+    For finitely generated abelian groups, surjectivity of the actual
+    n-scalar map with n ≥ 2 forces finiteness and coprimality with Nat.card A
+    and yields a uniform two-sided integer-scalar inverse; the converse
+    characterizes surjectivity and bijectivity of that scalar map.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -38,22 +37,23 @@ sources:
 automation:
   methods:
     - method: agent
-      tool_setup: Formal Frontier AI agents using Hive Tasks, Lean 4 and mathlib.
+      tool_setup: Formal Frontier AI agents using Lean 4 and mathlib.
 
 status:
   scope: >-
-    An exactness criterion for an endomorphism σ of an additive commutative
-    group, for a natural m > 0 with σ^m = 1, injective multiplication by that
-    same m, and elementwise lifting of fixed classes modulo mA. The period m
-    need not be the exact order of σ. Representative client examples and
-    counterexamples are included; no Tate or cohomology development is included.
+    For an endomorphism sigma of an additive commutative group, a natural
+    m > 0 with sigma^m = 1 (not necessarily exact order), injective
+    multiplication by the same m, and elementwise fixed-class lifting
+    modulo mA imply ker(∑_{i<m} sigma^i) = range(1 - sigma). The lifting is
+    elementwise, not a global section. Client examples include failure
+    boundaries; no unconditional Tate or cohomology theorem is asserted.
 
-    Separately, on an additive commutative finitely generated group and a
-    natural n ≥ 2, actual n-scalar surjectivity implies finiteness,
-    coprimality of n with Nat.card A, and a uniform two-sided integer inverse.
-    The two equivalences characterize actual scalar surjectivity and
-    bijectivity, with zero and nonzero finite client examples. This does not
-    formalize a K-theory statement or arbitrary endomorphisms.
+    For [AddGroup.FG A] on an additive commutative group and natural n ≥ 2,
+    surjectivity of the actual map x ↦ n • x implies finite A, coprimality
+    of n with Nat.card A and a uniform two-sided integer-scalar inverse.
+    Finiteness and coprimality also characterize scalar surjectivity and
+    bijectivity. This is neither a K-theory theorem nor a theorem about
+    arbitrary surjective endomorphisms or external-source coverage.
   axioms:
     - propext
     - Classical.choice
@@ -73,129 +73,15 @@ status:
 review:
   status: agent-reviewed
   reviewers:
-    - Formal Frontier worker-a (initial API and provenance review)
-    - Formal Frontier worker-a (affected matching-period metadata review)
-    - Formal Frontier worker-a (exact-Q FG destination content review)
+    - Independent Formal Frontier AI agents
   notes: >-
-    As of 2026-09-30, the original theorem and public API at
-    b05e2d3a56365d57ab40d40049d987a22520d517 received independent worker-a
-    review at 483240a8847e40b27986d9388617595e3845828a. A subsequent
-    documentation/metadata candidate at 3bcb14385f3c7d4d10e8f13900249ab57762077f
-    received a request for explicit positive-m and matching-period hypotheses
-    at 93f306302eecb731d95ace301a68631457fd26aa; this was not an approval.
-    Prism repaired the metadata only, and independent worker-a affected review
-    at a23f7af76d31ca21eefb687a1a34c71143e5c415 approved repaired
-    development commit f7606ae41bae3a077708e7bbaf15e8b3e7f30783. Native
-    run 1382 attempt 1 built both roots and audited all actual-origin
-    declarations, including private examples, against only the three standard
-    axioms listed above. Prism accepted and integrated that exact commit to
-    development main on 2026-09-30 at 12:35:30 UTC. This agent-reviewed status
-    describes the unchanged theorem/API and repaired metadata, not independent
-    review of this later release-readiness prose, its actual-head check,
-    official release or verified public-lineage publication.
-
-    Dated correction on 2026-09-30: first-release R
-    b21112387969652e174cde9845035af6c8d75b5e received independent
-    first-release review at 8f9d7e010041978a3846397954eab8c60325fca1,
-    applicable original native evidence, and responsible-maintainer acceptance
-    and protected integration. Its first public-root content was separately
-    reviewed; at that earlier preparation snapshot no later mirror receipt was
-    asserted. The accepted incubator donor received original code and affected-
-    union independent reviews, but at transfer preparation (13:44 UTC) this
-    new Group Theory transfer from R was unchecked as a combined candidate.
-    At that time it needed fresh affected destination review, actual both-root
-    build and complete transitive private-inclusive standard-axiom evidence,
-    acceptance, and a separately reviewed verified official release. Earlier
-    agent-reviewed status applied only to the prior CyclicNorm artifact and its
-    metadata.
-
-    Later dated publication correction, 2026-09-30 13:47:58 UTC: the first
-    parentless official release be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6
-    was verified on private GitHub and all onboarding holds were released.
-    The unchecked and pending-stage language above records this FG transfer's
-    13:44 UTC preparation, not an assertion about subsequent maintainer decisions.
-
-    Later dated FG correction, 2026-09-30 14:13:45 UTC: fresh independent
-    worker-a review at 132a39d173e372421989c947f15ecd9a65b6fff1 approved
-    the exact development candidate 051d8f9565bef2b8f4ab54a2b7f811f31ba9db78
-    and its combined destination content. Original native run 1416 attempt 1
-    built both roots and completely audited actual-origin transitive axioms,
-    including private/generated declarations, against only propext,
-    Classical.choice and Quot.sound; the responsible maintainer intook its
-    original evidence. Prism accepted Q and protected-integrated it into
-    development main at 14:13:45 UTC. Thus agent-reviewed describes the
-    accepted development code, not the then-new release-readiness prose or public
-    candidate. At release preparation, before the 15:27 UTC promotions on
-    2026-09-30, fresh independent release review, maintainer acceptance,
-    protected internal/public promotions and verified private publication
-    remained required before Q's FG results became an official release.
-
-    Later dated release receipt, 2026-09-30: independent consolidated review
-    fc2bdb069ec12f112f3b32f89c2ab13dc4d750f9 approved corrected release
-    f10b107e30f49ed020323abd8bb517681410e197. Protected main/internal/public
-    promotions completed at 15:27:30, 15:27:48 and 15:27:54 UTC. The equal-tree
-    official release 3a73363199049f9e05e7f74455ec0ff747ba67f8, tree
-    2bb587febf95464365b3270c4daf0f529d22bab1, sole prior official parent
-    be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6, was independently verified
-    on private GitHub at 15:30:40.937154 UTC. This receipt supersedes the dated
-    FG preparation-stage pending language; it does not assert acceptance or
-    publication of later documentary revisions. Original native1442 evidence
-    and unchanged accepted-Q native1416 science were reused, not repeated.
+    Independent AI-agent reviews addressed the existing Lean mathematics,
+    API, semantic hypotheses and provenance. The responsible maintainer
+    accepted the original results for the official release. This describes
+    review of that mathematics, not human review or blanket approval of
+    subsequent documentation and header changes.
 
 acknowledgements: >-
-  Original theorem and client: worker-b Hive Task
-  hive-request-a2edb13065c52b892d241b54b1b126a02ccb23b7
-  (UID dfeefd22-cf15-4911-90aa-e10d49b8424c). Transfer and packaging:
-  worker-b Hive Task hive-request-19f643d063d7ee8b030ea4a16fadc2a6e94c0535
-  (UID 5483d819-031d-4920-ae47-cd2a40feb9da). Documentation and release
-  metadata: worker-b Hive Task hive-request-c217eb129452563cadee4cd7a804bd23651d9f65
-  (UID e5b2df87-c7be-4336-8693-77ba0c71828b). Metadata hypothesis and dated
-  review-state repair and development acceptance: Prism, 2026-09-30.
-  Initial independent API/provenance review: worker-a Hive Task
-  hive-request-3cd73db461fdf0ba63539705101ddfb1e3e508e4
-  (UID 69519d02-d003-487b-bc07-5a96ba8b56de). Independent affected metadata
-  repair review: worker-a Hive Task
-  hive-request-6ee3659ca74032815f929fedb4a93193a6a71b66
-  (UID 1acbf2a0-d539-4f35-b095-61f21a89cefa). Subsequent release-readiness
-  and provisional public packaging: worker-b Hive Task
-  hive-request-dfff8e6b7c4a60ebec8244e80c1bfeb7f767f5f5
-  (UID 119e6915-6dc0-463f-be76-93cba91c9115), unreviewed at preparation
-  on 2026-09-30.
-
-  FG scalar mathematical argument: Prism; independent bounded source-proof
-  review: worker-a Hive Task
-  hive-request-33e12e1bf2da99c257c9e7740b11a8b96c959c4f
-  (UID 9d1901a8-ca64-4c6c-896b-c828bc4624dc); determinant-route advice:
-  Lattice. Original FG Lean implementation and client: worker-b Hive Task
-  hive-request-fa6f9c774e9d5c3857dcb2b843aab3186a954df4
-  (UID dd21e895-70e0-469c-991d-929b0bbfa519). Incubator union
-  assembler: worker-b Hive Task
-  hive-request-d2d9144bea61a93ca7dfdd582f8e6769b1baaced
-  (UID ccf0ff84-115c-44b2-a71f-a9f37051d41c). Independent original
-  FG code review: worker-a Hive Task
-  hive-request-9c993776c2cbe17698cfeaad702817b022cad08d
-  (UID c9917304-930b-466d-a0b3-a9a34b171357); independent accepted
-  incubator FG affected-union review: worker-a Hive Task
-  hive-request-2a197b600bdf6d337b4f678b6a3f85a4d55a7057
-  (UID cd25b479-f2a1-42d7-a646-d6145522a536). First-release R
-  independent reviewer: worker-a Hive Task
-  hive-request-54826aa756e1b2059df2b1e1b8eb479e1d93040c
-  (UID c5e2921a-faaf-4cc1-b563-6045b24089d5). This bounded
-  destination transfer and packaging: worker-b Hive Task
-  hive-request-db92374ce7a70b10882a7d9947d9f61260685a60
-  (UID 4cbf98c2-f317-4ffd-a0ed-7f5ef41be43e); its new affected
-  review, verification, acceptance and release remained pending at transfer
-  preparation (2026-09-30 13:44 UTC). Fresh exact-Q destination-content
-  review: worker-a Hive Task
-  hive-request-1f8648e89b73fdd321354dcd881feca0333e8bf9
-  (UID 9f3e960d-8b88-4145-bc5b-e98b328e8f5f); original native1416
-  evidence was intaken by Prism, who accepted and integrated Q at 14:13:45 UTC.
-  This new release-readiness prose and candidate preparation: worker-b Hive Task
-  hive-request-8b069dd28caf9b065b2577f38ce6c099778dc1d5
-  (UID 2e150abf-2a27-4b37-9c5f-7187ab003a69), not independently
-  release-reviewed or privately published at preparation. Prism subsequently
-  repaired concurrency guidance; fresh worker-a Hive Task
-  hive-request-9cb89bb149a3628a95503fbca5c0bba43e3ed3f3
-  (UID 69d45cb7-a905-4841-b020-4fe87dfafe0d) independently reviewed the
-  corrected exact release recorded above. The later bounded lifecycle-date
-  clarification is by Prism, 2026-09-30, without original proof or build replay.
+  Formal Frontier AI agents developed and independently reviewed the original
+  Lean proofs and clients. Prism developed the FG scalar mathematical argument,
+  with determinant-route advice from Lattice. Authors: Formal Frontier Agents.
