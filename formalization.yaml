@@ -1,0 +1,86 @@
+version: "v0.4"
+
+project:
+  name: Group Theory
+  description: >-
+    A finite cyclic norm exactness criterion: ker(∑_{i<m} σ^i) = range(1 - σ)
+    for an additive commutative group and endomorphism σ, with a natural number
+    m > 0 satisfying σ^m = 1 (not necessarily exact order), injectivity of
+    multiplication by this same m, and elementwise lifting of fixed classes
+    modulo mA.
+  authors:
+    - Formal Frontier Agents
+  license: Apache-2.0
+
+sources:
+  - title: Finite cyclic norm exactness from fixed-class lifting
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: GroupTheory/CyclicNorm.lean, AddMonoid.End.cyclicNorm_ker_eq_one_sub_range
+    note: >-
+      Original Lean proof; no particular paper is claimed as the source, and
+      this entry does not assert formal coverage of an external source.
+
+automation:
+  methods:
+    - method: agent
+      tool_setup: Formal Frontier AI agents using Hive Tasks, Lean 4 and mathlib.
+
+status:
+  scope: >-
+    An exactness criterion for an endomorphism σ of an additive commutative
+    group, for a natural m > 0 with σ^m = 1, injective multiplication by that
+    same m, and elementwise lifting of fixed classes modulo mA. The period m
+    need not be the exact order of σ. Representative client examples and
+    counterexamples are included; no Tate or cohomology development is included.
+  axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+  main_results:
+    - declaration: AddMonoid.End.cyclicNorm_ker_eq_one_sub_range
+      file: GroupTheory/CyclicNorm.lean
+
+review:
+  status: agent-reviewed
+  reviewers:
+    - Formal Frontier worker-a (initial API and provenance review)
+    - Formal Frontier worker-a (affected matching-period metadata review)
+  notes: >-
+    As of 2026-09-30, the original theorem and public API at
+    b05e2d3a56365d57ab40d40049d987a22520d517 received independent worker-a
+    review at 483240a8847e40b27986d9388617595e3845828a. A subsequent
+    documentation/metadata candidate at 3bcb14385f3c7d4d10e8f13900249ab57762077f
+    received a request for explicit positive-m and matching-period hypotheses
+    at 93f306302eecb731d95ace301a68631457fd26aa; this was not an approval.
+    Prism repaired the metadata only, and independent worker-a affected review
+    at a23f7af76d31ca21eefb687a1a34c71143e5c415 approved repaired
+    development commit f7606ae41bae3a077708e7bbaf15e8b3e7f30783. Native
+    run 1382 attempt 1 built both roots and audited all actual-origin
+    declarations, including private examples, against only the three standard
+    axioms listed above. Prism accepted and integrated that exact commit to
+    development main on 2026-09-30 at 12:35:30 UTC. This agent-reviewed status
+    describes the unchanged theorem/API and repaired metadata, not independent
+    review of this later release-readiness prose, its actual-head check,
+    official release or verified public-lineage publication.
+
+acknowledgements: >-
+  Original theorem and client: worker-b Hive Task
+  hive-request-a2edb13065c52b892d241b54b1b126a02ccb23b7
+  (UID dfeefd22-cf15-4911-90aa-e10d49b8424c). Transfer and packaging:
+  worker-b Hive Task hive-request-19f643d063d7ee8b030ea4a16fadc2a6e94c0535
+  (UID 5483d819-031d-4920-ae47-cd2a40feb9da). Documentation and release
+  metadata: worker-b Hive Task hive-request-c217eb129452563cadee4cd7a804bd23651d9f65
+  (UID e5b2df87-c7be-4336-8693-77ba0c71828b). Metadata hypothesis and dated
+  review-state repair and development acceptance: Prism, 2026-09-30.
+  Initial independent API/provenance review: worker-a Hive Task
+  hive-request-3cd73db461fdf0ba63539705101ddfb1e3e508e4
+  (UID 69519d02-d003-487b-bc07-5a96ba8b56de). Independent affected metadata
+  repair review: worker-a Hive Task
+  hive-request-6ee3659ca74032815f929fedb4a93193a6a71b66
+  (UID 1acbf2a0-d539-4f35-b095-61f21a89cefa). Subsequent release-readiness
+  and provisional public packaging: worker-b Hive Task
+  hive-request-dfff8e6b7c4a60ebec8244e80c1bfeb7f767f5f5
+  (UID 119e6915-6dc0-463f-be76-93cba91c9115), unreviewed at preparation
+  on 2026-09-30.

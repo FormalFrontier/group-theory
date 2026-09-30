@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "mode": "strict",
+  "projects": [
+    {
+      "path": ".",
+      "targets": [
+        "GroupTheory",
+        "GroupTheoryTest"
+      ]
+    }
+  ],
+  "docs_only_paths": []
+}
