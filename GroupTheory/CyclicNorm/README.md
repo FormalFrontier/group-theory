@@ -25,7 +25,7 @@ A fixed lift of `w` modulo `m • A` gives one divisibility witness, and
 injectivity of multiplication by `m` cancels the resulting equation. The
 argument does not invert the multiplication map.
 
-The ordinary-import client `GroupTheoryTest.CyclicNorm` checks arbitrary
+The client `GroupTheoryTest.CyclicNorm`, using public imports and a public section, checks arbitrary
 universes, the period-one and trivial-group cases, bijective multiplication by
 `m`, and transfer through an independently supplied injective restriction. Its
 coordinate swap on `ℤ × ℤ`, `m = 2`, has exactness although multiplication by two
