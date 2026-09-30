@@ -69,9 +69,20 @@ verification, acceptance and release were pending. Fresh independent review
 at `132a39d173e372421989c947f15ecd9a65b6fff1` approved the exact-Q
 destination content. The responsible maintainer accepted and protected-
 integrated Q at 14:13:45 UTC that day. This accepted development code is not
-itself the existing first public release or a new official FG dependency:
+itself the existing first public release or a new official FG dependency.
+At release preparation, before the 15:27 UTC promotions on September 30,
 this release-readiness prose, its public candidate, protected promotions and
-private publication still need separate review, acceptance and verification.
+private publication still needed separate review, acceptance and verification.
+Subsequently, independent consolidated review
+`fc2bdb069ec12f112f3b32f89c2ab13dc4d750f9` approved corrected release content
+`f10b107e30f49ed020323abd8bb517681410e197`; protected main/internal/public
+promotions completed at 15:27:30/15:27:48/15:27:54 UTC. Official release
+`3a73363199049f9e05e7f74455ec0ff747ba67f8`, tree
+`2bb587febf95464365b3270c4daf0f529d22bab1`, sole prior official
+`be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6`, was independently verified on
+private GitHub at 15:30:40.937154 UTC. This exact-release receipt supersedes
+the preparation-stage pending language, not review or publication requirements
+for later revisions.
 
 Authors: Formal Frontier Agents. Prism developed the bounded mathematical
 annihilator argument, independently reviewed by worker-a Hive Task
@@ -99,5 +110,10 @@ Independent destination-content reviewer: worker-a Hive Task
 exact Q. This release-readiness documentation: worker-b Hive Task
 `hive-request-8b069dd28caf9b065b2577f38ce6c099778dc1d5`
 (UID `2e150abf-2a27-4b37-9c5f-7187ab003a69`), not yet independently
-release-reviewed. Licensed under
+release-reviewed at preparation on September 30, 2026, before the 15:27 UTC
+promotions. Prism corrected the concurrency guidance; worker-a Hive Task
+`hive-request-9cb89bb149a3628a95503fbca5c0bba43e3ed3f3`
+(UID `69d45cb7-a905-4841-b020-4fe87dfafe0d`) independently reviewed the
+corrected release recorded above. This later lifecycle-date clarification is
+by Prism; it repeats no original proof or build. Licensed under
 [Apache-2.0](../../LICENSE).

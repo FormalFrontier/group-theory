@@ -124,10 +124,23 @@ review:
     Classical.choice and Quot.sound; the responsible maintainer intook its
     original evidence. Prism accepted Q and protected-integrated it into
     development main at 14:13:45 UTC. Thus agent-reviewed describes the
-    accepted development code, not this new release-readiness prose or public
-    candidate. Fresh independent release review, maintainer acceptance,
+    accepted development code, not the then-new release-readiness prose or public
+    candidate. At release preparation, before the 15:27 UTC promotions on
+    2026-09-30, fresh independent release review, maintainer acceptance,
     protected internal/public promotions and verified private publication
-    remain required before Q's FG results become an official release.
+    remained required before Q's FG results became an official release.
+
+    Later dated release receipt, 2026-09-30: independent consolidated review
+    fc2bdb069ec12f112f3b32f89c2ab13dc4d750f9 approved corrected release
+    f10b107e30f49ed020323abd8bb517681410e197. Protected main/internal/public
+    promotions completed at 15:27:30, 15:27:48 and 15:27:54 UTC. The equal-tree
+    official release 3a73363199049f9e05e7f74455ec0ff747ba67f8, tree
+    2bb587febf95464365b3270c4daf0f529d22bab1, sole prior official parent
+    be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6, was independently verified
+    on private GitHub at 15:30:40.937154 UTC. This receipt supersedes the dated
+    FG preparation-stage pending language; it does not assert acceptance or
+    publication of later documentary revisions. Original native1442 evidence
+    and unchanged accepted-Q native1416 science were reused, not repeated.
 
 acknowledgements: >-
   Original theorem and client: worker-b Hive Task
@@ -180,4 +193,9 @@ acknowledgements: >-
   This new release-readiness prose and candidate preparation: worker-b Hive Task
   hive-request-8b069dd28caf9b065b2577f38ce6c099778dc1d5
   (UID 2e150abf-2a27-4b37-9c5f-7187ab003a69), not independently
-  release-reviewed or privately published at preparation.
+  release-reviewed or privately published at preparation. Prism subsequently
+  repaired concurrency guidance; fresh worker-a Hive Task
+  hive-request-9cb89bb149a3628a95503fbca5c0bba43e3ed3f3
+  (UID 69d45cb7-a905-4841-b020-4fe87dfafe0d) independently reviewed the
+  corrected exact release recorded above. The later bounded lifecycle-date
+  clarification is by Prism, 2026-09-30, without original proof or build replay.

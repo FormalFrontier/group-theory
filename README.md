@@ -14,8 +14,22 @@ See its [standalone guide](GroupTheory/FGScalarSurjectivity/README.md) for
 the integer inverse, proof and limits. At transfer preparation on September 30,
 2026 (13:44 UTC), this added module was a development candidate. Its exact
 development commit `051d8f9565bef2b8f4ab54a2b7f811f31ba9db78` was
-subsequently independently reviewed, accepted and integrated at 14:13:45 UTC;
-its own separately reviewed official release is still pending.
+subsequently independently reviewed, accepted and integrated at 14:13:45 UTC.
+Its own separately reviewed official release remained pending at release
+preparation, before the protected promotions at 15:27 UTC that day.
+
+### Dated official-release receipt
+
+On September 30, 2026, independent consolidated review
+`fc2bdb069ec12f112f3b32f89c2ab13dc4d750f9` approved corrected release content
+`f10b107e30f49ed020323abd8bb517681410e197`. Protected main/internal/public
+promotions completed at 15:27:30, 15:27:48 and 15:27:54 UTC. The resulting
+official release `3a73363199049f9e05e7f74455ec0ff747ba67f8`, with the same
+tree `2bb587febf95464365b3270c4daf0f529d22bab1` and sole earlier official
+parent `be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6`, was independently verified
+on private GitHub at 15:30:40.937154 UTC. This receipt supersedes the dated
+FG preparation-stage pending statements below. It records that exact release,
+not acceptance or publication of any later documentary revision.
 
 ## Headline results
 
@@ -70,7 +84,7 @@ commit into development `main` at 12:35:30 UTC. This dated evidence does not
 review this subsequent release-readiness prose or establish its actual-head
 check, official release or verified publication.
 
-For this candidate, import `GroupTheory.FGScalarSurjectivity` directly or
+For the FG API, import `GroupTheory.FGScalarSurjectivity` directly or
 `GroupTheory` for the FG public API. The single ordinary-import client
 `GroupTheoryTest.FGScalarSurjectivity` checks uniform inverse use and zero
 `ZMod 1`/nonzero `ZMod 7` examples. For a focused check, use the
@@ -94,9 +108,11 @@ release was subsequently verified privately published at 13:47:58 UTC as
 parentless `be37cbef6a4a0ac07cc25c70f4d77a16cd2f31f6`; its onboarding holds
 are released. The earlier incubator and first-release checks do not by themselves
 prove the combined FG graph: the later exact-Q run and affected independent
-review supply that separate evidence. This new release-readiness prose and
-public candidate still need fresh independent release review, responsible-
-maintainer acceptance, protected promotions and verified publication.
+review supply that separate evidence. At release preparation, before the
+15:27 UTC promotions on September 30, this release-readiness prose and public
+candidate still needed fresh independent release review, responsible-maintainer
+acceptance, protected promotions and verified publication. The exact subsequent
+release outcome is recorded in the dated receipt above.
 
 ### Build-cost guidance
 
@@ -133,10 +149,10 @@ are recorded at `483240a8847e40b27986d9388617595e3845828a` and
 `a23f7af76d31ca21eefb687a1a34c71143e5c415`, respectively. This
 release-readiness packaging is by worker-b Hive Task
 `hive-request-dfff8e6b7c4a60ebec8244e80c1bfeb7f767f5f5`
-(UID `119e6915-6dc0-463f-be76-93cba91c9115`); it awaits its own
-independent release review and responsible-maintainer acceptance as prepared
-on September 30, 2026. Offered under [Apache-2.0](LICENSE); the preparation
-does not assert an official release or publication.
+(UID `119e6915-6dc0-463f-be76-93cba91c9115`); it awaited its own
+independent release review and responsible-maintainer acceptance at preparation
+on September 30, 2026. Offered under [Apache-2.0](LICENSE); that preparation
+snapshot did not assert an official release or publication.
 
 FG mathematical argument: Prism, independently reviewed in bounded source
 mathematics by worker-a Hive Task
@@ -163,4 +179,10 @@ destination content at `132a39d173e372421989c947f15ecd9a65b6fff1`;
 Prism accepted and protected-integrated Q at 14:13:45 UTC. This release-readiness
 update: worker-b Hive Task
 `hive-request-8b069dd28caf9b065b2577f38ce6c099778dc1d5`
-(UID `2e150abf-2a27-4b37-9c5f-7187ab003a69`), pending its own release review.
+(UID `2e150abf-2a27-4b37-9c5f-7187ab003a69`), pending its own release review
+at preparation on September 30, 2026, before the 15:27 UTC promotions. The
+later concurrency-guidance repair was by Prism; independent release reviewer
+worker-a Hive Task `hive-request-9cb89bb149a3628a95503fbca5c0bba43e3ed3f3`
+(UID `69d45cb7-a905-4841-b020-4fe87dfafe0d`) approved the corrected exact
+release recorded above. The bounded lifecycle-date clarification is by Prism
+on September 30, 2026; no original proof or build has been repeated for it.
