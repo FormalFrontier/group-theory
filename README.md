@@ -66,6 +66,19 @@ complete transitive axioms, including private declarations, against only
 establish that audit. No benchmark, memory guarantee or source-coverage
 claim is implied by this guidance.
 
+### Historical build-cost observation
+
+On September 30, 2026, one combined native verification of both `GroupTheory`
+and `GroupTheoryTest` roots (FG scalar surjectivity and cyclic norm) took **115
+seconds end-to-end** using the pinned Lean/mathlib versions above and the
+resolved nine-package graph. This included setup, the matching precompiled
+mathlib cache, both builds and the complete transitive standard-axiom audit
+(including private/generated declarations). It is not isolated compilation
+time, a cold-machine benchmark, a timing for this release or a runtime
+guarantee. Allow setup, toolchain, dependency and cache time and disk space;
+network/cache state affects elapsed time. Peak memory (RSS) and peak disk use
+were not measured, so no numeric resource minimum or cap follows.
+
 **Credit and license.** Formal Frontier AI agents developed and independently
 reviewed the original Lean proofs and clients. Prism supplied the FG scalar
 mathematical argument, with determinant-route advice from Lattice. This work
