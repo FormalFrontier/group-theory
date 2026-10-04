@@ -167,7 +167,9 @@ example : (∑ i ∈ range 2, (-(1 : AddMonoid.End ℤ)) ^ i).ker ≠
   change witness - -witness = (1 : ℤ) at hw
   omega
 
-example : ¬ Function.Injective (nsmulAddMonoidHom (α := ZMod 2) 2) := by
+/-- Multiplication by two is not injective on `ZMod 2`. -/
+theorem zmod_two_two_nsmul_not_injective :
+    ¬ Function.Injective (nsmulAddMonoidHom (α := ZMod 2) 2) := by
   intro hinj
   have heq : (0 : ZMod 2) = 1 := hinj (by decide)
   exact zero_ne_one heq
@@ -178,7 +180,8 @@ example : (∑ i ∈ range 2, (1 : AddMonoid.End (ZMod 2)) ^ i).ker ≠
   have hnorm : (1 : ZMod 2) ∈
       (∑ i ∈ range 2, (1 : AddMonoid.End (ZMod 2)) ^ i).ker := by
     change (∑ i ∈ range 2, (1 : AddMonoid.End (ZMod 2)) ^ i) 1 = 0
-    simp
+    simp only [one_pow, sum_const, card_range, nsmul_eq_mul, Nat.cast_ofNat,
+      mul_one, AddMonoid.End.ofNat_apply]
     decide
   rw [heq] at hnorm
   obtain ⟨witness, hw⟩ := hnorm

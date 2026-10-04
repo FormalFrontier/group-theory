@@ -3,12 +3,18 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    For any category and monoid-valued diagram with arbitrary stage topologies,
+    compatible sections have continuous coordinate projections and an initial
+    topology. Compatible continuous monoid homomorphisms from any monoid equipped
+    with a topology lift uniquely to sections and form an equivalent family API;
+    group diagrams have a continuous projection extending the algebraic one.
+
     An exactness criterion for the finite cyclic norm of an endomorphism of
     an additive commutative group, requiring a positive natural period m with
     sigma^m = 1 (not necessarily exact order), injective multiplication by
     that same m, and elementwise lifting of fixed classes modulo mA.
 
-    For finitely generated abelian groups, surjectivity of the actual
+    For finitely generated abelian groups, surjectivity of the
     n-scalar map with n ≥ 2 forces finiteness and coprimality with Nat.card A
     and yields a uniform two-sided integer-scalar inverse; the converse
     characterizes surjectivity and bijectivity of that scalar map.
@@ -17,6 +23,14 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Continuous compatible sections of monoid-valued diagrams
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: GroupTheory/Topology/Sections.lean, MonCat.sectionsHomEquiv
+    note: >-
+      Original Lean construction using Mathlib's compatible-sections carrier
+      and product/subtype topology; no external source-coverage claim.
   - title: Finite cyclic norm exactness from fixed-class lifting
     authors:
       - Formal Frontier Agents
@@ -41,6 +55,21 @@ automation:
 
 status:
   scope: >-
+    For any category J and F : J ⥤ MonCat with arbitrary topologies on the
+    stages, Mathlib's existing compatible-sections subtype has continuous
+    coordinate projections and the initial topology induced by its coordinates.
+    Continuous monoid homomorphisms from any monoid H equipped with an arbitrary
+    topology lift uniquely from families compatible along every arrow; these
+    families are equivalent to continuous homomorphisms into the sections.
+    For group diagrams, the continuous monoid-homomorphism projection recovers
+    Mathlib's algebraic projection on forgetting continuity. The topology is
+    inherited from the product/subtype construction; no new sections carrier
+    or group lift is defined. No continuity of operations or transitions,
+    smallness, inhabitance, cofilteredness, separation, compactness or
+    surjectivity of projections is assumed. This is not a TopCat limit,
+    topological-group theorem or additive API, and makes no claim of formal
+    coverage of an external source.
+
     For an endomorphism sigma of an additive commutative group, a natural
     m > 0 with sigma^m = 1 (not necessarily exact order), injective
     multiplication by the same m, and elementwise fixed-class lifting
@@ -49,7 +78,7 @@ status:
     boundaries; no unconditional Tate or cohomology theorem is asserted.
 
     For [AddGroup.FG A] on an additive commutative group and natural n ≥ 2,
-    surjectivity of the actual map x ↦ n • x implies finite A, coprimality
+    surjectivity of the map x ↦ n • x implies finite A, coprimality
     of n with Nat.card A and a uniform two-sided integer-scalar inverse.
     Finiteness and coprimality also characterize scalar surjectivity and
     bijectivity. This is neither a K-theory theorem nor a theorem about
@@ -59,6 +88,20 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: MonCat.sectionsπContinuousMonoidHom
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: MonCat.sectionsLift
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: MonCat.sectionsLift_unique
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: MonCat.sectionsHomEquiv
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: MonCat.sections_topology
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: GrpCat.sectionsπContinuousMonoidHom
+      file: GroupTheory/Topology/Sections.lean
+    - declaration: GrpCat.sectionsπContinuousMonoidHom_toMonoidHom
+      file: GroupTheory/Topology/Sections.lean
     - declaration: AddMonoid.End.cyclicNorm_ker_eq_one_sub_range
       file: GroupTheory/CyclicNorm.lean
     - declaration: AddCommGroup.exists_zsmul_inverse_of_nsmul_surjective
@@ -75,11 +118,9 @@ review:
   reviewers:
     - Independent Formal Frontier AI agents
   notes: >-
-    Independent AI-agent reviews addressed the existing Lean mathematics,
-    API, semantic hypotheses and provenance. The responsible maintainer
-    accepted the original results for the official release. This describes
-    review of that mathematics, not human review or blanket approval of
-    subsequent documentation and header changes.
+    Independent AI-agent reviews addressed the Lean proofs, API, semantic
+    hypotheses and provenance of these mathematical results; no human review
+    is claimed.
 
 acknowledgements: >-
   Formal Frontier AI agents developed and independently reviewed the original

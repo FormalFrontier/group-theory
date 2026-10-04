@@ -6,8 +6,10 @@ Authors: Formal Frontier Agents
 module
 
 import GroupTheory.FGScalarSurjectivity
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Data.ZMod.Basic
 
-section
+public section
 
 set_option warningAsError true
 
@@ -41,7 +43,9 @@ example : Function.Surjective (fun x : ZMod 1 => (2 : ℕ) • x) := by
 
 example : (1 : ZMod 7) ≠ 0 := by decide
 
-example : Function.Bijective (fun x : ZMod 7 => (2 : ℕ) • x) := by
+/-- Multiplication by two is bijective on `ZMod 7`. -/
+theorem zmod_seven_two_nsmul_bijective :
+    Function.Bijective (fun x : ZMod 7 => (2 : ℕ) • x) := by
   apply (AddCommGroup.nsmul_bijective_iff_finite_coprime
     (A := ZMod 7) (n := 2) (by decide)).mpr
   constructor
@@ -50,3 +54,5 @@ example : Function.Bijective (fun x : ZMod 7 => (2 : ℕ) • x) := by
     decide
 
 end GroupTheoryTest.FGScalarSurjectivity
+
+end

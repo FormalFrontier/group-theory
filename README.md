@@ -1,11 +1,31 @@
 # Group Theory
 
-Reusable Lean results on finite cyclic norms and natural scalar maps of
-finitely generated abelian groups. The library depends directly on mathlib,
-not on a source repository or the incubator. The mathematical guides explain
-the proof ideas, examples and limits in more detail.
+Reusable Lean results on continuous compatible sections of monoid diagrams,
+finite cyclic norms and natural scalar maps of finitely generated abelian groups.
+The library depends directly on mathlib, not on a source repository or the
+incubator. The mathematical guides explain the proof ideas, examples and limits
+in more detail.
 
 ## Headline results
+
+**Continuous compatible sections.** For any category `J`, functor
+`F : J ⥤ MonCat`, and topologies on its monoid stages, the existing Mathlib
+compatible-sections subtype has continuous coordinate projections
+`MonCat.sectionsπContinuousMonoidHom F j`. For any monoid `H` with an arbitrary
+topology, `MonCat.sectionsLift` constructs a continuous monoid homomorphism
+from a family of continuous homomorphisms `H →ₜ* F.obj j` compatible with
+**every** arrow.
+`MonCat.sectionsLift_unique` and `MonCat.sectionsHomEquiv` give its uniqueness
+and the equivalence with compatible families. `MonCat.sections_topology`
+identifies the sections topology as the initial topology: the infimum of the
+topologies induced by all coordinate projections.
+`GrpCat.sectionsπContinuousMonoidHom` extends
+Mathlib's algebraic projection for group-valued diagrams. No continuity of
+multiplication on `H` or the stages, or of the transition maps, is assumed;
+filteredness, inhabitance, compactness, separation and surjectivity are likewise
+unnecessary. This is a continuous-*monoid*-homomorphism API, not a TopCat limit
+or topological-group structure assertion. See [the definitions and theorems](GroupTheory/Topology/Sections.lean)
+and [boundary examples](GroupTheoryTest/Topology/Sections.lean).
 
 **Finite cyclic norm exactness.**
 [`AddMonoid.End.cyclicNorm_ker_eq_one_sub_range`](GroupTheory/CyclicNorm.lean)
@@ -22,7 +42,7 @@ assert an unconditional Tate/cohomology theorem or source coverage. See the
 [client examples and counterexamples](GroupTheoryTest/CyclicNorm.lean).
 
 **Surjective natural scalars on FG abelian groups.** For `[AddCommGroup A]`,
-`[AddGroup.FG A]` and `n : ℕ` with `2 ≤ n`, surjectivity of the **actual**
+`[AddGroup.FG A]` and `n : ℕ` with `2 ≤ n`, surjectivity of the
 map `fun x : A => n • x` forces `Finite A` and
 `Nat.Coprime n (Nat.card A)`. A *single* integer scalar is a two-sided
 inverse for `n • ·` on every element; the finite-and-coprime condition
@@ -38,16 +58,21 @@ See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 
 ## Use and verification
 
-Import `GroupTheory` for both sets of results or import
-`GroupTheory.CyclicNorm` or `GroupTheory.FGScalarSurjectivity` individually.
-For example, after `import GroupTheory`, use
+Import `GroupTheory` for all three sets of results, or import
+`GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
+`GroupTheory.FGScalarSurjectivity` individually. For example, after
+`import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
+continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
+its `j`th component; use
 `AddMonoid.End.cyclicNorm_ker_eq_one_sub_range sigma m hm hperiod hinjective hlift`
 or `(AddCommGroup.nsmul_surjective_iff_finite_coprime (A := A) (n := n) hn).mp hsurj`.
 The maintained `GroupTheoryTest` root exercises the interfaces but is not
-required by downstream imports: its cyclic client has four `public import`s
-and a public section (14 examples and two private helpers), while its FG
-client has an ordinary import and section (five examples). Private test
-helpers are not additional public theorems.
+required by downstream imports. Its sections clients include empty indexing,
+parallel arrows, non-group stages, discontinuous transitions, nonsurjective
+projections and a nontrivial consequence of `sections_topology`. The cyclic
+clients cover fixed-class lifting, the coordinate swap on `ℤ × ℤ` and
+counterexamples when hypotheses are dropped; the scalar clients include
+concrete `ZMod` examples.
 
 Use the pinned Lean `v4.34.0-rc2` and mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5` and run from this repository:
@@ -66,22 +91,9 @@ complete transitive axioms, including private declarations, against only
 establish that audit. No benchmark, memory guarantee or source-coverage
 claim is implied by this guidance.
 
-### Historical build-cost observation
-
-On September 30, 2026, one combined native verification of both `GroupTheory`
-and `GroupTheoryTest` roots (FG scalar surjectivity and cyclic norm) took **115
-seconds end-to-end** using the pinned Lean/mathlib versions above and the
-resolved nine-package graph. This included setup, the matching precompiled
-mathlib cache, both builds and the complete transitive standard-axiom audit
-(including private/generated declarations). It is not isolated compilation
-time, a cold-machine benchmark, a timing for this release or a runtime
-guarantee. Allow setup, toolchain, dependency and cache time and disk space;
-network/cache state affects elapsed time. Peak memory (RSS) and peak disk use
-were not measured, so no numeric resource minimum or cap follows.
-
-**Credit and license.** Formal Frontier AI agents developed and independently
-reviewed the original Lean proofs and clients. Prism supplied the FG scalar
-mathematical argument, with determinant-route advice from Lattice. This work
-is credited to **Authors: Formal Frontier Agents** and licensed under
-[Apache-2.0](LICENSE). Neither a human review nor an external source paper
-is claimed for these original proofs.
+**Credit and license.** Formal Frontier AI agents developed the Lean proofs and
+clients. The continuous sections API builds on Mathlib's sections definitions.
+Prism supplied the FG scalar mathematical argument, with determinant-route
+advice from Lattice. This work is credited to **Authors: Formal Frontier Agents**
+and licensed under [Apache-2.0](LICENSE). Neither human review nor an external
+source paper is claimed for the original cyclic norm and FG scalar proofs.

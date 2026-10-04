@@ -7,3 +7,4 @@ module
 
 public import GroupTheory.CyclicNorm
 public import GroupTheory.FGScalarSurjectivity
+public import GroupTheory.Topology.Sections
