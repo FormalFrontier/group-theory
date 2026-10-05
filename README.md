@@ -1,13 +1,33 @@
 # Group Theory
 
 Reusable Lean results on identity-component quotients of topological groups,
-continuous compatible sections of monoid diagrams, finite cyclic norms and
-natural scalar maps of finitely generated abelian groups.
+compact open subgroups of totally disconnected locally compact groups,
+continuous compatible sections of monoid diagrams, open quotients of compact
+totally disconnected spaces, finite cyclic norms and natural scalar maps of
+finitely generated abelian groups.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
 
 ## Headline results
+
+**Compact open subgroup neighborhoods.** Every identity neighborhood in a
+locally compact totally disconnected topological group contains a compact open
+subgroup; neighborhoods need not be open, and no ambient compactness or separate
+Hausdorff hypothesis is imposed. `OpenSubgroup.nhds_one_hasBasis_compact` expresses
+the neighborhood basis. For any compact open set, `OpenSubgroup.leftStabilizer`
+constructs its open left-translation stabilizer, even if the set misses the identity.
+When the set contains the identity, that subgroup is compact and contained in the set.
+The construction requires neither local compactness nor total disconnectedness.
+See [the subgroup API](GroupTheory/Topology/CompactOpenSubgroup.lean)
+and [the boundary clients](GroupTheoryTest/Topology/CompactOpenSubgroup.lean).
+
+**Open quotients of compact spaces.** If `f : X → Y` is an open quotient map,
+`X` is compact, Hausdorff and totally disconnected, and `Y` is Hausdorff,
+`Topology.IsOpenQuotientMap.totallyDisconnectedSpace` gives total
+disconnectedness of `Y`. This is a general result about topological spaces,
+independent of group structure. See [the theorem](GroupTheory/Topology/OpenQuotient.lean)
+and [a non-injective finite projection](GroupTheoryTest/Topology/OpenQuotient.lean).
 
 **Identity-component quotients.** For any topological group, the ordinary
 quotient by Mathlib's `Subgroup.connectedComponentOfOne` is Hausdorff and totally
@@ -70,14 +90,19 @@ See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 
 ## Use and verification
 
-Import `GroupTheory` for all four sets of results, or import
+Import `GroupTheory` for all six sets of results, or import
+`GroupTheory.Topology.OpenQuotient`,
 `GroupTheory.Topology.ConnectedComponentQuotient`,
 `GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
-`GroupTheory.FGScalarSurjectivity` individually. For example, after
+`GroupTheory.FGScalarSurjectivity` or `GroupTheory.Topology.CompactOpenSubgroup`
+individually. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
 `QuotientGroup.connectedComponentQuotientLift_mk_apply f x` to recover `f x`;
+use `Topology.IsOpenQuotientMap.totallyDisconnectedSpace hf` for an open
+quotient map `hf` between compact Hausdorff totally disconnected and Hausdorff
+spaces;
 use `AddMonoid.End.cyclicNorm_ker_eq_one_sub_range sigma m hm hperiod hinjective hlift`
 or `(AddCommGroup.nsmul_surjective_iff_finite_coprime (A := A) (n := n) hn).mp hsurj`.
 The maintained `GroupTheoryTest` root exercises the interfaces but is not
@@ -108,15 +133,29 @@ claim is implied by this guidance.
 
 ## References
 
+- Van Dantzig's compact-open subgroup theorem, used in Neukirch, Schmidt,
+  and Wingberg, *Cohomology of Number Fields*, corrected second edition,
+  Chapter I, §1, Proposition (1.1.9), for the identity-component discussion.
+- Mathlib's `OpenSubgroup` and `MulAction.stabilizer` supply the algebraic interface;
+  its compact-neighborhood and clopen-basis results supply the topological inputs.
 - Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected
   second edition, electronic version 2.3, Chapter I, §1, (1.1.9)(i) and its
   preceding paragraph. The continuous universal property here is an
   interpretation that does not require the source's local compactness assumption.
 - Mathlib's `Subgroup.connectedComponentOfOne`, `QuotientGroup.lift` and
   closed-normal quotient topology supply the component and quotient APIs.
+- Mathlib's clopen basis for compact Hausdorff totally disconnected spaces
+  and open-quotient basis transport supply the generic open-quotient proof.
 
 **Credit and license.** Formal Frontier AI agents developed the Lean proofs and
 clients. The continuous sections API builds on Mathlib's sections definitions.
+The compact-open subgroup result is the classical van Dantzig theorem, used as
+a prerequisite in Neukirch, Schmidt, and Wingberg's *Cohomology of Number
+Fields*, Chapter I, §1. Its translation-stabilizer argument independently
+assembles Mathlib's compact-neighborhood, clopen-basis and subgroup APIs;
+no Pontryagin or Bourbaki passage was inspected or transcribed.
+The generic open-quotient proof was first formalized in Formal Frontier's
+Profinite Groups library and uses Mathlib's clopen and basis APIs.
 The identity-component quotient API interprets Neukirch--Schmidt--Wingberg's
 totally disconnected quotient and reuses Mathlib's component and quotient APIs.
 Prism supplied the FG scalar mathematical argument, with determinant-route

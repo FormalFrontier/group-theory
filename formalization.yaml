@@ -3,6 +3,17 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    Every topological group has a Hausdorff, totally disconnected quotient
+    by its identity component, without separation or local compactness of
+    the original group. Continuous homomorphisms to totally disconnected
+    groups equipped with a topology factor uniquely through this quotient;
+    the target operations need not be continuous.
+
+    Every identity neighborhood in a locally compact totally disconnected
+    topological group contains a compact open subgroup. The open left-translation
+    stabilizer of any compact open set provides the construction; compactness
+    of that subgroup follows when the set contains the identity.
+
     For any category and monoid-valued diagram with arbitrary stage topologies,
     compatible sections have continuous coordinate projections and an initial
     topology. Compatible continuous monoid homomorphisms from any monoid equipped
@@ -23,6 +34,25 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Cohomology of Number Fields
+    authors:
+      - Jürgen Neukirch
+      - Alexander Schmidt
+      - Kay Wingberg
+    type: book
+    location: >-
+      Corrected second edition, electronic version 2.3, Chapter I, §1,
+      (1.1.9)(i),(iii) and the preceding paragraph.
+    note: >-
+      The identity-component quotient API interprets and generalizes the
+      totally disconnected quotient, without local compactness or separation
+      of the source group. The continuous universal property is not a claim
+      of the source's full open-normal-intersection characterization.
+      The construction reuses Mathlib's component, quotient and topology APIs.
+      The compact-open subgroup result is the classical van Dantzig theorem,
+      used as a prerequisite in this context. Its proof uses Mathlib's
+      compact-neighborhood, clopen-basis and subgroup APIs; the cited original
+      Pontryagin and Bourbaki passages were not inspected.
   - title: Continuous compatible sections of monoid-valued diagrams
     authors:
       - Formal Frontier Agents
@@ -55,6 +85,28 @@ automation:
 
 status:
   scope: >-
+    For any topological group G, the ordinary quotient by its identity
+    component is Hausdorff and totally disconnected. G need not be Hausdorff
+    or locally compact. The canonical projection is continuous, and every
+    continuous homomorphism from G to a totally disconnected group equipped
+    with a topology factors uniquely through it, without continuity of the
+    target operations. The API includes composition and hom-equivalence laws.
+    Hausdorffness uses Mathlib's existing closed-normal quotient instances,
+    not a separate library theorem. No open-normal-intersection
+    characterization is asserted.
+
+    Every identity neighborhood W in a locally compact totally disconnected
+    topological group contains a compact open subgroup lying in W, without
+    assuming W is open or separately assuming the group is Hausdorff. Compact
+    open subgroups form an identity-neighborhood basis. For any compact open
+    set K, its open left-translation stabilizer consists precisely of the
+    group elements g with g • K = K; when 1 ∈ K this stabilizer is compact
+    and contained in K. The stabilizer construction does not need local
+    compactness, total disconnectedness or identity membership in K. In a
+    compact ambient group the compactness refinement is equivalent to the
+    existing open-subgroup existence conclusion of Mathlib. This does not
+    assert an open-normal-intersection characterization of the quotient.
+
     For any category J and F : J ⥤ MonCat with arbitrary topologies on the
     stages, Mathlib's existing compatible-sections subtype has continuous
     coordinate projections and the initial topology induced by its coordinates.
@@ -88,6 +140,28 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: OpenSubgroup.leftStabilizer
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: OpenSubgroup.mem_leftStabilizer_iff
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: OpenSubgroup.isCompact_leftStabilizer
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: OpenSubgroup.exists_compact_subset_iff_exists_subset
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: OpenSubgroup.exists_compact_subset_nhds_one
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: OpenSubgroup.nhds_one_hasBasis_compact
+      file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: QuotientGroup.instTotallyDisconnectedSpaceConnectedComponentQuotient
+      file: GroupTheory/Topology/ConnectedComponentQuotient.lean
+    - declaration: QuotientGroup.connectedComponentQuotientMk
+      file: GroupTheory/Topology/ConnectedComponentQuotient.lean
+    - declaration: QuotientGroup.connectedComponentQuotientLift
+      file: GroupTheory/Topology/ConnectedComponentQuotient.lean
+    - declaration: QuotientGroup.connectedComponentQuotientLift_unique
+      file: GroupTheory/Topology/ConnectedComponentQuotient.lean
+    - declaration: QuotientGroup.connectedComponentQuotientHomEquiv
+      file: GroupTheory/Topology/ConnectedComponentQuotient.lean
     - declaration: MonCat.sectionsπContinuousMonoidHom
       file: GroupTheory/Topology/Sections.lean
     - declaration: MonCat.sectionsLift
