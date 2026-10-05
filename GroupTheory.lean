@@ -11,3 +11,4 @@ public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections
 public import GroupTheory.Topology.ConnectedComponentQuotient
 public import GroupTheory.Topology.OpenQuotient
+public import GroupTheory.Topology.ConnectedComponentOpenSubgroup

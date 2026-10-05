@@ -29,6 +29,19 @@ disconnectedness of `Y`. This is a general result about topological spaces,
 independent of group structure. See [the theorem](GroupTheory/Topology/OpenQuotient.lean)
 and [a non-injective finite projection](GroupTheoryTest/Topology/OpenQuotient.lean).
 
+**Locally compact identity components.** In a locally compact topological group,
+the identity component is the intersection of **all** open subgroups, even
+without a Hausdorff assumption; membership and point-separation lemmas make
+this characterization usable. For a continuous open surjective group homomorphism
+with locally compact source, the closure of its identity-component image is
+the identity component of the target, without target separation or local
+compactness assumptions. Openness and closure are essential; the printed
+open-*normal* intersection is false in general. The image argument uses the
+locally compact open-quotient theorem for totally disconnected groups, proved
+by restricting to a compact open subgroup. See [the component theorems](GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean),
+[their boundary clients](GroupTheoryTest/Topology/ConnectedComponentOpenSubgroup.lean)
+and [the open-quotient lemma](GroupTheory/Topology/OpenQuotient.lean).
+
 **Identity-component quotients.** For any topological group, the ordinary
 quotient by Mathlib's `Subgroup.connectedComponentOfOne` is Hausdorff and totally
 disconnected, without a separation or local-compactness hypothesis on the
@@ -90,9 +103,10 @@ See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 
 ## Use and verification
 
-Import `GroupTheory` for all six sets of results, or import
+Import `GroupTheory` for these results, or import
 `GroupTheory.Topology.OpenQuotient`,
 `GroupTheory.Topology.ConnectedComponentQuotient`,
+`GroupTheory.Topology.ConnectedComponentOpenSubgroup`,
 `GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
 `GroupTheory.FGScalarSurjectivity` or `GroupTheory.Topology.CompactOpenSubgroup`
 individually. For example, after
@@ -113,6 +127,12 @@ clients cover fixed-class lifting, the coordinate swap on `ℤ × ℤ` and
 counterexamples when hypotheses are dropped; the scalar clients include
 concrete `ZMod` examples. The quotient clients cover connected real, discrete,
 indiscrete non-Hausdorff and mixed connected/discrete groups.
+
+Older Profinite Groups versions that also define
+`Topology.IsOpenQuotientMap.totallyDisconnectedSpace` cannot share an import
+graph with `GroupTheory.Topology.OpenQuotient` or the aggregate `GroupTheory`
+import. To use both libraries, a compatible Profinite Groups version would
+need to re-export Group Theory's declaration instead of defining its own.
 
 Use the pinned Lean `v4.34.0-rc2` and mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5` and run from this repository:

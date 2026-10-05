@@ -14,6 +14,18 @@ project:
     stabilizer of any compact open set provides the construction; compactness
     of that subgroup follows when the set contains the identity.
 
+    In a locally compact topological group, the identity component is the
+    intersection of all open subgroups. Under a continuous open surjective
+    group homomorphism from a locally compact source, the closure of its
+    identity-component image equals the target identity component. Neither
+    result requires Hausdorffness of the original groups.
+
+    An open quotient map from a compact Hausdorff totally disconnected space
+    to a Hausdorff space has totally disconnected target, without group
+    structure, injectivity or a local-compactness assumption on the target.
+    An open quotient group homomorphism from a locally compact totally
+    disconnected group to a Hausdorff group has the same conclusion.
+
     For any category and monoid-valued diagram with arbitrary stage topologies,
     compatible sections have continuous coordinate projections and an initial
     topology. Compatible continuous monoid homomorphisms from any monoid equipped
@@ -52,7 +64,11 @@ sources:
       The compact-open subgroup result is the classical van Dantzig theorem,
       used as a prerequisite in this context. Its proof uses Mathlib's
       compact-neighborhood, clopen-basis and subgroup APIs; the cited original
-      Pontryagin and Bourbaki passages were not inspected.
+      Pontryagin and Bourbaki passages were not inspected. The locally compact
+      identity-component intersection ranges over all open subgroups, rather
+      than the false printed open-normal intersection. For component images,
+      openness corrects the false merely-continuous surjection statement;
+      closure remains necessary.
   - title: Continuous compatible sections of monoid-valued diagrams
     authors:
       - Formal Frontier Agents
@@ -92,8 +108,11 @@ status:
     with a topology factors uniquely through it, without continuity of the
     target operations. The API includes composition and hom-equivalence laws.
     Hausdorffness uses Mathlib's existing closed-normal quotient instances,
-    not a separate library theorem. No open-normal-intersection
-    characterization is asserted.
+    not a separate library theorem. The locally compact identity-component
+    characterization uses all open subgroups, not the false intersection of
+    open normal subgroups. Under continuous open surjective homomorphisms from
+    locally compact sources, the closure of the component image is the target
+    component; the target need not be separately Hausdorff or locally compact.
 
     Every identity neighborhood W in a locally compact totally disconnected
     topological group contains a compact open subgroup lying in W, without
@@ -106,6 +125,12 @@ status:
     compact ambient group the compactness refinement is equivalent to the
     existing open-subgroup existence conclusion of Mathlib. This does not
     assert an open-normal-intersection characterization of the quotient.
+
+    For an open quotient map f : X → Y, with X compact, Hausdorff and totally
+    disconnected and Y Hausdorff, Y is totally disconnected. No group structure,
+    injectivity or local-compactness assumption on Y is needed. The proof follows
+    the existing Formal Frontier Profinite Groups formalization and uses Mathlib's
+    clopen-basis and open-quotient APIs.
 
     For any category J and F : J ⥤ MonCat with arbitrary topologies on the
     stages, Mathlib's existing compatible-sections subtype has continuous
@@ -152,6 +177,18 @@ status:
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
     - declaration: OpenSubgroup.nhds_one_hasBasis_compact
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: Topology.IsOpenQuotientMap.totallyDisconnectedSpace
+      file: GroupTheory/Topology/OpenQuotient.lean
+    - declaration: ContinuousMonoidHom.totallyDisconnectedSpace_of_isOpenQuotientMap
+      file: GroupTheory/Topology/OpenQuotient.lean
+    - declaration: Subgroup.connectedComponentOfOne_eq_iInf_openSubgroup
+      file: GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean
+    - declaration: Subgroup.mem_connectedComponentOfOne_iff_forall_openSubgroup
+      file: GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean
+    - declaration: Subgroup.exists_openSubgroup_not_mem_of_not_mem_connectedComponentOfOne
+      file: GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean
+    - declaration: ContinuousMonoidHom.closure_image_connectedComponentOfOne
+      file: GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean
     - declaration: QuotientGroup.instTotallyDisconnectedSpaceConnectedComponentQuotient
       file: GroupTheory/Topology/ConnectedComponentQuotient.lean
     - declaration: QuotientGroup.connectedComponentQuotientMk
