@@ -1,12 +1,24 @@
 # Group Theory
 
-Reusable Lean results on continuous compatible sections of monoid diagrams,
-finite cyclic norms and natural scalar maps of finitely generated abelian groups.
+Reusable Lean results on identity-component quotients of topological groups,
+continuous compatible sections of monoid diagrams, finite cyclic norms and
+natural scalar maps of finitely generated abelian groups.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
 
 ## Headline results
+
+**Identity-component quotients.** For any topological group, the ordinary
+quotient by Mathlib's `Subgroup.connectedComponentOfOne` is Hausdorff and totally
+disconnected, without a separation or local-compactness hypothesis on the
+original group. `QuotientGroup.connectedComponentQuotientMk` is the canonical
+continuous projection. `QuotientGroup.connectedComponentQuotientLift` factors
+continuous homomorphisms into totally disconnected groups, with application,
+composition, uniqueness and hom-equivalence APIs. The target group's
+operations need not be continuous. See
+[the quotient API](GroupTheory/Topology/ConnectedComponentQuotient.lean)
+and [boundary examples](GroupTheoryTest/Topology/ConnectedComponentQuotient.lean).
 
 **Continuous compatible sections.** For any category `J`, functor
 `F : J ⥤ MonCat`, and topologies on its monoid stages, the existing Mathlib
@@ -58,13 +70,15 @@ See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 
 ## Use and verification
 
-Import `GroupTheory` for all three sets of results, or import
+Import `GroupTheory` for all four sets of results, or import
+`GroupTheory.Topology.ConnectedComponentQuotient`,
 `GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
 `GroupTheory.FGScalarSurjectivity` individually. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
-`AddMonoid.End.cyclicNorm_ker_eq_one_sub_range sigma m hm hperiod hinjective hlift`
+`QuotientGroup.connectedComponentQuotientLift_mk_apply f x` to recover `f x`;
+use `AddMonoid.End.cyclicNorm_ker_eq_one_sub_range sigma m hm hperiod hinjective hlift`
 or `(AddCommGroup.nsmul_surjective_iff_finite_coprime (A := A) (n := n) hn).mp hsurj`.
 The maintained `GroupTheoryTest` root exercises the interfaces but is not
 required by downstream imports. Its sections clients include empty indexing,
@@ -72,7 +86,8 @@ parallel arrows, non-group stages, discontinuous transitions, nonsurjective
 projections and a nontrivial consequence of `sections_topology`. The cyclic
 clients cover fixed-class lifting, the coordinate swap on `ℤ × ℤ` and
 counterexamples when hypotheses are dropped; the scalar clients include
-concrete `ZMod` examples.
+concrete `ZMod` examples. The quotient clients cover connected real, discrete,
+indiscrete non-Hausdorff and mixed connected/discrete groups.
 
 Use the pinned Lean `v4.34.0-rc2` and mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5` and run from this repository:
@@ -91,8 +106,19 @@ complete transitive axioms, including private declarations, against only
 establish that audit. No benchmark, memory guarantee or source-coverage
 claim is implied by this guidance.
 
+## References
+
+- Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected
+  second edition, electronic version 2.3, Chapter I, §1, (1.1.9)(i) and its
+  preceding paragraph. The continuous universal property here is an
+  interpretation that does not require the source's local compactness assumption.
+- Mathlib's `Subgroup.connectedComponentOfOne`, `QuotientGroup.lift` and
+  closed-normal quotient topology supply the component and quotient APIs.
+
 **Credit and license.** Formal Frontier AI agents developed the Lean proofs and
 clients. The continuous sections API builds on Mathlib's sections definitions.
+The identity-component quotient API interprets Neukirch--Schmidt--Wingberg's
+totally disconnected quotient and reuses Mathlib's component and quotient APIs.
 Prism supplied the FG scalar mathematical argument, with determinant-route
 advice from Lattice. This work is credited to **Authors: Formal Frontier Agents**
 and licensed under [Apache-2.0](LICENSE). Neither human review nor an external
