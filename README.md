@@ -4,6 +4,7 @@ Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
 finite-image and open-kernel rational-circle character subgroups,
+the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
@@ -50,6 +51,18 @@ subgroups admit precomposition, with continuity required only for the
 open-kernel restriction. See
 [the character subgroup API](GroupTheory/Topology/CharacterSubgroups.lean)
 and [the finite and 2-adic examples](GroupTheoryTest/Topology/CharacterSubgroups.lean).
+
+**Rational-circle and continuous characters.** The rational additive circle embeds
+in the unit circle, and every finite-order circle point has a rational preimage.
+For a compact nonarchimedean commutative additive group, open-kernel
+rational-circle characters identify additively with its continuous
+circle-valued characters.
+If the group is additionally Hausdorff and has a dense finitely generated
+additive subgroup, its finite-order characters supply that domain. These
+comparisons neither cover all abstract rational-circle characters nor give a
+topological equivalence. See [the inclusion](GroupTheory/Topology/RationalCircle.lean),
+[both comparison maps](GroupTheory/Topology/RationalCircleCharacter.lean) and
+[the finite and 2-adic clients](GroupTheoryTest/Topology/RationalCircleCharacter.lean).
 
 **Finite index from dense finite generation.** In a compact Hausdorff
 commutative topological group with an abstractly finitely generated dense
@@ -228,6 +241,8 @@ totally disconnected quotient and reuses Mathlib's component and quotient APIs.
 The open-kernel and finite-image arguments generalize their character case
 using Mathlib's nonarchimedean, locally constant and quotient APIs; this does
 not assert a comparison with all abstract characters or source coverage.
+The rational-circle inclusion and torsion-value lift follow the Formal Frontier
+Supernatural Numbers formalization of circle-valued characters.
 Prism supplied the FG scalar mathematical argument, with determinant-route
 advice from Lattice. This work is credited to **Authors: Formal Frontier Agents**
 and licensed under [Apache-2.0](LICENSE). Neither human review nor an external

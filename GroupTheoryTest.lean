@@ -14,4 +14,6 @@ public import GroupTheoryTest.Topology.OpenQuotient
 public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
 public import GroupTheoryTest.Topology.FiniteIndex
+public import GroupTheoryTest.Topology.PadicDenseIntegers
 public import GroupTheoryTest.Topology.CharacterSubgroups
+public import GroupTheoryTest.Topology.RationalCircleCharacter

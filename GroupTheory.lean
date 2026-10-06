@@ -16,3 +16,6 @@ public import GroupTheory.Topology.OpenKernel
 public import GroupTheory.Topology.CircleCharacter
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheory.Topology.CharacterSubgroups
+public import GroupTheory.Topology.RationalCircle
+public import GroupTheory.Topology.TypeTags
+public import GroupTheory.Topology.RationalCircleCharacter
