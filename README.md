@@ -3,6 +3,7 @@
 Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
+finite-image and open-kernel rational-circle character subgroups,
 open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
@@ -38,6 +39,17 @@ disconnected groups via the compact-open subgroup basis. See
 [the general API](GroupTheory/Topology/OpenKernel.lean),
 [the circle specialization](GroupTheory/Topology/CircleCharacter.lean) and
 [a nonconstant two-element character](GroupTheoryTest/Topology/OpenKernel.lean).
+
+**Rational-circle character subgroups.** A character of an abelian group has
+finite image precisely when it has finite order as a whole character. For
+topological abelian groups, characters with open kernels form a subgroup;
+compactness makes every such character finite-order, without a Hausdorff
+assumption. The converse holds for compact Hausdorff groups containing a dense
+finitely generated subgroup, using openness of finite-index subgroups. Both
+subgroups admit precomposition, with continuity required only for the
+open-kernel restriction. See
+[the character subgroup API](GroupTheory/Topology/CharacterSubgroups.lean)
+and [the finite and 2-adic examples](GroupTheoryTest/Topology/CharacterSubgroups.lean).
 
 **Finite index from dense finite generation.** In a compact Hausdorff
 commutative topological group with an abstractly finitely generated dense
@@ -138,7 +150,8 @@ Import `GroupTheory` for these results, or import
 `GroupTheory.FGScalarSurjectivity`, `GroupTheory.Topology.CompactOpenSubgroup`,
 `GroupTheory.Topology.OpenKernel` or `GroupTheory.Topology.CircleCharacter`
 individually. The finite-index results are also available through
-`GroupTheory.Topology.FiniteIndex`. For example, after
+`GroupTheory.Topology.FiniteIndex`, and character subgroups through
+`GroupTheory.Topology.CharacterSubgroups`. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
