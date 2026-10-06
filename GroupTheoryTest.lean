@@ -13,3 +13,4 @@ public import GroupTheoryTest.Topology.ConnectedComponentQuotient
 public import GroupTheoryTest.Topology.OpenQuotient
 public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
+public import GroupTheoryTest.Topology.FiniteIndex

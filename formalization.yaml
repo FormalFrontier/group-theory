@@ -22,6 +22,11 @@ project:
     the quotient is discrete, and Mathlib's canonical kernel lift uniquely
     factors the map. Circle's centered half-arc gives the character case.
 
+    In a compact Hausdorff commutative topological group with an abstractly
+    finitely generated dense subgroup, every positive-power range has finite
+    index and is open. Every abstract finite-index subgroup is open without
+    assuming it closed; the additive versions use natural-number scalars.
+
     In a locally compact topological group, the identity component is the
     intersection of all open subgroups. Under a continuous open surjective
     group homomorphism from a locally compact source, the closure of its
@@ -161,6 +166,13 @@ status:
     locally compact totally disconnected case via compact-open subgroups.
     The cyclic group of order two supplies a nonconstant character client.
 
+    A compact Hausdorff commutative group with an abstractly finitely generated
+    dense subgroup has finite-index open positive-power ranges; all abstract
+    finite-index subgroups are open, without a closedness hypothesis. The
+    additive 2-adic integers provide a dense integer subgroup, an open
+    finite-index doubling range and a proper finite-index reduction kernel.
+    Their zero-scalar range has infinite index, so positivity is necessary.
+
     For an open quotient map f : X → Y, with X compact, Hausdorff and totally
     disconnected and Y Hausdorff, Y is totally disconnected. No group structure,
     injectivity or local-compactness assumption on Y is needed. The proof follows
@@ -222,6 +234,18 @@ status:
       file: GroupTheory/Topology/OpenKernel.lean
     - declaration: Circle.finite_range
       file: GroupTheory/Topology/CircleCharacter.lean
+    - declaration: Subgroup.finiteIndex_range_powMonoidHom_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
+    - declaration: Subgroup.isOpen_range_powMonoidHom_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
+    - declaration: Subgroup.isOpen_of_finiteIndex_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
+    - declaration: AddSubgroup.finiteIndex_range_nsmulAddMonoidHom_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
+    - declaration: AddSubgroup.isOpen_range_nsmulAddMonoidHom_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
+    - declaration: AddSubgroup.isOpen_of_finiteIndex_of_dense_fg
+      file: GroupTheory/Topology/FiniteIndex.lean
     - declaration: Topology.IsOpenQuotientMap.totallyDisconnectedSpace
       file: GroupTheory/Topology/OpenQuotient.lean
     - declaration: ContinuousMonoidHom.totallyDisconnectedSpace_of_isOpenQuotientMap

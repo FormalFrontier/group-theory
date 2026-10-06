@@ -3,6 +3,7 @@
 Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
+open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups.
@@ -37,6 +38,16 @@ disconnected groups via the compact-open subgroup basis. See
 [the general API](GroupTheory/Topology/OpenKernel.lean),
 [the circle specialization](GroupTheory/Topology/CircleCharacter.lean) and
 [a nonconstant two-element character](GroupTheoryTest/Topology/OpenKernel.lean).
+
+**Finite index from dense finite generation.** In a compact Hausdorff
+commutative topological group with an abstractly finitely generated dense
+subgroup, every positive-power range has finite index and is open. Every
+abstract finite-index subgroup is therefore open, without assuming that it is
+closed. Additive versions use positive natural-number scalar maps. The dense
+integer subgroup of the 2-adic integers witnesses doubling with finite-index
+open range and a proper finite-index reduction kernel; the zero scalar map
+has infinite-index range. See [the subgroup results](GroupTheory/Topology/FiniteIndex.lean)
+and [the 2-adic examples](GroupTheoryTest/Topology/FiniteIndex.lean).
 
 **Open quotients of compact spaces.** If `f : X → Y` is an open quotient map,
 `X` is compact, Hausdorff and totally disconnected, and `Y` is Hausdorff,
@@ -126,7 +137,8 @@ Import `GroupTheory` for these results, or import
 `GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
 `GroupTheory.FGScalarSurjectivity`, `GroupTheory.Topology.CompactOpenSubgroup`,
 `GroupTheory.Topology.OpenKernel` or `GroupTheory.Topology.CircleCharacter`
-individually. For example, after
+individually. The finite-index results are also available through
+`GroupTheory.Topology.FiniteIndex`. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
