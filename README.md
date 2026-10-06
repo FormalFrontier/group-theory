@@ -2,6 +2,7 @@
 
 Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
+open kernels and finite images of continuous group homomorphisms,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups.
@@ -21,6 +22,21 @@ When the set contains the identity, that subgroup is compact and contained in th
 The construction requires neither local compactness nor total disconnectedness.
 See [the subgroup API](GroupTheory/Topology/CompactOpenSubgroup.lean)
 and [the boundary clients](GroupTheoryTest/Topology/CompactOpenSubgroup.lean).
+
+**Open kernels and finite images.** For a continuous homomorphism from a
+nonarchimedean group, a target identity neighborhood containing no nontrivial
+subgroup forces an open kernel, without source compactness, commutativity or a
+separation assumption on the target. An open kernel makes any group homomorphism
+locally constant, even without continuity or a topology on the target.
+Compactness of the source then gives finite image and a finite, discrete
+quotient by the kernel; Mathlib's `QuotientGroup.kerLift` gives the unique
+factorization, injective onto the image but not necessarily surjective onto
+the target. The centered half-circle supplies the target neighborhood for
+circle-valued characters, including those on compact locally compact totally
+disconnected groups via the compact-open subgroup basis. See
+[the general API](GroupTheory/Topology/OpenKernel.lean),
+[the circle specialization](GroupTheory/Topology/CircleCharacter.lean) and
+[a nonconstant two-element character](GroupTheoryTest/Topology/OpenKernel.lean).
 
 **Open quotients of compact spaces.** If `f : X → Y` is an open quotient map,
 `X` is compact, Hausdorff and totally disconnected, and `Y` is Hausdorff,
@@ -108,7 +124,8 @@ Import `GroupTheory` for these results, or import
 `GroupTheory.Topology.ConnectedComponentQuotient`,
 `GroupTheory.Topology.ConnectedComponentOpenSubgroup`,
 `GroupTheory.Topology.Sections`, `GroupTheory.CyclicNorm` or
-`GroupTheory.FGScalarSurjectivity` or `GroupTheory.Topology.CompactOpenSubgroup`
+`GroupTheory.FGScalarSurjectivity`, `GroupTheory.Topology.CompactOpenSubgroup`,
+`GroupTheory.Topology.OpenKernel` or `GroupTheory.Topology.CircleCharacter`
 individually. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
@@ -166,6 +183,11 @@ claim is implied by this guidance.
   closed-normal quotient topology supply the component and quotient APIs.
 - Mathlib's clopen basis for compact Hausdorff totally disconnected spaces
   and open-quotient basis transport supply the generic open-quotient proof.
+- Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected
+  second edition, Chapter I, §1, remarks following Theorem (1.1.11), motivate
+  the compact totally disconnected character case; the open-kernel API applies
+  more generally. Mathlib's `NonarchimedeanGroup`, locally constant functions
+  and quotient-group interfaces supply the reusable proof ingredients.
 
 **Credit and license.** Formal Frontier AI agents developed the Lean proofs and
 clients. The continuous sections API builds on Mathlib's sections definitions.
@@ -178,6 +200,9 @@ The generic open-quotient proof was first formalized in Formal Frontier's
 Profinite Groups library and uses Mathlib's clopen and basis APIs.
 The identity-component quotient API interprets Neukirch--Schmidt--Wingberg's
 totally disconnected quotient and reuses Mathlib's component and quotient APIs.
+The open-kernel and finite-image arguments generalize their character case
+using Mathlib's nonarchimedean, locally constant and quotient APIs; this does
+not assert a comparison with all abstract characters or source coverage.
 Prism supplied the FG scalar mathematical argument, with determinant-route
 advice from Lattice. This work is credited to **Authors: Formal Frontier Agents**
 and licensed under [Apache-2.0](LICENSE). Neither human review nor an external

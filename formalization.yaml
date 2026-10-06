@@ -14,6 +14,14 @@ project:
     stabilizer of any compact open set provides the construction; compactness
     of that subgroup follows when the set contains the identity.
 
+    For a continuous homomorphism from a nonarchimedean group, a subgroup-free
+    target identity neighborhood forces an open kernel, without source
+    compactness, commutativity or target separation. An open kernel makes a
+    group homomorphism locally constant even without continuity or a target
+    topology. With compact source, the image and kernel quotient are finite,
+    the quotient is discrete, and Mathlib's canonical kernel lift uniquely
+    factors the map. Circle's centered half-arc gives the character case.
+
     In a locally compact topological group, the identity component is the
     intersection of all open subgroups. Under a continuous open surjective
     group homomorphism from a locally compact source, the closure of its
@@ -69,6 +77,22 @@ sources:
       than the false printed open-normal intersection. For component images,
       openness corrects the false merely-continuous surjection statement;
       closure remains necessary.
+  - title: Cohomology of Number Fields, compact totally disconnected characters
+    authors:
+      - Jürgen Neukirch
+      - Alexander Schmidt
+      - Kay Wingberg
+    type: book
+    location: >-
+      Corrected second edition, Chapter I, §1, remarks following
+      Theorem (1.1.11).
+    note: >-
+      The open-kernel and finite-image results generalize the character
+      assertion to nonarchimedean, not necessarily abelian source groups;
+      compactness is needed only for finite image and quotient. They use
+      Mathlib's open-subgroup, locally constant and quotient APIs. This entry
+      asserts neither a comparison with abstract characters nor formal
+      coverage of the source.
   - title: Continuous compatible sections of monoid-valued diagrams
     authors:
       - Formal Frontier Agents
@@ -126,6 +150,17 @@ status:
     existing open-subgroup existence conclusion of Mathlib. This does not
     assert an open-normal-intersection characterization of the quotient.
 
+    A continuous homomorphism from a nonarchimedean group to a group with an
+    identity neighborhood containing no nontrivial subgroup has open kernel,
+    without source compactness, commutativity or target Hausdorffness.
+    Open kernels imply local constancy without homomorphism continuity or a
+    target topology. Compact source gives finite image and a finite discrete
+    quotient by the kernel. The canonical kernel lift factors the map uniquely;
+    it is injective, not necessarily surjective onto the whole target. The
+    centered half-circle yields circle-valued characters, including the
+    locally compact totally disconnected case via compact-open subgroups.
+    The cyclic group of order two supplies a nonconstant character client.
+
     For an open quotient map f : X → Y, with X compact, Hausdorff and totally
     disconnected and Y Hausdorff, Y is totally disconnected. No group structure,
     injectivity or local-compactness assumption on Y is needed. The proof follows
@@ -177,6 +212,16 @@ status:
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
     - declaration: OpenSubgroup.nhds_one_hasBasis_compact
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
+    - declaration: MonoidHom.isLocallyConstant_of_isOpen_ker
+      file: GroupTheory/Topology/OpenKernel.lean
+    - declaration: ContinuousMonoidHom.isOpen_ker_of_subgroup_free_nhds
+      file: GroupTheory/Topology/OpenKernel.lean
+    - declaration: ContinuousMonoidHom.finite_range_of_subgroup_free_nhds
+      file: GroupTheory/Topology/OpenKernel.lean
+    - declaration: ContinuousMonoidHom.finite_quotient_kerLift
+      file: GroupTheory/Topology/OpenKernel.lean
+    - declaration: Circle.finite_range
+      file: GroupTheory/Topology/CircleCharacter.lean
     - declaration: Topology.IsOpenQuotientMap.totallyDisconnectedSpace
       file: GroupTheory/Topology/OpenQuotient.lean
     - declaration: ContinuousMonoidHom.totallyDisconnectedSpace_of_isOpenQuotientMap
@@ -229,11 +274,12 @@ review:
   reviewers:
     - Independent Formal Frontier AI agents
   notes: >-
-    Independent AI-agent reviews addressed the Lean proofs, API, semantic
-    hypotheses and provenance of these mathematical results; no human review
-    is claimed.
+    Independent AI-agent reviews addressed the statements, Lean proofs, API,
+    semantic hypotheses and provenance of the mathematical results, including
+    the open-kernel and finite-image results. No human review is claimed.
 
 acknowledgements: >-
-  Formal Frontier AI agents developed and independently reviewed the original
-  Lean proofs and clients. Prism developed the FG scalar mathematical argument,
-  with determinant-route advice from Lattice. Authors: Formal Frontier Agents.
+  Formal Frontier AI agents developed the Lean proofs and clients; the existing
+  results received independent AI-agent proof review. Prism developed the FG
+  scalar mathematical argument, with determinant-route advice from Lattice.
+  Authors: Formal Frontier Agents.
