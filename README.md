@@ -153,7 +153,34 @@ apply to arbitrary surjective endomorphisms and do not formalize K-theory.
 See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 [client examples](GroupTheoryTest/FGScalarSurjectivity.lean).
 
+## Using the library
+
+Add the library to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "groupTheory"
+git = "https://github.com/FormalFrontier/group-theory.git"
+rev = "main"
+```
+
+GitHub `main` contains reviewed releases, not development commits. Lake resolves
+that ref when you add or update the dependency; your `lake-manifest.json` keeps
+that resolution until another update. Use the matching Lean and mathlib versions
+listed below. For a fixed reproducible version, replace `main` with the full
+commit of a published release. Dependencies from another Formal Frontier library
+or the incubator use the GitHub URL and full published release commit, not moving
+`main`, development commits or PR heads.
+
+Import the full library with:
+
+```lean
+import GroupTheory
+```
+
 ## Use and verification
+
+### Imports and interfaces
 
 Import `GroupTheory` for these results, or import
 `GroupTheory.Topology.OpenQuotient`,
@@ -164,7 +191,9 @@ Import `GroupTheory` for these results, or import
 `GroupTheory.Topology.OpenKernel` or `GroupTheory.Topology.CircleCharacter`
 individually. The finite-index results are also available through
 `GroupTheory.Topology.FiniteIndex`, and character subgroups through
-`GroupTheory.Topology.CharacterSubgroups`. For example, after
+`GroupTheory.Topology.CharacterSubgroups`. The rational-circle inclusion and
+character comparisons are available through `GroupTheory.Topology.RationalCircle`
+and `GroupTheory.Topology.RationalCircleCharacter`. For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
@@ -183,11 +212,15 @@ counterexamples when hypotheses are dropped; the scalar clients include
 concrete `ZMod` examples. The quotient clients cover connected real, discrete,
 indiscrete non-Hausdorff and mixed connected/discrete groups.
 
+### Compatibility
+
 Older Profinite Groups versions that also define
 `Topology.IsOpenQuotientMap.totallyDisconnectedSpace` cannot share an import
 graph with `GroupTheory.Topology.OpenQuotient` or the aggregate `GroupTheory`
-import. To use both libraries, a compatible Profinite Groups version would
-need to re-export Group Theory's declaration instead of defining its own.
+import. Removing that duplicate prevents the collision. Preserving that Profinite
+Groups API also requires re-exporting Group Theory's canonical declaration.
+
+### Building and checking the repository
 
 Use the pinned Lean `v4.34.0-rc2` and mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5` and run from this repository:
