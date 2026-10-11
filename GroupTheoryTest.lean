@@ -11,6 +11,8 @@ public import GroupTheoryTest.Topology.CompactOpenSubgroup
 public import GroupTheoryTest.Topology.Sections
 public import GroupTheoryTest.Topology.ConnectedComponentQuotient
 public import GroupTheoryTest.Topology.OpenQuotient
+public import GroupTheoryTest.Topology.ContinuousMap.CompactDiscrete
+public import GroupTheoryTest.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
 public import GroupTheoryTest.Topology.FiniteIndex

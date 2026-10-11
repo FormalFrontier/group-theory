@@ -39,6 +39,12 @@ project:
     An open quotient group homomorphism from a locally compact totally
     disconnected group to a Hausdorff group has the same conclusion.
 
+    The compact-open space of continuous maps from any compact space to a
+    discrete space is discrete, without Hausdorffness or nonemptiness. Every
+    discrete-valued continuous map on a compact topological group descends
+    through an open normal subgroup to its finite discrete quotient, without
+    total disconnectedness, commutativity or a homomorphism condition.
+
     For any category and monoid-valued diagram with arbitrary stage topologies,
     compatible sections have continuous coordinate projections and an initial
     topology. Compatible continuous monoid homomorphisms from any monoid equipped
@@ -123,6 +129,20 @@ sources:
       Original generic Lean proof and derived inverse/iff results; mathematical
       motivation is not a claim of formal coverage of an external source.
 
+  - title: Compact-open discreteness and compact-group finite-quotient factorization
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: >-
+      GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean and
+      GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean
+    note: >-
+      Proofs first formalized in Formal Frontier's Continuous Group Cohomology
+      library, preserving the public theorem names and generality. The proofs
+      use Mathlib's compact-open subbasic sets, compact fibers, clopen identity
+      neighborhoods and continuous quotient elimination; no particular external
+      publication or source-coverage claim is asserted for these formalizations.
+
 automation:
   methods:
     - method: agent
@@ -179,6 +199,16 @@ status:
     the existing Formal Frontier Profinite Groups formalization and uses Mathlib's
     clopen-basis and open-quotient APIs.
 
+    For any compact space X and discrete space Y, the existing compact-open
+    topology on C(X, Y) is discrete; this is a theorem, not a global instance.
+    For any compact topological group G and f : C(G, Y), there exist an open
+    normal subgroup N and a continuous map fbar on G / N with
+    fbar(QuotientGroup.mk g) = f g for every g. Mathlib's open-subgroup quotient
+    APIs make the quotient finite and discrete. Neither theorem requires a
+    Hausdorff or nonempty space; factorization needs no total disconnectedness,
+    commutativity or algebraic structure on Y. Clients derive right invariance
+    and quotient-point separation and include a nonconstant Boolean-valued map.
+
     For any category J and F : J ⥤ MonCat with arbitrary topologies on the
     stages, Mathlib's existing compatible-sections subtype has continuous
     coordinate projections and the initial topology induced by its coordinates.
@@ -212,6 +242,10 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: ContinuousMap.discreteTopology_of_compactSpace
+      file: GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean
+    - declaration: ContinuousMap.exists_openNormalSubgroup_factor
+      file: GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean
     - declaration: OpenSubgroup.leftStabilizer
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
     - declaration: OpenSubgroup.mem_leftStabilizer_iff
@@ -299,11 +333,15 @@ review:
     - Independent Formal Frontier AI agents
   notes: >-
     Independent AI-agent reviews addressed the statements, Lean proofs, API,
-    semantic hypotheses and provenance of the mathematical results, including
-    the open-kernel and finite-image results. No human review is claimed.
+    semantic hypotheses and provenance of the identity-component, compact-open
+    subgroup, sections, open-kernel, character, cyclic norm and scalar results.
+    No human review is claimed.
 
 acknowledgements: >-
   Formal Frontier AI agents developed the Lean proofs and clients; the existing
   results received independent AI-agent proof review. Prism developed the FG
   scalar mathematical argument, with determinant-route advice from Lattice.
+  The compact/discrete continuous-map and factorization proofs follow the
+  Continuous Group Cohomology formalization by Formal Frontier Agents and reuse
+  Mathlib's compact-open and clopen-neighborhood APIs.
   Authors: Formal Frontier Agents.

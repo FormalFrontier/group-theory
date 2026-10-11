@@ -3,6 +3,7 @@
 Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
+compact-open discreteness and finite-quotient factorization of discrete-valued maps,
 finite-image and open-kernel rational-circle character subgroups,
 the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
@@ -80,6 +81,22 @@ and [the 2-adic examples](GroupTheoryTest/Topology/FiniteIndex.lean).
 disconnectedness of `Y`. This is a general result about topological spaces,
 independent of group structure. See [the theorem](GroupTheory/Topology/OpenQuotient.lean)
 and [a non-injective finite projection](GroupTheoryTest/Topology/OpenQuotient.lean).
+
+**Discrete-valued maps on compact spaces and groups.** For any compact space
+`X` and discrete space `Y`, `ContinuousMap.discreteTopology_of_compactSpace`
+gives discreteness of the existing compact-open topology on `C(X, Y)`.
+For any compact topological group `G`, every `f : C(G, Y)` descends through
+an open normal subgroup: `ContinuousMap.exists_openNormalSubgroup_factor`
+gives `N : OpenNormalSubgroup G` and `fbar : C(G ⧸ N.toSubgroup, Y)` with
+`∀ g, fbar (QuotientGroup.mk g) = f g`. Mathlib's open-subgroup quotient APIs
+make this quotient finite and discrete. Neither theorem requires Hausdorffness
+or nonemptiness of the spaces; factorization requires neither total
+disconnectedness nor commutativity of `G`, and no algebraic structure on `Y`
+or homomorphism condition on `f`. Discreteness is a theorem, not a new global
+instance. See [the map-space theorem](GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean),
+[the group factorization](GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean),
+[isolated maps and observers](GroupTheoryTest/Topology/ContinuousMap/CompactDiscrete.lean)
+and [right-invariance and separation clients](GroupTheoryTest/Topology/Algebra/CompactGroup/DiscreteFactor.lean).
 
 **Locally compact identity components.** In a locally compact topological group,
 the identity component is the intersection of **all** open subgroups, even
@@ -193,7 +210,13 @@ individually. The finite-index results are also available through
 `GroupTheory.Topology.FiniteIndex`, and character subgroups through
 `GroupTheory.Topology.CharacterSubgroups`. The rational-circle inclusion and
 character comparisons are available through `GroupTheory.Topology.RationalCircle`
-and `GroupTheory.Topology.RationalCircleCharacter`. For example, after
+and `GroupTheory.Topology.RationalCircleCharacter`. The compact/discrete map
+results are available through `GroupTheory.Topology.ContinuousMap.CompactDiscrete`
+and `GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor`. Use
+`letI := ContinuousMap.discreteTopology_of_compactSpace (X := X) (Y := Y)`
+when a local map-space discreteness instance is needed, or obtain the quotient
+map with `obtain ⟨N, fbar, hfactor⟩ := f.exists_openNormalSubgroup_factor`.
+For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
 its `j`th component; use
@@ -210,7 +233,9 @@ projections and a nontrivial consequence of `sections_topology`. The cyclic
 clients cover fixed-class lifting, the coordinate swap on `ℤ × ℤ` and
 counterexamples when hypotheses are dropped; the scalar clients include
 concrete `ZMod` examples. The quotient clients cover connected real, discrete,
-indiscrete non-Hausdorff and mixed connected/discrete groups.
+indiscrete non-Hausdorff and mixed connected/discrete groups. The compact/discrete
+clients exhibit distinct Boolean values, isolated maps and continuous observers;
+they derive right invariance and separation of quotient points from factorization.
 
 ### Compatibility
 
@@ -219,6 +244,13 @@ Older Profinite Groups versions that also define
 graph with `GroupTheory.Topology.OpenQuotient` or the aggregate `GroupTheory`
 import. Removing that duplicate prevents the collision. Preserving that Profinite
 Groups API also requires re-exporting Group Theory's canonical declaration.
+
+Continuous Group Cohomology versions that define
+`ContinuousMap.discreteTopology_of_compactSpace` and
+`ContinuousMap.exists_openNormalSubgroup_factor` cannot share an import graph
+with these Group Theory modules or the aggregate `GroupTheory` import.
+Compatible versions must re-export the Group Theory declarations rather than
+defining them again.
 
 ### Building and checking the repository
 
@@ -260,6 +292,11 @@ claim is implied by this guidance.
   more generally. Mathlib's `NonarchimedeanGroup`, locally constant functions
   and quotient-group interfaces supply the reusable proof ingredients.
 
+- Formal Frontier Agents, *Continuous Group Cohomology*, compact/discrete
+  continuous-map discreteness and compact-group factorization formalizations.
+  The proofs use Mathlib's compact-open subbasic sets, compactness of fibers,
+  clopen identity neighborhoods and continuous quotient elimination.
+
 **Credit and license.** Formal Frontier AI agents developed the Lean proofs and
 clients. The continuous sections API builds on Mathlib's sections definitions.
 The compact-open subgroup result is the classical van Dantzig theorem, used as
@@ -269,6 +306,10 @@ assembles Mathlib's compact-neighborhood, clopen-basis and subgroup APIs;
 no Pontryagin or Bourbaki passage was inspected or transcribed.
 The generic open-quotient proof was first formalized in Formal Frontier's
 Profinite Groups library and uses Mathlib's clopen and basis APIs.
+The compact/discrete continuous-map and factorization proofs were first formalized
+by Formal Frontier Agents in the Continuous Group Cohomology library; their
+proofs and public declarations are preserved here, using Mathlib's compact-open
+and clopen-neighborhood APIs.
 The identity-component quotient API interprets Neukirch--Schmidt--Wingberg's
 totally disconnected quotient and reuses Mathlib's component and quotient APIs.
 The open-kernel and finite-image arguments generalize their character case
