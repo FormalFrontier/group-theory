@@ -44,6 +44,20 @@ project:
     discrete-valued continuous map on a compact topological group descends
     through an open normal subgroup to its finite discrete quotient, without
     total disconnectedness, commutativity or a homomorphism condition.
+    On an arbitrary power I → G of a compact topological group, every such map
+    factors through s → G / N for a finite set s of coordinates and one open
+    normal subgroup N of G. Only this selected stage is asserted to be finite
+    and discrete, not the full quotient power over I. The index, group and
+    target universes are independent. No finiteness of I or Y, algebraic
+    structure on Y, additional nonemptiness, Hausdorffness or profinite
+    hypothesis is needed.
+
+    Every open normal subgroup of a dependent product of groups with arbitrary
+    topologies contains a cylinder defined by open normal subgroups in finitely
+    many factors. For a constant family, one subgroup controls all selected
+    coordinates; the remaining coordinates are unrestricted. These containment
+    statements need no continuity of operations, compactness, separation or
+    finiteness of the index type.
 
     For any category and monoid-valued diagram with arbitrary stage topologies,
     compatible sections have continuous coordinate projections and an initial
@@ -134,13 +148,20 @@ sources:
       - Formal Frontier Agents
     type: original-proof
     location: >-
-      GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean and
-      GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean
+      GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean,
+      GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean,
+      GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean and
+      GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean
     note: >-
-      Proofs first formalized in Formal Frontier's Continuous Group Cohomology
-      library, preserving the public theorem names and generality. The proofs
-      use Mathlib's compact-open subbasic sets, compact fibers, clopen identity
-      neighborhoods and continuous quotient elimination; no particular external
+      The compact-open discreteness and unary factorization proofs were first
+      formalized in Formal Frontier's Continuous Group Cohomology library,
+      preserving the public theorem names and generality. They use Mathlib's
+      compact-open subbasic sets, compact fibers, clopen identity neighborhoods
+      and continuous quotient elimination. The finite-coordinate extension
+      reuses the unary factorization, finite-supported product neighborhoods,
+      finite intersections of open subgroups and products of open quotient maps.
+      The cylinder argument uses Monica Omar's Mathlib product-membership API,
+      in particular Submonoid.pi_mem_of_mulSingle_mem_aux. No particular external
       publication or source-coverage claim is asserted for these formalizations.
 
 automation:
@@ -209,6 +230,34 @@ status:
     commutativity or algebraic structure on Y. Clients derive right invariance
     and quotient-point separation and include a nonconstant Boolean-valued map.
 
+    For arbitrary I, compact topological group G and discrete space Y, with
+    their types in independent universes, every f : C(I → G, Y) admits
+    s : Finset I, N : OpenNormalSubgroup G and
+    fbar : C((s → G ⧸ N.toSubgroup), Y) satisfying the canonical triangle
+    ∀ x : I → G, fbar (fun i : s => QuotientGroup.mk (x i)) = f x.
+    The product and group-quotient topologies are canonical. The selected stage
+    s → G ⧸ N.toSubgroup is finite and discrete; no such assertion is made for
+    the full quotient power over an infinite I. The selected set may be empty,
+    and neither I nor Y needs to be finite. No additional nonemptiness,
+    Hausdorffness, total disconnectedness, commutativity or profinite hypothesis
+    is required. Y has no algebraic-structure requirement and f need not be a
+    homomorphism. The power clients include a two-coordinate Boolean observer
+    that cannot be a homomorphism under any group structure on Bool, an
+    infinite-index observer with an infinite discrete target, and empty-index,
+    empty-target and constant-map boundaries.
+
+    The finite-cylinder theorem applies to M : OpenNormalSubgroup (∀ i, A i)
+    for arbitrary I and a family A with only [∀ i, Group (A i)] and
+    [∀ i, TopologicalSpace (A i)]. It gives s : Finset I and
+    N : ∀ i : s, OpenNormalSubgroup (A i) with
+    ∀ x : (∀ i, A i), (∀ i : s, x i ∈ N i) → x ∈ M.
+    For a constant family it gives one N : OpenNormalSubgroup G with
+    ∀ x : I → G, (∀ i : s, x i ∈ N) → x ∈ M.
+    Coordinates outside s are unrestricted. Neither containment statement
+    assumes continuous group operations, compactness, separation or a finite
+    index type. The power factorization reuses the unary factorization with
+    this uniform cylinder and continuous quotient descent.
+
     For any category J and F : J ⥤ MonCat with arbitrary topologies on the
     stages, Mathlib's existing compatible-sections subtype has continuous
     coordinate projections and the initial topology induced by its coordinates.
@@ -246,6 +295,12 @@ status:
       file: GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean
     - declaration: ContinuousMap.exists_openNormalSubgroup_factor
       file: GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean
+    - declaration: OpenNormalSubgroup.exists_finset_pi_subset
+      file: GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean
+    - declaration: OpenNormalSubgroup.exists_finset_uniform_pi_subset
+      file: GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean
+    - declaration: ContinuousMap.exists_finset_openNormalSubgroup_pi_factor
+      file: GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean
     - declaration: OpenSubgroup.leftStabilizer
       file: GroupTheory/Topology/CompactOpenSubgroup.lean
     - declaration: OpenSubgroup.mem_leftStabilizer_iff

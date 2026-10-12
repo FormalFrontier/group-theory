@@ -4,6 +4,7 @@ Reusable Lean results on identity-component quotients of topological groups,
 compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
 compact-open discreteness and finite-quotient factorization of discrete-valued maps,
+finite-coordinate quotient factorization on arbitrary powers of compact groups,
 finite-image and open-kernel rational-circle character subgroups,
 the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
@@ -97,6 +98,40 @@ instance. See [the map-space theorem](GroupTheory/Topology/ContinuousMap/Compact
 [the group factorization](GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean),
 [isolated maps and observers](GroupTheoryTest/Topology/ContinuousMap/CompactDiscrete.lean)
 and [right-invariance and separation clients](GroupTheoryTest/Topology/Algebra/CompactGroup/DiscreteFactor.lean).
+
+**Finite-coordinate factorization on compact group powers.** For an arbitrary
+index type `I`, compact topological group `G` and discrete space `Y`, every
+`f : C(I → G, Y)` factors through finitely many quotient coordinates.
+`ContinuousMap.exists_finset_openNormalSubgroup_pi_factor` gives
+`s : Finset I`, one `N : OpenNormalSubgroup G` and
+`fbar : C((s → G ⧸ N.toSubgroup), Y)` with the canonical triangle
+`∀ x : I → G, fbar (fun i : s => QuotientGroup.mk (x i)) = f x`.
+The topologies are the canonical product and group-quotient topologies.
+It is the **selected finite stage** `s → G ⧸ N.toSubgroup`, not the full
+quotient power over `I`, that is finite and discrete. The types `I`, `G` and
+`Y` have independent universes, and neither `I` nor `Y` needs to be finite.
+The selected set may be empty. No additional nonemptiness, Hausdorffness,
+commutativity, total disconnectedness or profinite hypothesis is required;
+`Y` needs no group structure and `f` need not be a homomorphism.
+
+The supporting cylinder API is more general: for arbitrary `I` and a family
+`A : I → Type*` with only `[∀ i, Group (A i)]` and
+`[∀ i, TopologicalSpace (A i)]`, any
+`M : OpenNormalSubgroup (∀ i, A i)` contains a finite cylinder.
+`OpenNormalSubgroup.exists_finset_pi_subset M` gives `s : Finset I` and
+`N : ∀ i : s, OpenNormalSubgroup (A i)` such that
+`∀ x : (∀ i, A i), (∀ i : s, x i ∈ N i) → x ∈ M`.
+For a constant family and `M : OpenNormalSubgroup (I → G)`,
+`OpenNormalSubgroup.exists_finset_uniform_pi_subset M`
+gives one `N : OpenNormalSubgroup G` with
+`∀ x : I → G, (∀ i : s, x i ∈ N) → x ∈ M`.
+Coordinates outside `s` are unrestricted. These two containment theorems
+require neither continuity of group operations, compactness, separation nor
+a finite index type. The factorization combines the existing unary theorem
+with this finite-cylinder containment and continuous quotient descent.
+See [the cylinder API](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean),
+[the power factorization](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean)
+and [two-coordinate, infinite-index and empty-index clients](GroupTheoryTest/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean).
 
 **Locally compact identity components.** In a locally compact topological group,
 the identity component is the intersection of **all** open subgroups, even
@@ -212,10 +247,19 @@ individually. The finite-index results are also available through
 character comparisons are available through `GroupTheory.Topology.RationalCircle`
 and `GroupTheory.Topology.RationalCircleCharacter`. The compact/discrete map
 results are available through `GroupTheory.Topology.ContinuousMap.CompactDiscrete`
-and `GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor`. Use
-`letI := ContinuousMap.discreteTopology_of_compactSpace (X := X) (Y := Y)`
+and `GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor`.
+Import `GroupTheory.Topology.Algebra.OpenSubgroup.Pi` for finite-cylinder
+containment, or `GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor`
+for finite-coordinate factorization; both APIs are re-exported by `GroupTheory`.
+Use `letI := ContinuousMap.discreteTopology_of_compactSpace (X := X) (Y := Y)`
 when a local map-space discreteness instance is needed, or obtain the quotient
 map with `obtain ⟨N, fbar, hfactor⟩ := f.exists_openNormalSubgroup_factor`.
+For `f : C(I → G, Y)`, use
+`obtain ⟨s, N, fbar, hfactor⟩ := f.exists_finset_openNormalSubgroup_pi_factor`;
+`hfactor x` identifies `f x` with evaluation of `fbar` on the selected quotient
+coordinates. For an open normal subgroup `M` of a dependent product, use
+`obtain ⟨s, N, hsubset⟩ := M.exists_finset_pi_subset`; for a constant family,
+use `obtain ⟨s, N, hsubset⟩ := M.exists_finset_uniform_pi_subset`.
 For example, after
 `import GroupTheory`, use `MonCat.sectionsLift F q hq` to bundle a compatible
 continuous family and `MonCat.sectionsπ_comp_sectionsLift F q hq j` to recover
@@ -236,6 +280,11 @@ concrete `ZMod` examples. The quotient clients cover connected real, discrete,
 indiscrete non-Hausdorff and mixed connected/discrete groups. The compact/discrete
 clients exhibit distinct Boolean values, isolated maps and continuous observers;
 they derive right invariance and separation of quotient points from factorization.
+The power clients use a Boolean observer that depends on both coordinates and
+cannot be a homomorphism for any group structure on `Bool`. They also exhibit
+a nonconstant observer with infinite index and infinite discrete target,
+finite/discrete selected stages, empty indices and targets, and an explicit
+empty-coordinate factorization of a constant map.
 
 ### Compatibility
 
@@ -296,6 +345,10 @@ claim is implied by this guidance.
   continuous-map discreteness and compact-group factorization formalizations.
   The proofs use Mathlib's compact-open subbasic sets, compactness of fibers,
   clopen identity neighborhoods and continuous quotient elimination.
+- Mathlib's finite-supported product neighborhoods, finite intersections of
+  open subgroups and products of open quotient maps supply the finite-coordinate
+  extension. The cylinder argument uses Monica Omar's product-membership API,
+  in particular `Submonoid.pi_mem_of_mulSingle_mem_aux`.
 
 **Credit and license.** Formal Frontier AI agents developed the Lean proofs and
 clients. The continuous sections API builds on Mathlib's sections definitions.

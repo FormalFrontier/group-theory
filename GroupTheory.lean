@@ -13,6 +13,7 @@ public import GroupTheory.Topology.ConnectedComponentQuotient
 public import GroupTheory.Topology.OpenQuotient
 public import GroupTheory.Topology.ContinuousMap.CompactDiscrete
 public import GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor
+public import GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheory.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheory.Topology.OpenKernel
 public import GroupTheory.Topology.CircleCharacter
