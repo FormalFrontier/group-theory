@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.Quotient
+public import GroupTheory.Topology.Algebra.ConstMulAction
 
 /-!
 # Subgroups and the topology of left-coset quotients
@@ -18,6 +19,9 @@ subgroup is clopen without an index assumption. At finite index, openness,
 closedness and clopenness are equivalent. Compactness is needed only to deduce
 finite index from openness. Neither normality, right-translation continuity,
 joint multiplication, continuous inversion nor ambient separation is assumed.
+Fixed left actions on the canonical quotient inherit continuity from the source,
+for every subgroup; the additive quotient has the corresponding fixed-addition
+instance.
 
 ## Implementation notes
 
@@ -43,6 +47,39 @@ requires right translations.
 open scoped Pointwise
 
 universe u
+
+namespace QuotientGroup
+
+/-- Fixed left multiplication induces continuous fixed actions on the canonical
+left-coset quotient by any subgroup. This extends Mathlib's
+`QuotientGroup.instContinuousConstSMul` from separately continuous multiplication
+without changing the quotient, its action or its topology. -/
+@[to_additive
+/-- Fixed left addition induces continuous fixed actions on the canonical coset
+quotient by any additive subgroup. This extends Mathlib's
+`QuotientAddGroup.instContinuousConstVAdd` from separately continuous addition
+without changing the quotient, its action or its topology. -/]
+instance (priority := 100) continuousConstSMul
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) : ContinuousConstSMul G (G ⧸ H) := by
+  exact Topology.IsCoinducing.continuousConstSMul
+    { toFun := (QuotientGroup.mk : G → G ⧸ H)
+      map_smul' := fun g x => (MulAction.Quotient.smul_mk H g x).symm }
+    (QuotientGroup.isQuotientMap_mk H).isCoinducing
+
+/-- The fixed-action continuity instance agrees with Mathlib's separately
+continuous provider on the same canonical left-coset quotient. -/
+@[to_additive
+/-- The fixed-addition continuity instance agrees with Mathlib's separately
+continuous provider on the same canonical coset quotient. -/]
+theorem continuousConstSMul_eq
+    {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
+    (H : Subgroup G) :
+    continuousConstSMul H =
+      (QuotientGroup.instContinuousConstSMul (N := H) : ContinuousConstSMul G (G ⧸ H)) := by
+  exact Subsingleton.elim _ _
+
+end QuotientGroup
 
 namespace Subgroup
 

@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.Quotient
+import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.OrderOfElement
@@ -52,6 +53,19 @@ algebraic index-three witnesses give finite index independently of compactness.
 The closed/T1 and finite-index clopen APIs apply to both the finite permutation
 example and the infinite product, despite their failure of right continuity,
 inversion continuity, joint multiplication and T0 separation.
+
+A primitive two-shift action of `Bool` on the same cofinite multiplicative
+integers has neither scalar operator equal to the identity. The stock Option
+action is used with the topology coinduced by `some`; the inclusion is a
+nonsurjective open embedding and retains the nondiscrete source topology.
+
+Two further canonical quotients retain the strict partition source topology.
+The quotient of the permutation group by bottom is non-T1 and nondiscrete. In
+the infinite product, the subgroup bottom times the two-element cyclic subgroup
+is finite, nonnormal and nonopen. Its quotient is infinite and nondiscrete, as
+witnessed by the quotient-map observer recording the first coordinate. Fixed
+quotient translations are tested only after these independent boundary facts;
+nonidentity integer shifts give nontrivial observed movement.
 
 ## References
 
@@ -172,7 +186,101 @@ private theorem mathlib_open_closed_agreement [SeparatelyContinuousMul G]
     ((H.isClopen_iff_isOpen).mpr hH).isClosed = H.isClosed_of_isOpen hH := by
   exact Subsingleton.elim _ _
 
+private theorem canonical_fixed_action [ContinuousConstSMul G G]
+    (H : Subgroup G) (g : G) : Continuous (fun q : G ⧸ H => g • q) := by
+  exact continuous_const_smul g
+
+private theorem projection_hom_coercion (H : Subgroup G) :
+    (MulActionHom.toQuotient H : G → G ⧸ H) = QuotientGroup.mk := by
+  rfl
+
+private theorem projection_hom_continuous (H : Subgroup G) :
+    Continuous (MulActionHom.toQuotient H : G → G ⧸ H) := by
+  exact QuotientGroup.continuous_mk
+
+private theorem projection_transport_full [ContinuousConstSMul G G]
+    (H : Subgroup G) (g : G) : Continuous (fun q : G ⧸ H => g • q) := by
+  let : ContinuousConstSMul G (G ⧸ H) :=
+    Topology.IsCoinducing.continuousConstSMul (MulActionHom.toQuotient H)
+      (QuotientGroup.isQuotientMap_mk H).isCoinducing
+  exact continuous_const_smul g
+
+private theorem projection_transport_dot [ContinuousConstSMul G G]
+    (H : Subgroup G) (g : G) : Continuous (fun q : G ⧸ H => g • q) := by
+  let : ContinuousConstSMul G (G ⧸ H) :=
+    (QuotientGroup.isQuotientMap_mk H).isCoinducing.continuousConstSMul
+      (MulActionHom.toQuotient H)
+  exact continuous_const_smul g
+
+private theorem projection_semiconj (H : Subgroup G) (g : G) :
+    Function.Semiconj (QuotientGroup.mk : G → G ⧸ H)
+      (fun x : G => g * x) (fun q : G ⧸ H => g • q) := by
+  intro x
+  exact (MulAction.Quotient.smul_mk H g x).symm
+
+private theorem projection_map_smul (H : Subgroup G) (g x : G) :
+    MulActionHom.toQuotient H (g • x) = g • MulActionHom.toQuotient H x := by
+  exact map_smul (MulActionHom.toQuotient H) g x
+
+private theorem canonical_action_laws (H : Subgroup G) (g h : G) (q : G ⧸ H) :
+    (1 : G) • q = q ∧ (g * h) • q = g • h • q := by
+  exact ⟨one_smul G q, mul_smul g h q⟩
+
+private theorem fixed_action_observer [ContinuousConstSMul G G]
+    (H : Subgroup G) {Y : Type v} [TopologicalSpace Y]
+    (f : G ⧸ H → Y) (hf : Continuous f) (g : G) :
+    Continuous (fun q : G ⧸ H => f (g • q)) := by
+  exact hf.comp (canonical_fixed_action H g)
+
+private theorem fixed_action_homeomorph [ContinuousConstSMul G G]
+    (H : Subgroup G) (g : G) (q : G ⧸ H) :
+    Continuous (Homeomorph.smul (α := G ⧸ H) g) ∧
+      (Homeomorph.smul (α := G ⧸ H) g).symm
+        (Homeomorph.smul (α := G ⧸ H) g q) = q := by
+  exact ⟨(Homeomorph.smul g).continuous, (Homeomorph.smul g).symm_apply_apply q⟩
+
+private theorem canonical_stabilizer (H : Subgroup G) :
+    MulAction.stabilizer G (QuotientGroup.mk (1 : G) : G ⧸ H) = H := by
+  exact MulAction.stabilizer_quotient H
+
+private theorem mathlib_fixed_action_agreement [SeparatelyContinuousMul G]
+    (H : Subgroup G) :
+    QuotientGroup.continuousConstSMul H =
+      (QuotientGroup.instContinuousConstSMul (N := H) : ContinuousConstSMul G (G ⧸ H)) := by
+  exact QuotientGroup.continuousConstSMul_eq H
+
 end Generic
+
+section Additive
+
+variable {G : Type u} [AddGroup G] [TopologicalSpace G]
+
+private theorem additive_fixed_action [ContinuousConstVAdd G G]
+    (H : AddSubgroup G) (g : G) : Continuous (fun q : G ⧸ H => g +ᵥ q) := by
+  exact continuous_const_vadd g
+
+private theorem additive_projection_semiconj (H : AddSubgroup G) (g : G) :
+    Continuous (QuotientAddGroup.mk : G → G ⧸ H) ∧
+      Function.Semiconj (QuotientAddGroup.mk : G → G ⧸ H)
+        (fun x : G => g + x) (fun q : G ⧸ H => g +ᵥ q) := by
+  refine ⟨QuotientAddGroup.continuous_mk, ?_⟩
+  intro x
+  exact (AddAction.Quotient.vadd_mk H g x).symm
+
+private theorem additive_observer [ContinuousConstVAdd G G]
+    (H : AddSubgroup G) {Y : Type v} [TopologicalSpace Y]
+    (f : G ⧸ H → Y) (hf : Continuous f) (g : G) :
+    Continuous (fun q : G ⧸ H => f (g +ᵥ q)) := by
+  let : ContinuousConstVAdd G (G ⧸ H) := QuotientAddGroup.continuousConstVAdd H
+  exact hf.comp (continuous_const_vadd g)
+
+private theorem mathlib_fixed_addition_agreement [SeparatelyContinuousAdd G]
+    (H : AddSubgroup G) :
+    QuotientAddGroup.continuousConstVAdd H =
+      (QuotientAddGroup.instContinuousConstVAdd (N := H) : ContinuousConstVAdd G (G ⧸ H)) := by
+  exact QuotientAddGroup.continuousConstVAdd_eq H
+
+end Additive
 
 section CofiniteProduct
 
@@ -391,6 +499,140 @@ private theorem model_headline_clients : DiscreteTopology (M ⧸ H) ∧ Finite (
     H.finiteIndex_iff_finite_quotient.mp (H.finiteIndex_of_isOpen model_subgroup_open)⟩
 
 end CofiniteProduct
+
+section PrimitiveOption
+
+local instance : TopologicalSpace ℤ := TopologicalSpace.cofinite
+
+-- Both primitive scalar operators are nonidentity shifts; no action laws are installed.
+private def bool_shift (b : Bool) : A :=
+  Multiplicative.ofAdd (if b then (2 : ℤ) else 1)
+
+local instance : SMul Bool A := ⟨fun b x => bool_shift b * x⟩
+
+private theorem bool_smul_def (b : Bool) (x : A) : b • x = bool_shift b * x := by
+  rfl
+
+private theorem bool_shift_continuous (b : Bool) : Continuous (fun x : A => b • x) := by
+  exact continuous_ofAdd.comp
+    ((cofinite_integer_injection_continuous (fun n => (bool_shift b).toAdd + n)
+      (fun _ _ h => add_left_cancel h)).comp continuous_toAdd)
+
+local instance : ContinuousConstSMul Bool A where
+  continuous_const_smul := bool_shift_continuous
+
+private theorem cofinite_identity_not_open : ¬ IsOpen ({1} : Set A) := by
+  intro h
+  have hz : IsOpen ({0} : Set ℤ) := by
+    have heq : (Multiplicative.ofAdd : ℤ → A) ⁻¹' {1} = {0} := by
+      ext x
+      simp only [Set.mem_preimage, Set.mem_singleton_iff, ofAdd_eq_one]
+    rw [← heq]
+    exact h.preimage continuous_ofAdd
+  change ({0} : Set ℤ).Nonempty → ({0} : Set ℤ)ᶜ.Finite at hz
+  exact (Set.finite_singleton (0 : ℤ)).infinite_compl (hz ⟨0, rfl⟩)
+
+private theorem cofinite_action_source_not_discrete : ¬ DiscreteTopology A := by
+  intro h
+  let : DiscreteTopology A := h
+  exact cofinite_identity_not_open (isOpen_discrete _)
+
+private theorem bool_moves_identity (b : Bool) : b • (1 : A) ≠ 1 := by
+  cases b
+  · change Multiplicative.ofAdd (1 : ℤ) * 1 ≠ 1
+    rw [mul_one]
+    exact fun h => (by norm_num : (1 : ℤ) ≠ 0) (ofAdd_eq_one.mp h)
+  · change Multiplicative.ofAdd (2 : ℤ) * 1 ≠ 1
+    rw [mul_one]
+    exact fun h => (by norm_num : (2 : ℤ) ≠ 0) (ofAdd_eq_one.mp h)
+
+private theorem bool_operators_distinct :
+    (fun x : A => false • x) ≠ (fun x : A => true • x) := by
+  intro h
+  have heq := congrFun h (1 : A)
+  change Multiplicative.ofAdd (1 : ℤ) * 1 = Multiplicative.ofAdd (2 : ℤ) * 1 at heq
+  simp only [mul_one] at heq
+  have hz := Multiplicative.ofAdd.injective heq
+  norm_num at hz
+
+private theorem bool_has_no_identity_operator (e : Bool) : ¬ ∀ x : A, e • x = x := by
+  intro h
+  exact bool_moves_identity e (h 1)
+
+private theorem primitive_source_inhabited : Nonempty A ∧ Nontrivial A := by
+  exact ⟨inferInstance, inferInstance⟩
+
+-- Some is bundled through the existing primitive equivariant-map constructor.
+private def some_equivariant : A →[Bool] Option A where
+  toFun := Option.some
+  map_smul' b x := (Option.smul_some b x).symm
+
+private theorem some_equivariant_apply (x : A) : some_equivariant x = some x := by
+  rfl
+
+local instance : TopologicalSpace (Option A) :=
+  TopologicalSpace.coinduced (@Option.some A) inferInstance
+
+private theorem some_coinducing : Topology.IsCoinducing (@Option.some A) := by
+  exact ⟨rfl⟩
+
+private theorem some_hom_coinducing :
+    Topology.IsCoinducing (some_equivariant : A → Option A) := by
+  exact some_coinducing
+
+private theorem none_has_no_preimage : ¬ ∃ x : A, some_equivariant x = none := by
+  rintro ⟨x, hx⟩
+  change some x = none at hx
+  cases hx
+
+private theorem some_not_surjective : ¬ Function.Surjective (some_equivariant : A → Option A) := by
+  intro h
+  exact none_has_no_preimage (h none)
+
+private theorem some_open_embedding : Topology.IsOpenEmbedding (@Option.some A) := by
+  exact Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap
+    some_coinducing.continuous (Option.some_injective A)
+    (some_coinducing.isOpenMap_of_injective (Option.some_injective A))
+
+private theorem some_retains_source_topology :
+    (inferInstance : TopologicalSpace A) =
+      TopologicalSpace.induced (@Option.some A) (inferInstance : TopologicalSpace (Option A)) := by
+  exact some_open_embedding.isInducing.eq_induced
+
+-- This boundary uses only the inclusion, not transported target-action continuity.
+private theorem coinduced_option_not_discrete : ¬ DiscreteTopology (Option A) := by
+  intro h
+  let : DiscreteTopology (Option A) := h
+  exact cofinite_action_source_not_discrete
+    (DiscreteTopology.of_continuous_injective some_coinducing.continuous
+      (Option.some_injective A))
+
+private theorem primitive_option_boundaries :
+    Nonempty A ∧ Nontrivial A ∧ ¬ DiscreteTopology A ∧
+      ContinuousConstSMul Bool A ∧ ¬ DiscreteTopology (Option A) ∧
+      ¬ Function.Surjective (some_equivariant : A → Option A) ∧
+      (∀ b : Bool, b • (1 : A) ≠ 1) ∧
+      (fun x : A => false • x) ≠ (fun x : A => true • x) := by
+  exact ⟨primitive_source_inhabited.1, primitive_source_inhabited.2,
+    cofinite_action_source_not_discrete, inferInstance, coinduced_option_not_discrete,
+    some_not_surjective, bool_moves_identity, bool_operators_distinct⟩
+
+-- Target continuity is obtained only after the independent input/boundary proofs.
+private theorem primitive_option_fixed_action (b : Bool) :
+    Continuous (fun x : Option A => b • x) := by
+  let : ContinuousConstSMul Bool (Option A) :=
+    Topology.IsCoinducing.continuousConstSMul some_equivariant some_hom_coinducing
+  exact continuous_const_smul b
+
+private theorem primitive_option_characteristic (b : Bool) :
+    b • (none : Option A) = none ∧
+      b • some (1 : A) = some (b • (1 : A)) ∧
+      b • some (1 : A) ≠ some (1 : A) := by
+  refine ⟨Option.smul_none b, Option.smul_some b 1, ?_⟩
+  rw [Option.smul_some]
+  exact fun h => bool_moves_identity b ((Option.some_injective A) h)
+
+end PrimitiveOption
 
 section PartitionProduct
 
@@ -656,6 +898,213 @@ private theorem partition_product_headline_clients :
   exact ⟨(H.isOpen_iff_discreteTopology_quotient).mp partition_product_subgroup_open,
     H.finiteIndex_iff_finite_quotient.mp
       (H.finiteIndex_of_isOpen partition_product_subgroup_open)⟩
+
+-- The old nonnormal controls keep their canonical, discrete quotient outputs.
+private theorem partition_quotient_action_clients :
+    Continuous (fun q : P ⧸ K => sigma • q) ∧
+      Continuous (fun q : P ⧸ K => tau • q) ∧
+      sigma • (QuotientGroup.mk (1 : P) : P ⧸ K) ≠ QuotientGroup.mk 1 ∧
+      tau • (QuotientGroup.mk (1 : P) : P ⧸ K) = QuotientGroup.mk 1 ∧
+      MulAction.stabilizer P (QuotientGroup.mk (1 : P) : P ⧸ K) = K := by
+  refine ⟨continuous_const_smul sigma, continuous_const_smul tau, ?_, ?_,
+    MulAction.stabilizer_quotient K⟩
+  · simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
+    intro h
+    exact sigma_not_mem_K (by simpa using (QuotientGroup.eq.mp h.symm))
+  · simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
+    apply QuotientGroup.eq.mpr
+    simpa only [mul_one] using K.inv_mem (Subgroup.mem_zpowers tau)
+
+private theorem partition_product_quotient_action_clients :
+    Continuous (fun q : M ⧸ H => ((1 : A), sigma) • q) ∧
+      Continuous (fun q : M ⧸ H => ((1 : A), tau) • q) ∧
+      ((1 : A), sigma) • (QuotientGroup.mk (1 : M) : M ⧸ H) ≠ QuotientGroup.mk 1 ∧
+      ((1 : A), tau) • (QuotientGroup.mk (1 : M) : M ⧸ H) = QuotientGroup.mk 1 := by
+  refine ⟨continuous_const_smul _, continuous_const_smul _, ?_, ?_⟩
+  · simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
+    change (QuotientGroup.mk ((1 : A), sigma) : M ⧸ H) ≠
+      QuotientGroup.mk ((1 : A), (1 : P))
+    exact model_distinct_cosets.symm
+  · simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
+    apply QuotientGroup.eq.mpr
+    simp [H, K, Subgroup.mem_prod]
+
+-- Bottom is a normal, nondiscrete control on precisely the same strict source P.
+private theorem bottom_projection_injective :
+    Function.Injective (QuotientGroup.mk : P → P ⧸ (⊥ : Subgroup P)) := by
+  intro x y h
+  exact eq_of_inv_mul_eq_one (Subgroup.mem_bot.mp (QuotientGroup.eq.mp h))
+
+private theorem partition_bottom_not_t1 : ¬ T1Space (P ⧸ (⊥ : Subgroup P)) := by
+  intro h
+  let : T1Space (P ⧸ (⊥ : Subgroup P)) := h
+  let : T1Space P := t1Space_of_injective_of_continuous bottom_projection_injective
+    QuotientGroup.continuous_mk
+  exact partition_not_t0 inferInstance
+
+private theorem partition_bottom_not_discrete :
+    ¬ DiscreteTopology (P ⧸ (⊥ : Subgroup P)) := by
+  intro h
+  let : DiscreteTopology (P ⧸ (⊥ : Subgroup P)) := h
+  let : DiscreteTopology P := DiscreteTopology.of_continuous_injective
+    QuotientGroup.continuous_mk bottom_projection_injective
+  exact partition_not_t0 inferInstance
+
+private theorem partition_bottom_boundaries :
+    (⊥ : Subgroup P).Normal ∧ ¬ T1Space (P ⧸ (⊥ : Subgroup P)) ∧
+      ¬ DiscreteTopology (P ⧸ (⊥ : Subgroup P)) := by
+  exact ⟨inferInstance, partition_bottom_not_t1, partition_bottom_not_discrete⟩
+
+private theorem partition_bottom_action_clients (g : P) :
+    Continuous (fun q : P ⧸ (⊥ : Subgroup P) => g • q) ∧
+      Function.Semiconj (QuotientGroup.mk : P → P ⧸ (⊥ : Subgroup P))
+        (fun x : P => g * x) (fun q : P ⧸ (⊥ : Subgroup P) => g • q) ∧
+      sigma • (QuotientGroup.mk (1 : P) : P ⧸ (⊥ : Subgroup P)) ≠ QuotientGroup.mk 1 := by
+  refine ⟨continuous_const_smul g, projection_semiconj _ g, ?_⟩
+  intro h
+  have hs : sigma = (1 : P) := bottom_projection_injective
+    (by simpa only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one] using h)
+  exact (by decide : sigma ≠ (1 : P)) hs
+
+private abbrev J : Subgroup M := (⊥ : Subgroup A).prod K
+
+-- This lift records the first coordinate, not a product-quotient homeomorphism.
+private theorem first_coordinate_compatible (x y : M) (h : QuotientGroup.leftRel J x y) :
+    x.1 = y.1 := by
+  have hm := (Subgroup.mem_prod.mp (QuotientGroup.leftRel_apply.mp h)).1
+  exact eq_of_inv_mul_eq_one (Subgroup.mem_bot.mp hm)
+
+private def first_coordinate (q : M ⧸ J) : A :=
+  Quotient.liftOn' q Prod.fst first_coordinate_compatible
+
+private theorem first_coordinate_mk (x : M) :
+    first_coordinate (QuotientGroup.mk x) = x.1 := by
+  exact QuotientGroup.quotient_liftOn_mk Prod.fst first_coordinate_compatible x
+
+private theorem first_coordinate_comp_mk :
+    first_coordinate ∘ (QuotientGroup.mk : M → M ⧸ J) = Prod.fst := by
+  funext x
+  exact first_coordinate_mk x
+
+private theorem first_coordinate_quotient_map : Topology.IsQuotientMap first_coordinate := by
+  apply (QuotientGroup.isQuotientMap_mk J).of_comp_isQuotientMap
+  rw [first_coordinate_comp_mk]
+  exact isQuotientMap_fst
+
+private theorem first_coordinate_continuous : Continuous first_coordinate := by
+  exact first_coordinate_quotient_map.continuous
+
+private theorem first_coordinate_surjective : Function.Surjective first_coordinate := by
+  exact first_coordinate_quotient_map.surjective
+
+private theorem J_quotient_infinite : Infinite (M ⧸ J) := by
+  exact Infinite.of_surjective first_coordinate first_coordinate_surjective
+
+private theorem J_index_zero : J.index = 0 := by
+  exact Subgroup.index_eq_zero_iff_infinite.mpr J_quotient_infinite
+
+private theorem J_not_finiteIndex : ¬ J.FiniteIndex := by
+  exact Subgroup.not_finiteIndex_iff.mpr J_index_zero
+
+-- Discreteness is ruled out by the quotient observer before fixed-action descent.
+private theorem J_quotient_not_discrete : ¬ DiscreteTopology (M ⧸ J) := by
+  intro h
+  let : DiscreteTopology (M ⧸ J) := h
+  apply cofinite_identity_not_open
+  apply first_coordinate_quotient_map.isCoinducing.isOpen_preimage.mp
+  exact isOpen_discrete _
+
+private theorem J_not_open : ¬ IsOpen (J : Set M) := by
+  intro h
+  have hi : Continuous (fun a : A => (a, (1 : P))) :=
+    continuous_id.prodMk continuous_const
+  have heq : (fun a : A => (a, (1 : P))) ⁻¹' (J : Set M) = {1} := by
+    ext a
+    simp [J, Subgroup.mem_prod]
+  exact cofinite_identity_not_open (heq ▸ h.preimage hi)
+
+private theorem J_comap_inr : J.comap (MonoidHom.inr A P) = K := by
+  ext p
+  simp [J, Subgroup.mem_prod]
+
+private theorem J_not_normal : ¬ J.Normal := by
+  intro h
+  have hK := h.comap (MonoidHom.inr A P)
+  rw [J_comap_inr] at hK
+  exact partition_K_not_normal hK
+
+private theorem J_finite : Finite J := by
+  let f : J → P := fun x => (x : M).2
+  apply Finite.of_injective f
+  intro x y h
+  apply Subtype.ext
+  apply Prod.ext
+  · have hx : (x : M).1 = 1 := Subgroup.mem_bot.mp (Subgroup.mem_prod.mp x.property).1
+    have hy : (y : M).1 = 1 := Subgroup.mem_bot.mp (Subgroup.mem_prod.mp y.property).1
+    exact hx.trans hy.symm
+  · exact h
+
+private theorem J_boundaries :
+    Finite J ∧ ¬ J.Normal ∧ ¬ IsOpen (J : Set M) ∧ Infinite (M ⧸ J) ∧
+      J.index = 0 ∧ ¬ J.FiniteIndex ∧ ¬ DiscreteTopology (M ⧸ J) ∧
+      ¬ ContinuousConstSMul Mᵐᵒᵖ M ∧ ¬ SeparatelyContinuousMul M ∧
+      ¬ Continuous (fun x : M × M => x.1 * x.2) ∧
+      ¬ Continuous (fun x : M => x⁻¹) := by
+  exact ⟨J_finite, J_not_normal, J_not_open, J_quotient_infinite, J_index_zero,
+    J_not_finiteIndex, J_quotient_not_discrete, partition_product_no_right_action,
+    partition_product_not_separately_continuous, partition_product_mul_not_continuous,
+    partition_product_inverse_not_continuous⟩
+
+private theorem first_coordinate_smul (g : M) (q : M ⧸ J) :
+    first_coordinate (g • q) = g.1 * first_coordinate q := by
+  refine QuotientGroup.induction_on q fun x => ?_
+  (simp only [MulAction.Quotient.smul_mk, smul_eq_mul, first_coordinate_mk]; rfl)
+
+private theorem J_fixed_action (g : M) : Continuous (fun q : M ⧸ J => g • q) := by
+  let : ContinuousConstSMul M (M ⧸ J) := QuotientGroup.continuousConstSMul J
+  exact continuous_const_smul g
+
+private theorem J_projection_clients (g : M) :
+    Continuous (MulActionHom.toQuotient J : M → M ⧸ J) ∧
+      Function.Semiconj (QuotientGroup.mk : M → M ⧸ J)
+        (fun x : M => g * x) (fun q : M ⧸ J => g • q) ∧
+      MulAction.stabilizer M (QuotientGroup.mk (1 : M) : M ⧸ J) = J := by
+  exact ⟨QuotientGroup.continuous_mk, projection_semiconj J g,
+    MulAction.stabilizer_quotient J⟩
+
+private theorem J_stabilizer_element :
+    ((1 : A), tau) ≠ (1 : M) ∧
+      ((1 : A), tau) • (QuotientGroup.mk (1 : M) : M ⧸ J) = QuotientGroup.mk 1 := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    exact (by decide : tau ≠ (1 : P)) (congrArg Prod.snd h)
+  · simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
+    apply QuotientGroup.eq.mpr
+    simp [J, K, Subgroup.mem_prod]
+
+private theorem J_observed_action (g : M) :
+    Continuous (fun q : M ⧸ J => first_coordinate (g • q)) ∧
+      (∀ q : M ⧸ J, first_coordinate (g • q) = g.1 * first_coordinate q) := by
+  exact ⟨first_coordinate_continuous.comp (J_fixed_action g), first_coordinate_smul g⟩
+
+private theorem J_translation_moves (a : A) (ha : a ≠ 1) :
+    (a, (1 : P)) • (QuotientGroup.mk (1 : M) : M ⧸ J) ≠ QuotientGroup.mk 1 := by
+  intro h
+  have heq := congrArg first_coordinate h
+  simp only [first_coordinate_smul, first_coordinate_mk] at heq
+  change a * 1 = 1 at heq
+  exact ha (by simpa only [mul_one] using heq)
+
+private theorem J_nontrivial_observed_translation :
+    Continuous (fun q : M ⧸ J => (Multiplicative.ofAdd (1 : ℤ), (1 : P)) • q) ∧
+      first_coordinate ((Multiplicative.ofAdd (1 : ℤ), (1 : P)) •
+        (QuotientGroup.mk (1 : M) : M ⧸ J)) ≠
+          first_coordinate (QuotientGroup.mk (1 : M) : M ⧸ J) := by
+  refine ⟨J_fixed_action _, ?_⟩
+  simp only [first_coordinate_smul, first_coordinate_mk]
+  change Multiplicative.ofAdd (1 : ℤ) * 1 ≠ 1
+  rw [mul_one]
+  exact fun h => (by norm_num : (1 : ℤ) ≠ 0) (ofAdd_eq_one.mp h)
 
 end PartitionProduct
 

@@ -18,6 +18,25 @@ in more detail.
 
 ## Headline results
 
+**Fixed-action continuity.**
+
+- `Topology.IsCoinducing.continuousConstSMul` transports continuity of fixed
+  scalar actions from `X` to `Y` along an equivariant coinducing map
+  `f : X →[M] Y`, assuming `ContinuousConstSMul M X`, with topologies on
+  `X` and `Y` and primitive actions of `M` on both. Scalar, source and target
+  universes are independent; no scalar topology, action laws or surjectivity
+  is required. `Topology.IsCoinducing.continuousConstVAdd` gives the
+  corresponding transport from `X` to `Y` for fixed vector additions,
+  assuming `ContinuousConstVAdd M X`. See
+  [the transport API](GroupTheory/Topology/Algebra/ConstMulAction.lean).
+- `QuotientGroup.continuousConstSMul` supplies continuous fixed left actions on
+  the canonical coinduced left-coset quotient `G ⧸ H` for every subgroup `H`,
+  assuming only `Group G`, `TopologicalSpace G` and `ContinuousConstSMul G G`.
+  No normality, right continuity, joint multiplication, continuous inversion,
+  separation, compactness or index assumption is required. The additive instance
+  is `QuotientAddGroup.continuousConstVAdd`. See
+  [the coset quotient API](GroupTheory/Topology/Algebra/Group/Quotient.lean).
+
 **Open, closed and clopen subgroups and left-coset quotients.**
 For an arbitrary subgroup `H`, the following results require only `Group G`, a
 supplied `TopologicalSpace G` and continuity of fixed left translations
