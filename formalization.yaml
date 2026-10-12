@@ -80,10 +80,15 @@ project:
     sigma^m = 1 (not necessarily exact order), injective multiplication by
     that same m, and elementwise lifting of fixed classes modulo mA.
 
-    Proof terms address an arbitrary subgroup being open
-    iff its canonical left-coset quotient is discrete under continuous fixed
-    left translations, and the compact finite-index consequence. The existing
-    quotient and topology are unchanged.
+    For an arbitrary subgroup H of a group G with a supplied topology and
+    continuous fixed left translations (ContinuousConstSMul G G), openness is
+    equivalent to discreteness of the canonical left-coset quotient G / H,
+    and closedness is equivalent to its T1 property. Clopenness is equivalent
+    to openness without an index assumption. At finite index, openness,
+    closedness and clopenness are equivalent, without compactness. Compactness
+    is needed only to deduce finite index from openness. No normality, right
+    continuity, joint multiplication, continuous inversion or ambient separation
+    is required. The existing quotient and coinduced topology are unchanged.
 
     For finitely generated abelian groups, surjectivity of the
     n-scalar map with n ≥ 2 forces finiteness and coprimality with Nat.card A
@@ -194,26 +199,30 @@ sources:
       compact-discrete finiteness theorem. No particular external publication or
       source-coverage claim is asserted.
 
-  - title: Open subgroups and discrete canonical left-coset quotients
+  - title: Open, closed and clopen subgroups and canonical left-coset quotients
     authors:
       - Formal Frontier Agents
     type: original-proof
     location: GroupTheory/Topology/Algebra/Group/Quotient.lean
     note: >-
-      The proof terms compose
-      Mathlib's canonical left-coset singleton fibers, coinducing projection,
-      IsOpen.smul, compact-discrete finiteness and finite-index API. The
-      statements are candidates for generalizing Mathlib's stronger separately
-      continuous quotient-discreteness and open-subgroup finiteness results;
-      the clients contain same-object agreement lemmas under those hypotheses.
+      The proof terms compose Mathlib's canonical left-coset singleton fibers,
+      coinducing projection, IsOpen.smul, IsClosed.smul, finite-T1 discreteness,
+      compact-discrete finiteness and finite-index API. They generalize the
+      separately continuous quotient-discreteness, quotient-T1, open-subgroup
+      closedness, closed finite-index openness and compact open-subgroup
+      finiteness results. The clients contain same-object agreement lemmas
+      under those stronger hypotheses.
       Their first example is cofinite integers times discrete permutations of
       three points. A second example induces the permutation topology from the
       canonical left-coset projection to an explicitly discrete auxiliary
       target, without reading the dependent coinduced quotient topology as
       input. Supporting terms
       cover strict failure of right translations, inversion and joint
-      multiplication, and the infinite compact product with an open proper
-      nonnormal index-three subgroup.
+      multiplication, and the infinite compact product with a clopen proper
+      nonnormal index-three subgroup. Closedness and finite index are supplied
+      independently, using a closed auxiliary singleton and algebraic index
+      three, so the closed/T1 and finite-index open/clopen APIs apply to the
+      finite and infinite strict examples.
       No source paper or book passage was inspected for these additions, and
       no external-source correspondence or coverage is claimed.
 
@@ -349,16 +358,25 @@ status:
     elementwise, not a global section. Client examples include failure
     boundaries; no unconditional Tate or cohomology theorem is asserted.
 
-    The open-subgroup left-coset characterization and compact finite-index
-    corollary use Group, a supplied topology and continuous fixed left translations,
-    with compactness only for finite index.
-    They impose no normality, right continuity, joint multiplication, inversion
-    continuity or separation assumption. The client module includes both a
-    cofinite-integer times discrete-permutation example and a stricter example
-    with partition-topologized permutations, induced from an explicitly
-    discrete canonical left-coset target. The latter and its infinite compact
+    Subgroup.isClosed_iff_t1Space_quotient characterizes closed H by T1 of
+    the canonical left-coset quotient, and Subgroup.isClopen_iff_isOpen
+    characterizes clopen H by openness, with no index assumption.
+    Subgroup.isOpen_iff_isClosed and Subgroup.isClopen_iff_isClosed require
+    H.FiniteIndex and identify openness, closedness and clopenness.
+    These and the open/discrete characterization use Group, a supplied topology
+    and continuous fixed left translations (ContinuousConstSMul G G), without
+    compactness. Only the separate open-to-finite-index corollary needs
+    CompactSpace G. None imposes normality, right continuity, joint
+    multiplication, inversion continuity or ambient separation. The canonical
+    quotient and coinduced topology are unchanged. An arbitrary observer from
+    the quotient of a closed finite-index subgroup to any space is continuous,
+    with no explicit openness or compactness premise. The client module includes
+    both a cofinite-integer times discrete-permutation example and a stricter
+    example with partition-topologized permutations, induced from an explicitly
+    discrete auxiliary left-coset target. The latter and its infinite compact
     product have continuous left translations but fail the all-right condition,
-    separate continuity, inversion and T0/T1/T2.
+    separate continuity, inversion and T0/T1/T2; independent closedness and
+    algebraic index-three witnesses supply the new API's premises.
 
     For [AddGroup.FG A] on an additive commutative group and natural n ≥ 2,
     surjectivity of the map x ↦ n • x implies finite A, coprimality
@@ -382,6 +400,14 @@ status:
     - declaration: Subgroup.isOpen_iff_discreteTopology_quotient
       file: GroupTheory/Topology/Algebra/Group/Quotient.lean
     - declaration: Subgroup.finiteIndex_of_isOpen
+      file: GroupTheory/Topology/Algebra/Group/Quotient.lean
+    - declaration: Subgroup.isClosed_iff_t1Space_quotient
+      file: GroupTheory/Topology/Algebra/Group/Quotient.lean
+    - declaration: Subgroup.isClopen_iff_isOpen
+      file: GroupTheory/Topology/Algebra/Group/Quotient.lean
+    - declaration: Subgroup.isOpen_iff_isClosed
+      file: GroupTheory/Topology/Algebra/Group/Quotient.lean
+    - declaration: Subgroup.isClopen_iff_isClosed
       file: GroupTheory/Topology/Algebra/Group/Quotient.lean
     - declaration: ContinuousMap.discreteTopology_of_compactSpace
       file: GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean
@@ -479,17 +505,17 @@ review:
   reviewers:
     - Independent Formal Frontier AI agents
   notes: >-
-    The finite-coordinate homomorphism, finite-cylinder, compact/discrete map
-    and other documented APIs have completed proofs. The open-subgroup
-    left-coset characterization and finite-index corollary use the canonical
-    quotient, and their clients include strict left-translation boundary examples.
+    The finite-coordinate homomorphism, finite-cylinder and compact/discrete
+    map APIs have completed proofs. The subgroup characterizations use the
+    canonical left-coset quotient, and their clients include strict
+    left-translation boundary examples.
     Verification requires builds and transitive axiom checks for public and
     private declarations; the listed axiom policy alone is not a certificate.
     Review is by AI agents; no human review is claimed.
 
 acknowledgements: >-
-  Formal Frontier AI agents developed the Lean proofs and clients; the existing
-  results received independent AI-agent proof review. Prism developed the FG
+  Formal Frontier AI agents developed the Lean proofs and clients. Independent
+  AI-agent proof review is part of verification. Prism developed the FG
   scalar mathematical argument, with determinant-route advice from Lattice.
   The compact/discrete continuous-map and factorization proofs follow the
   Continuous Group Cohomology formalization by Formal Frontier Agents and reuse
