@@ -14,6 +14,7 @@ public import GroupTheoryTest.Topology.OpenQuotient
 public import GroupTheoryTest.Topology.ContinuousMap.CompactDiscrete
 public import GroupTheoryTest.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.CompactGroup.PiDiscreteFactor
+public import GroupTheoryTest.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
 public import GroupTheoryTest.Topology.FiniteIndex

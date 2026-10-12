@@ -59,6 +59,16 @@ project:
     statements need no continuity of operations, compactness, separation or
     finiteness of the index type.
 
+    Every continuous group homomorphism from an arbitrary dependent product of
+    groups equipped with topologies to a discrete group factors through open
+    normal quotients of finitely many coordinates. Each selected canonical
+    quotient and their product are discrete. Source operations need not be
+    continuous; neither the index nor target needs to be finite. Compact factors
+    make these selected quotients and their product finite. The canonical selected
+    projection needs only normal subgroups and has an application, kernel,
+    surjectivity and monoid-target unique descent API, the latter conditional on
+    the projection being a quotient map.
+
     For any category and monoid-valued diagram with arbitrary stage topologies,
     compatible sections have continuous coordinate projections and an initial
     topology. Compatible continuous monoid homomorphisms from any monoid equipped
@@ -164,6 +174,21 @@ sources:
       in particular Submonoid.pi_mem_of_mulSingle_mem_aux. No particular external
       publication or source-coverage claim is asserted for these formalizations.
 
+  - title: Finite-coordinate factorization of continuous group homomorphisms
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
+    note: >-
+      The canonical projection and continuous descent reuse Mathlib's algebraic
+      quotient, kernel-equivalence and quotient-map APIs. The proof combines the
+      finite-cylinder containment and supported-part/tail argument with exact
+      coordinate kernels, continuous injective kernel lifts and intrinsic quotient
+      discreteness. Monica Omar's finite-supported product-membership API supplies
+      the noncommutative subgroup argument. Compactness enters only through the
+      compact-discrete finiteness theorem. No particular external publication or
+      source-coverage claim is asserted.
+
 automation:
   methods:
     - method: agent
@@ -258,6 +283,22 @@ status:
     index type. The power factorization reuses the unary factorization with
     this uniform cylinder and continuous quotient descent.
 
+    For arbitrary dependent groups G i with topologies and a discrete group H,
+    every continuous homomorphism from the product to H factors through
+    quotients of finitely many coordinates by open normal subgroups. The
+    factor is itself a continuous group homomorphism, with a bundled triangle
+    through the canonical selected projection. Each selected quotient and the
+    product stage are intrinsically discrete in their canonical topologies.
+    Source operations need not be continuous, and no compactness, separation,
+    commutativity, finite index or finite target is assumed. The descended
+    homomorphism need not be injective, and the stage may be infinite. Compact
+    factors give finite coordinate quotients and finite stage. The normality-only
+    projection has application, kernel and surjectivity lemmas; its monoid-target
+    universal property assumes it is a quotient map. Clients have genuinely
+    essential and heterogeneous coordinates, noninjective factors, arbitrary
+    ignored topologies and a surjective infinite integer observer ruling out a
+    finite stage, together with empty, trivial and nonopen normal boundaries.
+
     For any category J and F : J ⥤ MonCat with arbitrary topologies on the
     stages, Mathlib's existing compatible-sections subtype has continuous
     coordinate projections and the initial topology induced by its coordinates.
@@ -291,6 +332,14 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: ContinuousMonoidHom.piQuotient
+      file: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
+    - declaration: ContinuousMonoidHom.piQuotient_existsUnique_factor
+      file: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
+    - declaration: ContinuousMonoidHom.exists_finset_openNormalSubgroup_pi_factor
+      file: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
+    - declaration: ContinuousMonoidHom.exists_finset_openNormalSubgroup_pi_factor_finite
+      file: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
     - declaration: ContinuousMap.discreteTopology_of_compactSpace
       file: GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean
     - declaration: ContinuousMap.exists_openNormalSubgroup_factor

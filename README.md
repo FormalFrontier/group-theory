@@ -5,6 +5,7 @@ compact open subgroups of totally disconnected locally compact groups,
 open kernels and finite images of continuous group homomorphisms,
 compact-open discreteness and finite-quotient factorization of discrete-valued maps,
 finite-coordinate quotient factorization on arbitrary powers of compact groups,
+structured finite-coordinate factorization of continuous group homomorphisms,
 finite-image and open-kernel rational-circle character subgroups,
 the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
@@ -133,6 +134,32 @@ See [the cylinder API](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean),
 [the power factorization](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean)
 and [two-coordinate, infinite-index and empty-index clients](GroupTheoryTest/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean).
 
+**Finite-coordinate homomorphism factorization.** For an arbitrary dependent
+family of groups `G i` with topologies and a discrete group `H`, every
+`f : (∀ i, G i) →ₜ* H` factors as a continuous group homomorphism through
+quotients of finitely many coordinates by open normal subgroups.
+`ContinuousMonoidHom.exists_finset_openNormalSubgroup_pi_factor` gives
+`s : Finset I`, `N : ∀ i : s, OpenNormalSubgroup (G i)` and
+`fbar : (∀ i : s, G i ⧸ (N i).toSubgroup) →ₜ* H`, with the bundled triangle
+`fbar.comp (ContinuousMonoidHom.piQuotient s (fun i => (N i).toSubgroup)) = f`.
+Each selected quotient and their product have their canonical discrete topology.
+Neither continuity of the source operations nor compactness, separation,
+commutativity or finiteness of the index or target is assumed. The selected
+stage may be infinite, and the descended homomorphism need not be injective.
+If all factors are compact,
+`ContinuousMonoidHom.exists_finset_openNormalSubgroup_pi_factor_finite` makes
+each selected quotient and their product finite. Compactness is needed only
+for this refinement.
+
+The canonical `ContinuousMonoidHom.piQuotient` projection needs normality,
+not openness, of the selected subgroup family. Its application, kernel and
+surjectivity lemmas describe its coordinates. Under the explicit quotient-map
+hypothesis, `piQuotient_existsUnique_factor` gives unique continuous descent
+into any monoid equipped with a topology exactly when the projection kernel
+lies in the observer's kernel. See
+[the homomorphism API](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean)
+and [essential coordinates, noninjective factors and nonfinite stages](GroupTheoryTest/Topology/Algebra/Group/PiDiscreteFactor.lean).
+
 **Locally compact identity components.** In a locally compact topological group,
 the identity component is the intersection of **all** open subgroups, even
 without a Hausdorff assumption; membership and point-separation lemmas make
@@ -250,7 +277,15 @@ results are available through `GroupTheory.Topology.ContinuousMap.CompactDiscret
 and `GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor`.
 Import `GroupTheory.Topology.Algebra.OpenSubgroup.Pi` for finite-cylinder
 containment, or `GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor`
-for finite-coordinate factorization; both APIs are re-exported by `GroupTheory`.
+for finite-coordinate map factorization. Import
+`GroupTheory.Topology.Algebra.Group.PiDiscreteFactor` for the homomorphism
+projection and descent APIs; all are re-exported by `GroupTheory`.
+For a discrete-group-valued homomorphism `f : (∀ i, G i) →ₜ* H`, use
+`obtain ⟨s, N, fbar, hfactor, hquot, hstage⟩ :=
+ContinuousMonoidHom.exists_finset_openNormalSubgroup_pi_factor f`.
+Here `hfactor` is a bundled homomorphism equality, and `hquot` and `hstage`
+give intrinsic quotient and stage discreteness. With compact factors, the
+`_finite` theorem returns coordinate finiteness and product finiteness instead.
 Use `letI := ContinuousMap.discreteTopology_of_compactSpace (X := X) (Y := Y)`
 when a local map-space discreteness instance is needed, or obtain the quotient
 map with `obtain ⟨N, fbar, hfactor⟩ := f.exists_openNormalSubgroup_factor`.
@@ -284,7 +319,12 @@ The power clients use a Boolean observer that depends on both coordinates and
 cannot be a homomorphism for any group structure on `Bool`. They also exhibit
 a nonconstant observer with infinite index and infinite discrete target,
 finite/discrete selected stages, empty indices and targets, and an explicit
-empty-coordinate factorization of a constant map.
+empty-coordinate factorization of a constant map. The homomorphism clients
+include two essential coordinates with proper nontrivial kernels, heterogeneous
+factors, arbitrary topologies on ignored factors, noninjective descent,
+infinite discrete targets and a surjective integer observer that rules out
+finite stages. Empty and trivial cases and a closed nonopen real normal
+subgroup test the boundaries of the canonical projection.
 
 ### Compatibility
 
@@ -308,10 +348,13 @@ Use the pinned Lean `v4.34.0-rc2` and mathlib
 
 ```sh
 lake exe cache get
-LEAN_NUM_THREADS=1 lake --wfail build GroupTheory GroupTheoryTest
+LEAN_NUM_THREADS=1 lake build GroupTheory GroupTheoryTest
 ```
 
 The matching precompiled mathlib cache **must succeed before the build**.
+The test-only compact/discrete observer modules keep their helper declarations
+private and emit `linter.privateModule` warnings. The command above retains
+those warnings; adding `--wfail` treats them as errors.
 `LEAN_NUM_THREADS` is runtime tuning, not a child-process or memory cap;
 `LAKE_JOBS` is unsupported by this pinned Lake. Build both roots when
 verifying the maintained producer and clients. The configured CI also checks
