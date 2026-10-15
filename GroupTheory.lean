@@ -7,6 +7,7 @@ module
 
 public import GroupTheory.CyclicNorm
 public import GroupTheory.FGScalarSurjectivity
+public import GroupTheory.IndexNSmul
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections

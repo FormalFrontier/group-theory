@@ -124,6 +124,17 @@ No topology, lattice, finite-rank or divisibility-at-other-scalars assumption is
 See the [equivalence and representative API](GroupTheory/QuotientTorsion.lean)
 and the [nonzero half-class in `ℚ / ℤ` and unit-scalar boundary](GroupTheoryTest/QuotientTorsion.lean).
 
+**Scalar indices on FG abelian groups.** For `[AddCommGroup A]` and
+`[AddGroup.FG A]`, the [scalar-index module](GroupTheory/IndexNSmul.lean) states
+`(nsmulAddMonoidHom (α := A) n).range.index =
+n ^ Module.finrank ℤ A * Nat.card ((nsmulAddMonoidHom (α := A) n).ker)`
+for every `n : ℕ`. Injectivity at this scalar removes the kernel factor, without
+a global freeness assumption. For `[Module.Free ℤ A] [Module.Finite ℤ A]`,
+a comparison collapses the right-hand side to Mathlib's existing free index
+formula, including at zero. Index and `Nat.card` vanish for infinite quotients
+and kernels; no all-scalar quotient finiteness is asserted.
+See the [mixed free/torsion examples](GroupTheoryTest/IndexNSmul.lean).
+
 [All results and their hypotheses](docs/Results.md), including open kernels,
 characters, discrete-target and finite-coordinate factorizations, identity
 components and compatible sections.
@@ -201,7 +212,7 @@ claim is implied by this guidance.
 | Finite cylinders and coordinate factorizations | [`OpenSubgroup.Pi`](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean), [`PiDiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean), [`Group.PiDiscreteFactor`](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean) |
 | Identity components and quotients | [`ConnectedComponentOpenSubgroup`](GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean), [`ConnectedComponentQuotient`](GroupTheory/Topology/ConnectedComponentQuotient.lean) |
 | Open quotients and compatible sections | [`OpenQuotient`](GroupTheory/Topology/OpenQuotient.lean), [`Sections`](GroupTheory/Topology/Sections.lean) |
-| Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean) |
+| Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean) |
 
 ## References
 

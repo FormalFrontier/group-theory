@@ -293,3 +293,16 @@ there are no topology, lattice or finite-generation premises. At `n = 0`
 it forces `V` to be trivial; at `n = 1` both sides are trivial. See
 [the construction and its characteristic laws](../GroupTheory/QuotientTorsion.lean)
 and [the rational half-class and unit-scalar examples](../GroupTheoryTest/QuotientTorsion.lean).
+
+**Scalar indices on FG abelian groups.**
+The [scalar-index formula](../GroupTheory/IndexNSmul.lean) gives the all-natural-scalar
+identity `index(n • A) = n ^ Module.finrank ℤ A * Nat.card (ker(n • ·))` under
+`[AddCommGroup A] [AddGroup.FG A]`. The injective specialization requires only
+injectivity at the specified scalar, not freeness or a nonzero scalar. The free
+comparison collapses the kernel-weighted expression to Mathlib's existing
+`n ^ Module.finrank ℤ A` for `[Module.Free ℤ A] [Module.Finite ℤ A]`, also at zero.
+Index and `Nat.card` are zero for infinite quotients and kernels;
+no all-scalar finiteness conclusion is asserted.
+Mathlib already supplies quotient finiteness at nonzero scalars.
+The [mixed examples](../GroupTheoryTest/IndexNSmul.lean) distinguish integer module
+finrank from minimum-generator rank and allow nonzero finite torsion.
