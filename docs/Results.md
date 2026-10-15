@@ -282,3 +282,14 @@ characterizes both surjectivity and bijectivity of that map. The four APIs in
 apply to arbitrary surjective endomorphisms and do not formalize K-theory.
 See the [FG scalar guide](../GroupTheory/FGScalarSurjectivity/README.md) and its
 [client examples](../GroupTheoryTest/FGScalarSurjectivity.lean).
+
+**Torsion in additive quotients.** For any additive commutative group `V`,
+additive subgroup `L` and `n : ℕ`, bijectivity of multiplication by `n` on `V`
+gives `QuotientAddGroup.nsmulTorsionEquivQuotient : (V / L)[n] ≃+ L / nL`.
+Here the domain is the multiplication kernel and `nL` is the multiplication range on `L`.
+The forward and inverse representative simp lemmas describe `[x] ↦ [n • x]`
+and unique ambient `n`-division. The hypothesis is needed at this scalar only:
+there are no topology, lattice or finite-generation premises. At `n = 0`
+it forces `V` to be trivial; at `n = 1` both sides are trivial. See
+[the construction and its characteristic laws](../GroupTheory/QuotientTorsion.lean)
+and [the rational half-class and unit-scalar examples](../GroupTheoryTest/QuotientTorsion.lean).

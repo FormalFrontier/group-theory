@@ -11,7 +11,7 @@ the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
-finitely generated abelian groups.
+finitely generated abelian groups, and torsion in additive quotients.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -114,6 +114,16 @@ apply to arbitrary surjective endomorphisms and do not formalize K-theory.
 See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 [client examples](GroupTheoryTest/FGScalarSurjectivity.lean).
 
+**Torsion in additive quotients.** If multiplication by `n : ℕ` is bijective
+on an additive commutative group `V`, then
+`QuotientAddGroup.nsmulTorsionEquivQuotient` identifies the `n`-torsion subgroup
+of `V / L` with `L / nL` for any additive subgroup `L`. It uses the ordinary
+kernel and range-quotient carriers. A class represented by `x`, with `n • x ∈ L`,
+maps to `[n • x]`; the inverse is given by unique `n`-division in `V`.
+No topology, lattice, finite-rank or divisibility-at-other-scalars assumption is needed.
+See the [equivalence and representative API](GroupTheory/QuotientTorsion.lean)
+and the [nonzero half-class in `ℚ / ℤ` and unit-scalar boundary](GroupTheoryTest/QuotientTorsion.lean).
+
 [All results and their hypotheses](docs/Results.md), including open kernels,
 characters, discrete-target and finite-coordinate factorizations, identity
 components and compatible sections.
@@ -191,10 +201,14 @@ claim is implied by this guidance.
 | Finite cylinders and coordinate factorizations | [`OpenSubgroup.Pi`](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean), [`PiDiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean), [`Group.PiDiscreteFactor`](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean) |
 | Identity components and quotients | [`ConnectedComponentOpenSubgroup`](GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean), [`ConnectedComponentQuotient`](GroupTheory/Topology/ConnectedComponentQuotient.lean) |
 | Open quotients and compatible sections | [`OpenQuotient`](GroupTheory/Topology/OpenQuotient.lean), [`Sections`](GroupTheory/Topology/Sections.lean) |
-| Cyclic norms and FG scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean) |
+| Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean) |
 
 ## References
 
+- J. S. Milne, *Abelian Varieties*, version 2.0 (2008), I.10, Remark 10.7,
+  for the complex-torus torsion application. The quotient-torsion equivalence
+  specializes Mathlib's Snake lemma construction and representative equation,
+  formalized by Joël Riou.
 - Van Dantzig's compact-open subgroup theorem, used in Neukirch, Schmidt,
   and Wingberg, *Cohomology of Number Fields*, corrected second edition,
   Chapter I, §1, Proposition (1.1.9), for the identity-component discussion.
