@@ -18,3 +18,4 @@ name = "GroupTheory"
 
 [[lean_lib]]
 name = "GroupTheoryTest"
+roots = ["GroupTheoryTest", "GroupTheoryTest.GroupAction.CentralizerTransitivity"]

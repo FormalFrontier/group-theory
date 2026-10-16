@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import GroupTheory.GroupAction.Automorphism
 public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 
@@ -21,6 +22,22 @@ ordinary composition: the permutation of `α * β` sends `x` to `α (β x)`, not
 inverse permutation. No finiteness, transitivity, faithfulness or chosen point is
 required, including for the empty type.
 
+## Main statements
+
+* `Action.autEquivCentralizer` identifies equivariant automorphisms with the
+  centralizer of a categorical action.
+* `Action.autEquivPermCentralizer` gives the permutation specialization.
+* `MulAction.stabilizer_normal_of_pretransitive_commuting` proves normality of
+  point stabilizers when a commuting scalar operation is pretransitive. The
+  scalars need no monoid structure, and the group action need not be pretransitive.
+* `MulAction.isPretransitive_centralizer_iff_stabilizer_normal` characterizes
+  pretransitivity of the image centralizer for a pretransitive group action with
+  a chosen point by normality of its stabilizer. The centralizer acts by the
+  restriction of permutation evaluation; no faithfulness or finiteness is needed.
+
+The last criterion is a general group-action consequence of stabilizer conjugacy
+and the normalizer-quotient and centralizer descriptions, not a freeness criterion.
+
 ## References
 
 * J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion of
@@ -28,6 +45,9 @@ required, including for the empty type.
   for an arbitrary category generalizes that setting.
 * Mathlib's `Action.ρAut`, `Action.mkIso`, forgetful functor and
   `CategoryTheory.Aut.mulEquivPerm` supply the action and automorphism interfaces.
+  Its stabilizer inclusions, conjugacy formula and normality criterion supply the
+  normal-stabilizer implication. The converse uses
+  `MulAction.normalizerQuotientEquivAut` and its evaluation law.
 -/
 
 @[expose] public section
@@ -200,3 +220,61 @@ theorem autEquivPermCentralizer_eq_iff (α : Aut (ofMulAction G X))
 end Types
 
 end Action
+
+namespace MulAction
+
+/-- If a pretransitive scalar operation commutes with a group action, every point
+stabilizer of the group action is normal. The commuting scalars need only an
+`SMul` operation, with no monoid laws; the group action need not be pretransitive. -/
+theorem stabilizer_normal_of_pretransitive_commuting
+    {G : Type u} {H : Type w} {X : Type v}
+    [Group G] [MulAction G X] [SMul H X] [SMulCommClass G H X]
+    [MulAction.IsPretransitive H X] (x : X) : (MulAction.stabilizer G x).Normal := by
+  have hle (y z : X) : stabilizer G y ≤ stabilizer G z := by
+    obtain ⟨h, rfl⟩ := exists_smul_eq H y z
+    exact le_stabilizer_smul_right h y
+  have heq (y z : X) : stabilizer G y = stabilizer G z :=
+    (hle y z).antisymm (hle z y)
+  apply Subgroup.normal_iff_map_conj_eq.mpr
+  intro g
+  rw [← MulEquiv.toMonoidHom_eq_coe, ← stabilizer_smul_eq_stabilizer_map_conj]
+  exact heq (g • x) x
+
+/-- For a pretransitive group action with a chosen point, the centralizer of the
+image action in `Equiv.Perm X` acts pretransitively exactly when the point
+stabilizer is normal. Its action is the restriction of permutation evaluation.
+The reverse implication uses the normalizer-quotient classification and the
+centralizer identification, without faithfulness, finiteness or freeness. -/
+theorem isPretransitive_centralizer_iff_stabilizer_normal
+    {G : Type u} {X : Type v} [Group G] [MulAction G X]
+    [MulAction.IsPretransitive G X] (x : X) :
+    MulAction.IsPretransitive
+      (Subgroup.centralizer (Set.range (MulAction.toPermHom G X))) X ↔
+      (MulAction.stabilizer G x).Normal := by
+  let C := Subgroup.centralizer (Set.range (MulAction.toPermHom G X))
+  constructor
+  · intro h
+    let : IsPretransitive C X := h
+    let : SMulCommClass G C X := ⟨fun g c y => by
+      have hgc : toPermHom G X g * (c : Equiv.Perm X) =
+          (c : Equiv.Perm X) * toPermHom G X g := c.property _ ⟨g, rfl⟩
+      exact congrArg (fun p : Equiv.Perm X => p y) hgc⟩
+    exact stabilizer_normal_of_pretransitive_commuting (H := C) x
+  · intro h
+    let : (stabilizer G x).Normal := h
+    apply IsPretransitive.of_orbit (x₀ := x)
+    intro y
+    obtain ⟨g, rfl⟩ := exists_smul_eq G x y
+    let n : Subgroup.normalizer (stabilizer G x : Set G) :=
+      ⟨g⁻¹, by
+        rw [Subgroup.normalizer_eq_top]
+        exact Subgroup.mem_top _⟩
+    refine ⟨Action.autEquivPermCentralizer G X
+      (normalizerQuotientEquivAut (G := G) x (QuotientGroup.mk n)), ?_⟩
+    change (Action.autEquivPermCentralizer G X
+      (normalizerQuotientEquivAut (G := G) x (QuotientGroup.mk n)) : Equiv.Perm X) x = g • x
+    rw [Action.autEquivPermCentralizer_apply, normalizerQuotientEquivAut_mk_apply_self]
+    change (g⁻¹)⁻¹ • x = g • x
+    rw [inv_inv]
+
+end MulAction

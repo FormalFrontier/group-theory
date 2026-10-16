@@ -28,9 +28,16 @@ For `[Group G] [MulAction G X]`, `Action.autEquivPermCentralizer G X`
 specializes this to the centralizer of `MulAction.toPermHom G X` in `Equiv.Perm X`,
 reusing Mathlib's `CategoryTheory.Aut.mulEquivPerm`. Multiplication is ordinary
 composition `α (β x)` on both sides. No finite, transitive, faithful, nonempty
-or topological hypothesis is needed. See the
-[centralizer API](GroupTheory/GroupAction/Centralizer.lean) and its
-[noncommuting three-point and empty-set clients](GroupTheoryTest/ActionCentralizer.lean).
+or topological hypothesis is needed. For a pretransitive `G`-action and `x : X`,
+`MulAction.isPretransitive_centralizer_iff_stabilizer_normal` characterizes
+pretransitivity of this canonical image centralizer by normality of the point
+stabilizer. The general helper
+`MulAction.stabilizer_normal_of_pretransitive_commuting` only needs a commuting
+pretransitive scalar operation `SMul H X`, with no monoid structure on `H` or
+pretransitivity of `G`. These are general group-action facts, not freeness criteria.
+See the [centralizer API](GroupTheory/GroupAction/Centralizer.lean), its
+[noncommuting three-point and empty-set clients](GroupTheoryTest/ActionCentralizer.lean),
+and the [normal-stabilizer clients](GroupTheoryTest/GroupAction/CentralizerTransitivity.lean).
 
 **Automorphisms of transitive actions.** For a group `G` acting transitively
 on `X` and a chosen point `x`, `MulAction.normalizerQuotientEquivAut`
@@ -298,7 +305,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
-| Action automorphisms and centralizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
+| Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
 | Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
