@@ -292,7 +292,16 @@ and unique ambient `n`-division. The hypothesis is needed at this scalar only:
 there are no topology, lattice or finite-generation premises. At `n = 0`
 it forces `V` to be trivial; at `n = 1` both sides are trivial. See
 [the construction and its characteristic laws](../GroupTheory/QuotientTorsion.lean)
-and [the rational half-class and unit-scalar examples](../GroupTheoryTest/QuotientTorsion.lean).
+and [the rational half- and quarter-classes and unit-scalar examples](../GroupTheoryTest/QuotientTorsion.lean).
+
+The scalar-transition statement
+`QuotientAddGroup.nsmulTorsionEquivQuotient_naturality` says that, for `n = m * d`,
+multiplication by `d` on quotient torsion corresponds to reduction `L / nL → L / mL`, as an equality
+of additive homomorphisms built from the usual quotient and kernel-restriction
+maps. Bijectivity at `n` implies the required bijectivity at `m`; there is no
+positivity assumption. The quarter-to-half rational example computes the
+nonzero classes and their equivalence values from representatives, then applies
+this identity to their compatibility.
 
 **Scalar indices on FG abelian groups.**
 The [scalar-index formula](../GroupTheory/IndexNSmul.lean) gives the all-natural-scalar

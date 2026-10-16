@@ -122,7 +122,10 @@ kernel and range-quotient carriers. A class represented by `x`, with `n • x �
 maps to `[n • x]`; the inverse is given by unique `n`-division in `V`.
 No topology, lattice, finite-rank or divisibility-at-other-scalars assumption is needed.
 See the [equivalence and representative API](GroupTheory/QuotientTorsion.lean)
-and the [nonzero half-class in `ℚ / ℤ` and unit-scalar boundary](GroupTheoryTest/QuotientTorsion.lean).
+and the [rational half- and quarter-classes and unit-scalar boundaries](GroupTheoryTest/QuotientTorsion.lean).
+The scalar-transition statement identifies multiplication by `d` from
+`(m * d)`-torsion to `m`-torsion with reduction
+`L / (m * d)L → L / mL`, assuming only ambient bijectivity at `m * d`.
 
 **Scalar indices on FG abelian groups.** For `[AddCommGroup A]` and
 `[AddGroup.FG A]`, the [scalar-index module](GroupTheory/IndexNSmul.lean) states

@@ -25,6 +25,11 @@ therefore recovers the algebraic identification `n⁻¹L / L ≃+ L / nL` behind
 Milne's complex-torus calculation. The lattice's topological and finite-rank
 properties are used for further conclusions, not for this identification.
 
+For `n = m * d`, the scalar-transition identity says that the equivalence
+intertwines multiplication by `d` on torsion with reduction `L / nL → L / mL`.
+It uses the quotient map and the restriction of the scalar map to kernels.
+Bijectivity at `n` already implies bijectivity at `m`.
+
 The abstract provider is Mathlib's
 `CategoryTheory.ShortComplex.SnakeInput.δIso`, applied to multiplication by `n`
 on the short exact sequence `L → V → V / L` in `ModuleCat ℤ`. Every additive
@@ -201,5 +206,92 @@ set_option backward.isDefEq.respectTransparency false in
   have h' := congrArg (nsmulTorsionEquivQuotient L n hn).symm h
   simpa using congrArg
     (fun y : (nsmulAddMonoidHom (α := V ⧸ L) n).ker => (y : V ⧸ L)) h'.symm
+
+end QuotientAddGroup
+
+namespace AddMonoidHom
+
+variable {A : Type u}
+
+/-- Bijectivity of a product scalar implies bijectivity of its first factor. -/
+theorem nsmul_bijective_of_mul [AddCommMonoid A] (m d : ℕ)
+    (hmd : Function.Bijective (nsmulAddMonoidHom (α := A) (m * d))) :
+    Function.Bijective (nsmulAddMonoidHom (α := A) m) := by
+  constructor
+  · intro a b hab
+    apply hmd.1
+    change (m * d) • a = (m * d) • b
+    simpa only [mul_nsmul, nsmulAddMonoidHom_apply] using congrArg (fun x : A => d • x) hab
+  · intro y
+    obtain ⟨x, hx⟩ := hmd.2 y
+    exact ⟨d • x, by simpa only [nsmulAddMonoidHom_apply, mul_nsmul'] using hx⟩
+
+/-- Multiples of a product scalar are multiples of its first factor. -/
+theorem range_nsmul_mul_le [AddCommGroup A] (m d : ℕ) :
+    (nsmulAddMonoidHom (α := A) (m * d)).range ≤
+      (nsmulAddMonoidHom (α := A) m).range := by
+  rintro _ ⟨x, rfl⟩
+  exact ⟨d • x, (mul_nsmul' x m d).symm⟩
+
+/-- Multiplication by `d` takes `(m * d)`-torsion to `m`-torsion. -/
+theorem nsmul_mapsTo_ker [AddCommGroup A] (m d : ℕ) :
+    Set.MapsTo (nsmulAddMonoidHom (α := A) d)
+      (nsmulAddMonoidHom (α := A) (m * d)).ker
+      (nsmulAddMonoidHom (α := A) m).ker := by
+  intro x hx
+  change (m * d) • x = 0 at hx
+  change m • (d • x) = 0
+  simpa only [mul_nsmul'] using hx
+
+end AddMonoidHom
+
+namespace QuotientAddGroup
+
+variable {V : Type u} [AddCommGroup V]
+
+/-- The quotient-torsion equivalences commute with scalar-divisibility transitions.
+For `n = m * d`, multiplication by `d` on `(V / L)[n]` corresponds to
+reduction `L / nL → L / mL`. Only bijectivity at `n` is assumed; bijectivity
+at `m` follows from the commuting scalar factors. The two arrows below are
+`QuotientAddGroup.map` and `AddMonoidHom.restrict` on their usual carriers.
+No positivity hypothesis is needed: a zero product forces `V` to be trivial. -/
+theorem nsmulTorsionEquivQuotient_naturality (L : AddSubgroup V) (m d : ℕ)
+    (hmd : Function.Bijective (nsmulAddMonoidHom (α := V) (m * d))) :
+    let reduction : (L ⧸ (nsmulAddMonoidHom (α := L) (m * d)).range) →+
+        L ⧸ (nsmulAddMonoidHom (α := L) m).range :=
+      map _ _ (AddMonoidHom.id L) (by
+        simpa only [AddSubgroup.comap_id] using
+          AddMonoidHom.range_nsmul_mul_le (A := L) m d)
+    let torsionMap : (nsmulAddMonoidHom (α := V ⧸ L) (m * d)).ker →+
+        (nsmulAddMonoidHom (α := V ⧸ L) m).ker :=
+      AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker m d)
+    reduction.comp (nsmulTorsionEquivQuotient L (m * d) hmd).toAddMonoidHom =
+      (nsmulTorsionEquivQuotient L m
+        (AddMonoidHom.nsmul_bijective_of_mul m d hmd)).toAddMonoidHom.comp torsionMap := by
+  dsimp only
+  apply AddMonoidHom.ext
+  intro x
+  obtain ⟨v, hv⟩ := mk'_surjective L (x : V ⧸ L)
+  have hmem : (m * d) • v ∈ L := by
+    apply (eq_zero_iff _).mp
+    rw [mk_nsmul]
+    exact (congrArg (fun q : V ⧸ L => (m * d) • q) hv).trans x.property
+  have hx : x = ⟨(v : V ⧸ L), by
+      simpa using (eq_zero_iff ((m * d) • v)).mpr hmem⟩ := Subtype.ext hv.symm
+  subst x
+  have hdmem : m • (d • v) ∈ L := by
+    simpa only [mul_nsmul'] using hmem
+  have hrestrict : AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker m d)
+      ⟨(v : V ⧸ L), by simpa using (eq_zero_iff ((m * d) • v)).mpr hmem⟩ =
+      ⟨((d • v : V) : V ⧸ L), by
+        simpa using (eq_zero_iff (m • (d • v))).mpr hdmem⟩ :=
+    Subtype.ext (mk_nsmul L v d).symm
+  simp only [AddMonoidHom.comp_apply, AddEquiv.coe_toAddMonoidHom, hrestrict]
+  rw [nsmulTorsionEquivQuotient_apply_mk L (m * d) hmd v hmem,
+    nsmulTorsionEquivQuotient_apply_mk L m
+      (AddMonoidHom.nsmul_bijective_of_mul m d hmd) (d • v) hdmem, map_mk]
+  apply congrArg (fun l : L => (l : L ⧸ (nsmulAddMonoidHom (α := L) m).range))
+  apply Subtype.ext
+  exact mul_nsmul' v m d
 
 end QuotientAddGroup
