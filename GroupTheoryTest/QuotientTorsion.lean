@@ -21,7 +21,10 @@ assuming ambient bijectivity or assuming the torsion witness.
 The nonzero quarter-class maps by doubling to the nonzero half-class.
 The corresponding equivalence values are both computed as `[1]` using the
 representative API. The scalar-transition identity then identifies the
-reduction of the first value with the second.
+reduction of the first value with the second. Including that same half-class
+back into the four-torsion gives `[2]` modulo `4L`, as does doubling its value
+modulo `2L`. Nonvanishing of `[2]` modulo `4L` is proved from quotient membership
+and the nonintegrality of `1 / 2`, independently of either equivalence.
 
 The same rational model has a finitely generated rank-one integer subgroup
 and exactly two doubling-torsion classes. This count uses the original
@@ -112,7 +115,9 @@ private theorem one_torsion_boundary {V : Type*} [AddCommGroup V] (L : AddSubgro
 
 /-- Doubling takes the nonzero quarter-class in `ℚ / ℤ` to the nonzero half-class.
 Both equivalences send these classes to `[1]`, and reduction carries the first
-value to the second. -/
+value to the second. Including the same half-class into the four-torsion and
+doubling its lattice value both give `[2]` modulo `4ℤ`. That target class is
+nonzero by a quotient-membership argument independent of the equivalences. -/
 private theorem rational_quarter_to_half :
     let L := AddSubgroup.zmultiples (1 : ℚ)
     let reduction : (L ⧸ (nsmulAddMonoidHom (α := L) 4).range) →+
@@ -123,6 +128,19 @@ private theorem rational_quarter_to_half :
     let torsionMap : (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker →+
         (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker :=
       AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker 2 2)
+    let inclusion : (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker →+
+        (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker :=
+      AddSubgroup.inclusion (by
+        intro q hq
+        change 2 • q = 0 at hq
+        change (2 * 2) • q = 0
+        rw [mul_nsmul', hq, nsmul_zero])
+    let quotientDouble : (L ⧸ (nsmulAddMonoidHom (α := L) 2).range) →+
+        L ⧸ (nsmulAddMonoidHom (α := L) 4).range :=
+      QuotientAddGroup.map _ _ (nsmulAddMonoidHom (α := L) 2) (by
+        rintro _ ⟨l, rfl⟩
+        exact ⟨l, mul_nsmul' l 2 2⟩)
+    let two : L := ⟨2, AddSubgroup.mem_zmultiples_iff.mpr ⟨2, by norm_num⟩⟩
     ∃ (h4 : Function.Bijective (nsmulAddMonoidHom (α := ℚ) 4))
       (x : (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker),
       (x : ℚ ⧸ L) = ((1 / 4 : ℚ) : ℚ ⧸ L) ∧
@@ -138,9 +156,44 @@ private theorem rational_quarter_to_half :
           L ⧸ (nsmulAddMonoidHom (α := L) 2).range) ∧
       reduction (QuotientAddGroup.nsmulTorsionEquivQuotient L 4 h4 x) =
         QuotientAddGroup.nsmulTorsionEquivQuotient L 2
-          (AddMonoidHom.nsmul_bijective_of_mul 2 2 h4) (torsionMap x) := by
+          (AddMonoidHom.nsmul_bijective_of_mul 2 2 h4) (torsionMap x) ∧
+      (inclusion (torsionMap x) : ℚ ⧸ L) = ((1 / 2 : ℚ) : ℚ ⧸ L) ∧
+      (inclusion (torsionMap x) : ℚ ⧸ L) ≠ 0 ∧
+      QuotientAddGroup.nsmulTorsionEquivQuotient L 4 h4 (inclusion (torsionMap x)) =
+        (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) ∧
+      quotientDouble (QuotientAddGroup.nsmulTorsionEquivQuotient L 2
+          (AddMonoidHom.nsmul_bijective_of_mul 2 2 h4) (torsionMap x)) =
+        (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) ∧
+      QuotientAddGroup.nsmulTorsionEquivQuotient L 4 h4 (inclusion (torsionMap x)) =
+        quotientDouble (QuotientAddGroup.nsmulTorsionEquivQuotient L 2
+          (AddMonoidHom.nsmul_bijective_of_mul 2 2 h4) (torsionMap x)) ∧
+      (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) ≠ 0 := by
   let L := AddSubgroup.zmultiples (1 : ℚ)
+  let inclusion : (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker →+
+      (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker :=
+    AddSubgroup.inclusion (by
+      intro q hq
+      change 2 • q = 0 at hq
+      change (2 * 2) • q = 0
+      rw [mul_nsmul', hq, nsmul_zero])
+  let quotientDouble : (L ⧸ (nsmulAddMonoidHom (α := L) 2).range) →+
+      L ⧸ (nsmulAddMonoidHom (α := L) 4).range :=
+    QuotientAddGroup.map _ _ (nsmulAddMonoidHom (α := L) 2) (by
+      rintro _ ⟨l, rfl⟩
+      exact ⟨l, mul_nsmul' l 2 2⟩)
+  let two : L := ⟨2, AddSubgroup.mem_zmultiples_iff.mpr ⟨2, by norm_num⟩⟩
   obtain ⟨h2, hhalf, hhalf_ne, hhalf_image, _⟩ := rational_half_torsion
+  -- A putative fourth multiple equal to two would make the half integral.
+  have hfour_half : 4 • (1 / 2 : ℚ) = 2 := by norm_num [nsmul_eq_mul]
+  have htwo_ne : (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) ≠ 0 := by
+    intro hzero
+    obtain ⟨l, hl⟩ := (QuotientAddGroup.eq_zero_iff two).mp hzero
+    have hl' : 4 • (l : ℚ) = 2 := congrArg Subtype.val hl
+    have hlhalf : (l : ℚ) = 1 / 2 := by
+      apply mul_left_cancel₀ (by norm_num : (4 : ℚ) ≠ 0)
+      simpa only [nsmul_eq_mul, Nat.cast_ofNat] using hl'.trans hfour_half.symm
+    apply hhalf_ne
+    exact (QuotientAddGroup.eq_zero_iff (1 / 2 : ℚ)).mpr (hlhalf ▸ l.property)
   have h4 : Function.Bijective (nsmulAddMonoidHom (α := ℚ) 4) := by
     have hcomp : nsmulAddMonoidHom (α := ℚ) 4 =
         (nsmulAddMonoidHom 2).comp (nsmulAddMonoidHom 2) := by
@@ -181,7 +234,125 @@ private theorem rational_quarter_to_half :
           (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker) := Subtype.ext hdouble
     rw [hvalue]
     exact hhalf_image
-  refine ⟨h4, x, rfl, ?_, hdouble, ?_, himage4, himage2, ?_⟩
+  let y := AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker 2 2) x
+  have hinclusion_half : (inclusion y : ℚ ⧸ L) = ((1 / 2 : ℚ) : ℚ ⧸ L) :=
+    (AddSubgroup.coe_inclusion _ y).trans hdouble
+  have hinclusion_ne : (inclusion y : ℚ ⧸ L) ≠ 0 := by
+    simpa only [hinclusion_half] using hhalf_ne
+  have hhalfmem4 : 4 • (1 / 2 : ℚ) ∈ L := by
+    rw [hfour_half]
+    exact two.property
+  have hinclusion_value : QuotientAddGroup.nsmulTorsionEquivQuotient L 4 h4
+      (inclusion y) = (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) := by
+    have hvalue : inclusion y =
+        (⟨((1 / 2 : ℚ) : ℚ ⧸ L), by
+          change 4 • ((1 / 2 : ℚ) : ℚ ⧸ L) = 0
+          rw [← QuotientAddGroup.mk_nsmul]
+          exact (QuotientAddGroup.eq_zero_iff (4 • (1 / 2 : ℚ))).mpr hhalfmem4⟩ :
+          (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker) := Subtype.ext hinclusion_half
+    rw [hvalue]
+    have hforward :=
+      QuotientAddGroup.nsmulTorsionEquivQuotient_apply_mk L 4 h4 (1 / 2 : ℚ) hhalfmem4
+    have htwo_value : (⟨4 • (1 / 2 : ℚ), hhalfmem4⟩ : L) = two :=
+      Subtype.ext hfour_half
+    rw [htwo_value] at hforward
+    exact hforward
+  have hquotient_value : quotientDouble (QuotientAddGroup.nsmulTorsionEquivQuotient L 2
+      (AddMonoidHom.nsmul_bijective_of_mul 2 2 h4) y) =
+      (two : L ⧸ (nsmulAddMonoidHom (α := L) 4).range) := by
+    rw [himage2]
+    simp only [quotientDouble, QuotientAddGroup.map_mk]
+    apply congrArg (fun l : L => (l : L ⧸ (nsmulAddMonoidHom (α := L) 4).range))
+    apply Subtype.ext
+    change 2 • (1 : ℚ) = 2
+    norm_num [nsmul_eq_mul]
+  -- Use the ambient square with f₂ = μ₂, f₄ = μ₄, a = id and b = μ₂.
+  let h2' := AddMonoidHom.nsmul_bijective_of_mul 2 2 h4
+  let f2 := AddEquiv.ofBijective (nsmulAddMonoidHom (α := ℚ) 2) h2'
+  let f4 := AddEquiv.ofBijective (nsmulAddMonoidHom (α := ℚ) 4) h4
+  let hf2 : L.map f2.toAddMonoidHom ≤ L :=
+    AddSubgroup.map_le_iff_le_comap.mpr (by intro q hq; exact L.nsmul_mem hq 2)
+  let hf4 : L.map f4.toAddMonoidHom ≤ L :=
+    AddSubgroup.map_le_iff_le_comap.mpr (by intro q hq; exact L.nsmul_mem hq 4)
+  let c2 := AddEquiv.addSubgroupCongr
+    (congrArg AddMonoidHom.ker (QuotientAddGroup.map_nsmulAddMonoidHom L 2).symm)
+  let c4 := AddEquiv.addSubgroupCongr
+    (congrArg AddMonoidHom.ker (QuotientAddGroup.map_nsmulAddMonoidHom L 4).symm)
+  let e2 := QuotientAddGroup.quotientAddEquivOfEq
+    (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L 2)
+  let e4 := QuotientAddGroup.quotientAddEquivOfEq
+    (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L 4)
+  have hquotient_id (q : ℚ ⧸ L) :
+      QuotientAddGroup.map L L (AddMonoidHom.id ℚ)
+        (by intro q hq; exact hq) q = q :=
+    QuotientAddGroup.map_id_apply L (by intro q hq; exact hq) q
+  let kernelMap :
+      (QuotientAddGroup.map L L f2.toAddMonoidHom
+        (AddSubgroup.map_le_iff_le_comap.mp hf2)).ker →+
+      (QuotientAddGroup.map L L f4.toAddMonoidHom
+        (AddSubgroup.map_le_iff_le_comap.mp hf4)).ker :=
+    AddMonoidHom.restrict (f := QuotientAddGroup.map L L (AddMonoidHom.id ℚ)
+      (by intro q hq; exact hq)) (by
+        have hf2' : f2.toAddMonoidHom = nsmulAddMonoidHom (α := ℚ) 2 := rfl
+        have hf4' : f4.toAddMonoidHom = nsmulAddMonoidHom (α := ℚ) 4 := rfl
+        intro q hq
+        have hq2 : q ∈ (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker := by
+          simpa only [hf2', QuotientAddGroup.map_nsmulAddMonoidHom,
+            SetLike.mem_coe, AddSubgroup.mem_toAddSubmonoid] using hq
+        have hq4 : q ∈ (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker :=
+          (inclusion ⟨q, hq2⟩).property
+        have hq4' : QuotientAddGroup.map L L (AddMonoidHom.id ℚ)
+            (by intro q hq; exact hq) q ∈
+              (nsmulAddMonoidHom (α := ℚ ⧸ L) 4).ker :=
+          (hquotient_id q).symm ▸ hq4
+        simpa only [hf4', QuotientAddGroup.map_nsmulAddMonoidHom,
+          SetLike.mem_coe, AddSubgroup.mem_toAddSubmonoid] using hq4')
+  have hcomm : ∀ q : ℚ, f4 ((AddMonoidHom.id ℚ) q) = nsmulAddMonoidHom 2 (f2 q) :=
+    fun q => mul_nsmul' q 2 2
+  let subgroupMap : L →+ L :=
+    AddMonoidHom.restrict (f := nsmulAddMonoidHom (α := ℚ) 2)
+      (by intro q hq; exact L.nsmul_mem hq 2)
+  let latticeMap := QuotientAddGroup.map ((L.map f2.toAddMonoidHom).addSubgroupOf L)
+      ((L.map f4.toAddMonoidHom).addSubgroupOf L) subgroupMap (by
+        intro l hl
+        change (l : ℚ) ∈ L.map f2.toAddMonoidHom at hl
+        change nsmulAddMonoidHom 2 (l : ℚ) ∈ L.map f4.toAddMonoidHom
+        obtain ⟨q, hq, hql⟩ := AddSubgroup.mem_map.mp hl
+        exact AddSubgroup.mem_map.mpr
+          ⟨q, hq, (hcomm q).trans (congrArg (nsmulAddMonoidHom 2) hql)⟩)
+  have square : latticeMap.comp
+        (QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f2 hf2).toAddMonoidHom =
+      (QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f4 hf4).toAddMonoidHom.comp
+        kernelMap :=
+    QuotientAddGroup.kerMapEquivQuotientOfEquiv_naturality L L f2 hf2 L L f4 hf4
+      (AddMonoidHom.id ℚ) (nsmulAddMonoidHom 2)
+      (by intro q hq; exact hq) (by intro q hq; exact L.nsmul_mem hq 2) hcomm
+  have hquot (z : L ⧸ (L.map f2.toAddMonoidHom).addSubgroupOf L) :
+      quotientDouble (e2 z) = e4 (latticeMap z) := by
+    obtain ⟨l, rfl⟩ := QuotientAddGroup.mk'_surjective _ z
+    simp only [quotientDouble, e2, e4, latticeMap] <;> rfl
+  have hkernel : kernelMap (c2 y) = c4 (inclusion y) := by
+    apply Subtype.ext
+    change QuotientAddGroup.map L L (AddMonoidHom.id ℚ)
+      (by intro q hq; exact hq) (c2 y : ℚ ⧸ L) =
+        (c4 (inclusion y) : ℚ ⧸ L)
+    exact (hquotient_id (c2 y : ℚ ⧸ L)).trans (by
+      simpa only [c2, c4, AddEquiv.addSubgroupCongr_apply] using
+        (AddSubgroup.coe_inclusion _ y).symm)
+  have hpoint : latticeMap
+        (QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f2 hf2 (c2 y)) =
+      QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f4 hf4 (kernelMap (c2 y)) :=
+    DFunLike.congr_fun square (c2 y)
+  have hcommute : QuotientAddGroup.nsmulTorsionEquivQuotient L 4 h4 (inclusion y) =
+      quotientDouble (QuotientAddGroup.nsmulTorsionEquivQuotient L 2 h2' y) := by
+    rw [QuotientAddGroup.nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv,
+      QuotientAddGroup.nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv]
+    change e4 (QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f4 hf4 (c4 (inclusion y))) =
+      quotientDouble (e2 (QuotientAddGroup.kerMapEquivQuotientOfEquiv L L f2 hf2 (c2 y)))
+    rw [hquot, hpoint, hkernel]
+  refine ⟨h4, x, rfl, ?_, hdouble, ?_, himage4, himage2, ?_, hinclusion_half,
+    hinclusion_ne, hinclusion_value, hquotient_value,
+    hcommute, htwo_ne⟩
   · intro hzero
     apply hhalf_ne
     rw [← hdouble, hzero, nsmul_zero]

@@ -168,6 +168,27 @@ end AddMonoidHom
 
 namespace QuotientAddGroup
 
+variable {V : Type u} [AddCommGroup V] (L : AddSubgroup V) (n : ℕ)
+
+/-- The quotient-torsion equivalence is the quotient-map kernel equivalence for
+multiplication by `n`, after identifying the induced map and the subgroup of multiples. -/
+theorem nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv
+    (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
+    nsmulTorsionEquivQuotient L n hn =
+      (AddEquiv.addSubgroupCongr
+        (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L n).symm)).trans
+        ((kerMapEquivQuotientOfEquiv L L
+          (AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) n) hn)
+          (AddSubgroup.map_le_iff_le_comap.mpr
+            (by intro x hx; exact L.nsmul_mem hx n))).trans
+          (quotientAddEquivOfEq
+            (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L n))) := by
+  rfl
+
+end QuotientAddGroup
+
+namespace QuotientAddGroup
+
 variable {V : Type u} [AddCommGroup V]
 
 /-- The quotient-torsion equivalences commute with scalar-divisibility transitions.
@@ -189,51 +210,77 @@ theorem nsmulTorsionEquivQuotient_naturality (L : AddSubgroup V) (m d : ℕ)
     reduction.comp (nsmulTorsionEquivQuotient L (m * d) hmd).toAddMonoidHom =
       (nsmulTorsionEquivQuotient L m
         (AddMonoidHom.nsmul_bijective_of_mul m d hmd)).toAddMonoidHom.comp torsionMap := by
-  dsimp only
+  let hm := AddMonoidHom.nsmul_bijective_of_mul m d hmd
+  let f := AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) (m * d)) hmd
+  let f' := AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) m) hm
+  let h : L.map f.toAddMonoidHom ≤ L :=
+    AddSubgroup.map_le_iff_le_comap.mpr (by intro v hv; exact L.nsmul_mem hv (m * d))
+  let h' : L.map f'.toAddMonoidHom ≤ L :=
+    AddSubgroup.map_le_iff_le_comap.mpr (by intro v hv; exact L.nsmul_mem hv m)
+  let c := AddEquiv.addSubgroupCongr
+    (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L (m * d)).symm)
+  let c' := AddEquiv.addSubgroupCongr
+    (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L m).symm)
+  let e := quotientAddEquivOfEq
+    (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L (m * d))
+  let e' := quotientAddEquivOfEq
+    (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L m)
+  let reduction : (L ⧸ (nsmulAddMonoidHom (α := L) (m * d)).range) →+
+      L ⧸ (nsmulAddMonoidHom (α := L) m).range :=
+    map _ _ (AddMonoidHom.id L) (by
+      simpa only [AddSubgroup.comap_id] using
+        AddMonoidHom.range_nsmul_mul_le (A := L) m d)
+  let torsionMap := AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker (A := V ⧸ L) m d)
+  let kernelMap : (map L L f.toAddMonoidHom (AddSubgroup.map_le_iff_le_comap.mp h)).ker →+
+      (map L L f'.toAddMonoidHom (AddSubgroup.map_le_iff_le_comap.mp h')).ker :=
+    AddMonoidHom.restrict (f := map L L (nsmulAddMonoidHom (α := V) d)
+      (by intro v hv; exact L.nsmul_mem hv d)) (by
+        have hf : f.toAddMonoidHom =
+            nsmulAddMonoidHom (α := V) (m * d) := rfl
+        have hf' : f'.toAddMonoidHom =
+            nsmulAddMonoidHom (α := V) m := rfl
+        simpa only [hf, hf', map_nsmulAddMonoidHom,
+          AddSubgroup.coe_toAddSubmonoid] using
+          AddMonoidHom.nsmul_mapsTo_ker (A := V ⧸ L) m d)
+  have hcomm : ∀ v : V, f' (nsmulAddMonoidHom d v) = (AddMonoidHom.id V) (f v) :=
+    fun v => (mul_nsmul' v m d).symm
+  let subgroupMap : L →+ L :=
+    AddMonoidHom.restrict (f := AddMonoidHom.id V) (by intro v hv; exact hv)
+  let latticeMap := map ((L.map f.toAddMonoidHom).addSubgroupOf L)
+      ((L.map f'.toAddMonoidHom).addSubgroupOf L) subgroupMap (by
+        intro l hl
+        change (l : V) ∈ L.map f.toAddMonoidHom at hl
+        change (AddMonoidHom.id V) (l : V) ∈ L.map f'.toAddMonoidHom
+        obtain ⟨v, hv, hvl⟩ := AddSubgroup.mem_map.mp hl
+        exact AddSubgroup.mem_map.mpr
+          ⟨d • v, L.nsmul_mem hv d, (hcomm v).trans (congrArg (AddMonoidHom.id V) hvl)⟩)
+  have square : latticeMap.comp (kerMapEquivQuotientOfEquiv L L f h).toAddMonoidHom =
+      (kerMapEquivQuotientOfEquiv L L f' h').toAddMonoidHom.comp kernelMap :=
+    kerMapEquivQuotientOfEquiv_naturality L L f h L L f' h'
+      (nsmulAddMonoidHom d) (AddMonoidHom.id V)
+      (by intro v hv; exact L.nsmul_mem hv d) (by intro v hv; exact hv) hcomm
+  have hquot (z : L ⧸ (L.map f.toAddMonoidHom).addSubgroupOf L) :
+      reduction (e z) = e' (latticeMap z) := by
+    obtain ⟨l, rfl⟩ := mk'_surjective _ z
+    simp only [reduction, e, e', latticeMap] <;> rfl
+  change reduction.comp (nsmulTorsionEquivQuotient L (m * d) hmd).toAddMonoidHom =
+    (nsmulTorsionEquivQuotient L m hm).toAddMonoidHom.comp torsionMap
   apply AddMonoidHom.ext
   intro x
-  obtain ⟨v, hv⟩ := mk'_surjective L (x : V ⧸ L)
-  have hmem : (m * d) • v ∈ L := by
-    apply (eq_zero_iff _).mp
-    rw [mk_nsmul]
-    exact (congrArg (fun q : V ⧸ L => (m * d) • q) hv).trans x.property
-  have hx : x = ⟨(v : V ⧸ L), by
-      simpa using (eq_zero_iff ((m * d) • v)).mpr hmem⟩ := Subtype.ext hv.symm
-  subst x
-  have hdmem : m • (d • v) ∈ L := by
-    simpa only [mul_nsmul'] using hmem
-  have hrestrict : AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker m d)
-      ⟨(v : V ⧸ L), by simpa using (eq_zero_iff ((m * d) • v)).mpr hmem⟩ =
-      ⟨((d • v : V) : V ⧸ L), by
-        simpa using (eq_zero_iff (m • (d • v))).mpr hdmem⟩ :=
-    Subtype.ext (mk_nsmul L v d).symm
-  simp only [AddMonoidHom.comp_apply, AddEquiv.coe_toAddMonoidHom, hrestrict]
-  rw [nsmulTorsionEquivQuotient_apply_mk L (m * d) hmd v hmem,
-    nsmulTorsionEquivQuotient_apply_mk L m
-      (AddMonoidHom.nsmul_bijective_of_mul m d hmd) (d • v) hdmem, map_mk]
-  apply congrArg (fun l : L => (l : L ⧸ (nsmulAddMonoidHom (α := L) m).range))
-  apply Subtype.ext
-  exact mul_nsmul' v m d
-
-end QuotientAddGroup
-
-namespace QuotientAddGroup
-
-variable {V : Type u} [AddCommGroup V] (L : AddSubgroup V) (n : ℕ)
-
-/-- The quotient-torsion equivalence is the quotient-map kernel equivalence for
-multiplication by `n`, after identifying the induced map and the subgroup of multiples. -/
-theorem nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv
-    (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
-    nsmulTorsionEquivQuotient L n hn =
-      (AddEquiv.addSubgroupCongr
-        (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L n).symm)).trans
-        ((kerMapEquivQuotientOfEquiv L L
-          (AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) n) hn)
-          (AddSubgroup.map_le_iff_le_comap.mpr
-            (by intro x hx; exact L.nsmul_mem hx n))).trans
-          (quotientAddEquivOfEq
-            (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L n))) := by
-  rfl
+  have hkernel : kernelMap (c x) = c' (torsionMap x) := by
+    apply Subtype.ext
+    change map L L (nsmulAddMonoidHom (α := V) d)
+      (by intro v hv; exact L.nsmul_mem hv d) (c x : V ⧸ L) =
+        (c' (torsionMap x) : V ⧸ L)
+    simp only [c, c', AddEquiv.addSubgroupCongr_apply, map_nsmulAddMonoidHom] <;> rfl
+  have hpoint : latticeMap (kerMapEquivQuotientOfEquiv L L f h (c x)) =
+      kerMapEquivQuotientOfEquiv L L f' h' (kernelMap (c x)) :=
+    DFunLike.congr_fun square (c x)
+  simp only [AddMonoidHom.comp_apply, AddEquiv.coe_toAddMonoidHom]
+  rw [nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv,
+    nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv]
+  change reduction (e (kerMapEquivQuotientOfEquiv L L f h (c x))) =
+    e' (kerMapEquivQuotientOfEquiv L L f' h' (c' (torsionMap x)))
+  rw [hquot, hpoint, hkernel]
 
 end QuotientAddGroup

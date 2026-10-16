@@ -103,4 +103,73 @@ theorem kerMapEquivQuotientOfEquiv_apply_mk (g : G) (hg : f g ∈ M) :
   apply Subtype.ext
   simp only [MulEquiv.symm_apply_apply, kerMapEquivQuotientOfEquiv_symm_apply_mk]
 
+universe u' v'
+
+/-- The kernel-quotient equivalences commute with a commuting square of ambient group
+homomorphisms preserving the normal subgroups. The kernel map is the restriction of
+the quotient map induced by `a`, and the map on the quotients of `M` and `M'` is
+induced by the restriction of `b`. -/
+@[to_additive QuotientAddGroup.kerMapEquivQuotientOfEquiv_naturality
+  /-- The kernel-quotient equivalences commute with a commuting square of ambient additive
+  group homomorphisms preserving the normal subgroups. The kernel map is the restriction of
+  the quotient map induced by `a`, and the map on the quotients of `M` and `M'` is
+  induced by the restriction of `b`. -/]
+theorem kerMapEquivQuotientOfEquiv_naturality {G' : Type u'} {H' : Type v'}
+    [Group G'] [Group H'] (N' : Subgroup G') [N'.Normal]
+    (M' : Subgroup H') [M'.Normal] (f' : G' ≃* H')
+    (h' : N'.map f'.toMonoidHom ≤ M') (a : G →* G') (b : H →* H')
+    (ha : N ≤ N'.comap a) (hb : M ≤ M'.comap b)
+    (hcomm : ∀ g : G, f' (a g) = b (f g)) :
+    let qA : G ⧸ N →* G' ⧸ N' := map N N' a ha
+    let kernelMap :
+        (map N M f.toMonoidHom (Subgroup.map_le_iff_le_comap.mp h)).ker →*
+          (map N' M' f'.toMonoidHom (Subgroup.map_le_iff_le_comap.mp h')).ker :=
+      MonoidHom.restrict (f := qA) (by
+        intro x hx
+        obtain ⟨g, rfl⟩ := mk'_surjective N x
+        change ((f g : H) : H ⧸ M) = 1 at hx
+        change ((f' (a g) : H') : H' ⧸ M') = 1
+        apply (eq_one_iff (f' (a g))).mpr
+        rw [hcomm]
+        exact hb ((eq_one_iff (f g)).mp hx))
+    let subgroupMap : M →* M' :=
+      MonoidHom.restrict (f := b) (by intro y hy; exact hb hy)
+    let latticeMap : M ⧸ (N.map f.toMonoidHom).subgroupOf M →*
+        M' ⧸ (N'.map f'.toMonoidHom).subgroupOf M' :=
+      map _ _ subgroupMap (by
+        intro y hy
+        change b (y : H) ∈ N'.map f'.toMonoidHom
+        change (y : H) ∈ N.map f.toMonoidHom at hy
+        obtain ⟨n, hn, hny⟩ := Subgroup.mem_map.mp hy
+        exact Subgroup.mem_map.mpr
+          ⟨a n, ha hn, (hcomm n).trans (congrArg b hny)⟩)
+    latticeMap.comp (kerMapEquivQuotientOfEquiv N M f h).toMonoidHom =
+      (kerMapEquivQuotientOfEquiv N' M' f' h').toMonoidHom.comp kernelMap := by
+  dsimp only
+  apply MonoidHom.ext
+  rintro ⟨x, hx⟩
+  obtain ⟨g, rfl⟩ := mk'_surjective N x
+  have hg : f g ∈ M := by
+    apply (eq_one_iff (f g)).mp
+    exact hx
+  have hg' : f' (a g) ∈ M' := by
+    rw [hcomm]
+    exact hb hg
+  simp only [MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom]
+  have hrep :
+      kerMapEquivQuotientOfEquiv N M f h ⟨(mk' N) g, hx⟩ =
+        ((⟨f g, hg⟩ : M) : M ⧸ (N.map f.toMonoidHom).subgroupOf M) :=
+    kerMapEquivQuotientOfEquiv_apply_mk N M f h g hg
+  rw [hrep, map_mk]
+  change
+    ((⟨b (f g), hb hg⟩ : M') : M' ⧸ (N'.map f'.toMonoidHom).subgroupOf M') =
+      kerMapEquivQuotientOfEquiv N' M' f' h'
+        ⟨((a g : G') : G' ⧸ N'), by
+          change ((f' (a g) : H') : H' ⧸ M') = 1
+          exact (eq_one_iff (f' (a g))).mpr hg'⟩
+  rw [kerMapEquivQuotientOfEquiv_apply_mk N' M' f' h' (a g) hg']
+  apply congrArg (fun m : M' => (m : M' ⧸ (N'.map f'.toMonoidHom).subgroupOf M'))
+  apply Subtype.ext
+  exact (hcomm g).symm
+
 end QuotientGroup

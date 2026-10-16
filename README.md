@@ -149,7 +149,12 @@ and a group equivalence `f : G ≃* H` with `f(N) ≤ M`,
 The groups may be noncommutative and lie in independent universes; image normality
 is derived from the ambient equivalence. A kernel class `[g]` maps to `[f g]`,
 and the inverse sends `[m]` to `[f.symm m]`. The additive equivalence and both
-representative formulas are generated in `QuotientAddGroup`. See the
+representative formulas are generated in `QuotientAddGroup`.
+For a second such quotient map, ambient homomorphisms `a : G →* G'` and
+`b : H →* H'` preserving the respective normal subgroups and satisfying
+`f' ∘ a = b ∘ f` induce a commuting square of these equivalences.
+`QuotientGroup.kerMapEquivQuotientOfEquiv_naturality` states this compatibility;
+its additive counterpart is generated in `QuotientAddGroup`. See the
 [quotient-kernel API](GroupTheory/QuotientGroup/Kernel.lean) and the
 [independent rational-plane diagonal model](GroupTheoryTest/QuotientKernel.lean).
 
@@ -167,6 +172,7 @@ and the [rational half- and quarter-classes and unit-scalar boundaries](GroupThe
 The scalar-transition statement identifies multiplication by `d` from
 `(m * d)`-torsion to `m`-torsion with reduction
 `L / (m * d)L → L / mL`, assuming only ambient bijectivity at `m * d`.
+This is a specialization of the quotient-kernel naturality square.
 
 **Scalar indices on FG abelian groups.** For `[AddCommGroup A]` and
 `[AddGroup.FG A]`, the [scalar-index module](GroupTheory/IndexNSmul.lean) states
