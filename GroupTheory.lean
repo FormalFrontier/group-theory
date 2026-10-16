@@ -7,6 +7,8 @@ module
 
 public import GroupTheory.CyclicNorm
 public import GroupTheory.FGScalarSurjectivity
+public import GroupTheory.FreeGroup.Rank
+public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.IndexNSmul
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
@@ -27,3 +29,5 @@ public import GroupTheory.Topology.CharacterSubgroups
 public import GroupTheory.Topology.RationalCircle
 public import GroupTheory.Topology.TypeTags
 public import GroupTheory.Topology.RationalCircleCharacter
+public import GroupTheory.Subgroup.IndexTwo
+public import GroupTheory.FreeGroup.IndexTwo

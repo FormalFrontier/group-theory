@@ -11,12 +11,40 @@ the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
-finitely generated abelian groups, and torsion in additive quotients.
+finitely generated abelian groups, torsion in additive quotients, and automorphisms
+of transitive group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
 
 ## Headline results
+
+**Automorphisms of transitive actions.** For a group `G` acting transitively
+on `X` and a chosen point `x`, `MulAction.normalizerQuotientEquivAut`
+identifies `N_G(G_x) / G_x` with the canonical
+`CategoryTheory.Aut (Action.ofMulAction G X)`. The group and set universes
+are independent; there is no finiteness, normality, faithfulness or freeness
+assumption. The denominator is the stabilizer as a subgroup of its normalizer.
+`Action.normalizerToAut` constructs inverse right translation on `G / H` for
+any subgroup `H`, with kernel `H` inside `N_G(H)` and same-object agreement
+with Mathlib's finite-normal `Action.FintypeCat.toEndHom` after `Aut.toEnd`
+and `FintypeCat.incl.mapAction`/`mapEnd`.
+Automorphisms multiply by ordinary function composition, so `[n]` sends
+`g • x` to `(g * n⁻¹) • x`. May's displayed `g * n` formula reverses multiplication
+under this convention; the abstract isomorphism remains valid with inverse
+parameter. See the [action API](GroupTheory/GroupAction/Automorphism.lean)
+and its [noncommutative and nonnormal clients](GroupTheoryTest/GroupAction/Automorphism.lean).
+
+**Finite free bases and finite-index subgroups.** The
+[free-group rank module](GroupTheory/FreeGroup/Rank.lean) proves that every free
+basis of a finitely generated group has a finite indexing type of cardinality
+`Group.rank G`. For every finite-index subgroup `H` of a finitely generated free
+group, it proves `Group.rank H + H.index = Group.rank G * H.index + 1`, including
+ambient rank zero and without normality or a separate finite-generation
+hypothesis on `H`. Mathlib supplies subgroup freeness and finite generation.
+The [parity-kernel client](GroupTheoryTest/FreeGroup/Rank.lean) constructs an
+index-two subgroup of `FreeGroup (Fin 2)`, computes its rank as three and uses
+the existing basis-reindexing API to give a basis indexed by `Fin 3`.
 
 **Fixed-action continuity.**
 
@@ -153,6 +181,26 @@ and the [independent rational half-class count and boundary models](GroupTheoryT
 characters, discrete-target and finite-coordinate factorizations, identity
 components and compatible sections.
 
+### Index-two subgroups and explicit generators
+
+For an arbitrary group, index-two subgroups correspond to nontrivial homomorphisms
+into `Multiplicative (ZMod 2)`. The API includes kernel uniqueness, characteristic
+values, and pullback along surjective homomorphisms. Normality follows from index
+two and is not an additional hypothesis.
+
+For a free group basis `β` indexed by `Fin 2`, write `a = β 0` and `b = β 1`.
+The three nontrivial generator-value patterns have the following kernel generators:
+
+| Values on `a,b` | Explicit generators |
+| --- | --- |
+| `10` | `a²`, `b`, `a * b * a⁻¹` |
+| `01` | `b²`, `a`, `b * a * b⁻¹` |
+| `11` | `a²`, `b * a⁻¹`, `a * b` |
+
+The three kernels are distinct and exhaust the index-two subgroups. The word
+spanning formulas themselves apply to any two-generated group with an index-two
+subgroup; they assert generation, not freeness of the displayed triples.
+
 ## Using the library
 
 Add the library to your `lakefile.toml`:
@@ -218,6 +266,9 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
+| Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
+| Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
 | Fixed-action continuity and subgroup quotients | [`ConstMulAction`](GroupTheory/Topology/Algebra/ConstMulAction.lean), [`Quotient`](GroupTheory/Topology/Algebra/Group/Quotient.lean) |
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |
@@ -230,6 +281,22 @@ claim is implied by this guidance.
 
 ## References
 
+- J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, §4,
+  first lemma, p. 24, for the transitive-action normalizer quotient.
+  The parameterization uses inverse right translation for ordinary composition.
+  Mathlib's bundled action automorphisms, right normalizer action on cosets,
+  coset-to-orbit map and finite-normal endomorphism construction provide the
+  existing interfaces; no replacement equivariant-permutation structure is used.
+
+- J. P. May, *A Concise Course in Algebraic Topology*, Chapter 4, §5,
+  first theorem, printed page 37, for the finite-index free-group rank formula.
+  The free-group modules reuse Mathlib's free bases and Nielsen–Schreier theorem,
+  formalized by David Wärn, Eric Wieser and Joachim Breitner, and its group rank
+  and Schreier finite-generation API, formalized by Thomas Browning.
+- J. P. May, *A Concise Course in Algebraic Topology*, Chapter 4, Problem 1,
+  p. 38, for the two-generator free-group application. The character construction
+  uses Mathlib's quotient-group and prime-cardinality equivalences; the explicit
+  spanning argument uses its Schreier generators for a right transversal.
 - J. S. Milne, *Abelian Varieties*, version 2.0 (2008), I.10, Remark 10.7,
   for the complex-torus torsion application. The quotient-torsion equivalence
   specializes Mathlib's Snake lemma construction and representative equation,
