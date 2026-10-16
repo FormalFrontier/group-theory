@@ -4,9 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import GroupTheory.QuotientGroup.Kernel
 
 /-!
 # Torsion in additive quotients
@@ -30,21 +28,29 @@ intertwines multiplication by `d` on torsion with reduction `L / nL → L / mL`.
 It uses the quotient map and the restriction of the scalar map to kernels.
 Bijectivity at `n` already implies bijectivity at `m`.
 
-The abstract provider is Mathlib's
-`CategoryTheory.ShortComplex.SnakeInput.δIso`, applied to multiplication by `n`
-on the short exact sequence `L → V → V / L` in `ModuleCat ℤ`. Every additive
-commutative group has its canonical integer-module structure; this introduces
-no additional hypothesis on `V` or `L`. Bijectivity makes the middle vertical
-kernel and cokernel zero. `CategoryTheory.ShortComplex.SnakeInput.δ_eq` fixes
-the positive representative formula `[x] ↦ [n • x]`.
+The construction specializes `QuotientAddGroup.kerMapEquivQuotientOfEquiv`.
+Its underlying homomorphism `ψ : L →+ V ⧸ L` sends `l` to the quotient class
+of its unique `n`-division in `V`. Mathlib's first isomorphism theorem identifies
+`L / ker ψ` with `range ψ`; the kernel is `nL`, and the range is the `n`-torsion
+of `V / L`. Inverting this comparison gives the positive representative formula
+`[x] ↦ [n • x]`. The induced quotient map and the subgroup of multiples are
+identified with the usual scalar homomorphism and its range.
+
+The snake lemma applied to multiplication by `n` on `L → V → V / L` gives
+another description: bijectivity makes the middle vertical kernel and cokernel
+zero, so the connecting morphism is invertible. The direct first-isomorphism
+construction needs no integer-module or categorical comparison objects.
 
 ## References
 
 * J. S. Milne, *Abelian Varieties*, version 2.0 (2008), I.10, Remark 10.7,
   p. 45, for the complex-torus application.
+* Mathlib's `QuotientAddGroup.quotientKerEquivRange` for the first isomorphism
+  theorem, specialized by `QuotientAddGroup.kerMapEquivQuotientOfEquiv` with
+  the canonical kernel/range identifications.
 * Joël Riou, Mathlib's `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean`,
-  for the connecting morphism, its characteristic equation, and its
-  invertibility when the middle vertical kernel and cokernel vanish.
+  for the snake-lemma formalization approach used in the original construction,
+  its connecting morphism and positive-sign characteristic equation.
 -/
 
 @[expose] public section
@@ -54,94 +60,19 @@ universe u
 namespace QuotientAddGroup
 
 variable {V : Type u} [AddCommGroup V] (L : AddSubgroup V) (n : ℕ)
+
+/-- The quotient map induced by multiplication by `n` is multiplication by `n`
+on the quotient. -/
+theorem map_nsmulAddMonoidHom :
+    map L L (nsmulAddMonoidHom (α := V) n)
+      (by intro x hx; exact L.nsmul_mem hx n) =
+        nsmulAddMonoidHom (α := V ⧸ L) n := by
+  apply addMonoidHom_ext
+  ext x
+  simpa only [AddMonoidHom.comp_apply, mk'_apply, map_mk, nsmulAddMonoidHom_apply] using
+    mk_nsmul L x n
+
 variable (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n))
-
-open CategoryTheory CategoryTheory.Limits
-
-/-- The inclusion/projection row, using the canonical integer modules. -/
-private def quotientRow : ShortComplex (ModuleCat.{u} ℤ) :=
-  ShortComplex.mk (ModuleCat.ofHom L.subtype.toIntLinearMap)
-    (ModuleCat.ofHom (mk' L).toIntLinearMap) (by ext x; simp)
-
-private lemma quotientRow_shortExact : (quotientRow L).ShortExact := by
-  refine ModuleCat.shortComplex_shortExact _ ?_ Subtype.val_injective (mk'_surjective L)
-  exact LinearMap.exact_subtype_mkQ L.toIntSubmodule
-
-/-- Multiplication by `n` on the inclusion/projection row. -/
-private def nsmulRowMap : quotientRow L ⟶ quotientRow L where
-  τ₁ := ModuleCat.ofHom (nsmulAddMonoidHom (α := L) n).toIntLinearMap
-  τ₂ := ModuleCat.ofHom (nsmulAddMonoidHom (α := V) n).toIntLinearMap
-  τ₃ := ModuleCat.ofHom (nsmulAddMonoidHom (α := V ⧸ L) n).toIntLinearMap
-  comm₁₂ := by ext x; rfl
-  comm₂₃ := by
-    ext x
-    exact map_nsmul (mk' L) n x
-
-/-- The snake diagram with categorical vertical kernels and cokernels. -/
-private noncomputable def nsmulSnake : ShortComplex.SnakeInput (ModuleCat.{u} ℤ) where
-  L₀ := kernel (nsmulRowMap L n)
-  L₁ := quotientRow L
-  L₂ := quotientRow L
-  L₃ := cokernel (nsmulRowMap L n)
-  v₀₁ := kernel.ι (nsmulRowMap L n)
-  v₁₂ := nsmulRowMap L n
-  v₂₃ := cokernel.π (nsmulRowMap L n)
-  h₀ := kernelIsKernel _
-  h₃ := cokernelIsCokernel _
-  L₁_exact := (quotientRow_shortExact L).exact
-  epi_L₁_g := (quotientRow_shortExact L).epi_g
-  L₂_exact := (quotientRow_shortExact L).exact
-  mono_L₂_f := (quotientRow_shortExact L).mono_f
-
-private lemma nsmulSnake_kernel_isZero
-    (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
-    IsZero (nsmulSnake L n).L₀.X₂ := by
-  have : Mono (nsmulSnake L n).v₁₂.τ₂ := (ModuleCat.mono_iff_injective _).mpr hn.1
-  exact KernelFork.IsLimit.isZero_of_mono (nsmulSnake L n).h₀τ₂
-
-private lemma nsmulSnake_cokernel_isZero
-    (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
-    IsZero (nsmulSnake L n).L₃.X₂ := by
-  have : Epi (nsmulSnake L n).v₁₂.τ₂ := (ModuleCat.epi_iff_surjective _).mpr hn.2
-  exact CokernelCofork.IsColimit.isZero_of_epi (nsmulSnake L n).h₃τ₂
-
-/-- The comparison with the `n`-torsion subgroup. -/
-private noncomputable def nsmulKernelIso :
-    (nsmulSnake L n).L₀.X₃ ≅
-      ModuleCat.of ℤ (nsmulAddMonoidHom (α := V ⧸ L) n).ker :=
-  PreservesKernel.iso ShortComplex.π₃ (nsmulRowMap L n) ≪≫
-    ModuleCat.kernelIsoKer (nsmulRowMap L n).τ₃
-
-/-- The comparison with the quotient of the subgroup by its `n`-fold multiples. -/
-private noncomputable def nsmulCokernelIso :
-    (nsmulSnake L n).L₃.X₁ ≅
-      ModuleCat.of ℤ (L ⧸ (nsmulAddMonoidHom (α := L) n).range) :=
-  PreservesCokernel.iso ShortComplex.π₁ (nsmulRowMap L n) ≪≫
-    ModuleCat.cokernelIsoRangeQuotient (nsmulRowMap L n).τ₁
-
--- The comparison isos involve chosen limits; their canonical instances must unfold here.
-set_option backward.isDefEq.respectTransparency false in
-private lemma nsmulKernelIso_inv_ι :
-    (nsmulKernelIso L n).inv ≫ (nsmulSnake L n).v₀₁.τ₃ =
-      ModuleCat.ofHom (nsmulAddMonoidHom (α := V ⧸ L) n).ker.subtype.toIntLinearMap := by
-  simp only [nsmulKernelIso, Iso.trans_inv, Category.assoc]
-  change (ModuleCat.kernelIsoKer (nsmulRowMap L n).τ₃).inv ≫
-    (PreservesKernel.iso ShortComplex.π₃ (nsmulRowMap L n)).inv ≫
-      ShortComplex.π₃.map (kernel.ι (nsmulRowMap L n)) = _
-  rw [PreservesKernel.iso_inv_ι]
-  exact ModuleCat.kernelIsoKer_inv_kernel_ι (nsmulRowMap L n).τ₃
-
--- Likewise for the chosen colimits in the cokernel comparison.
-set_option backward.isDefEq.respectTransparency false in
-private lemma nsmulCokernelIso_π_hom :
-    (nsmulSnake L n).v₂₃.τ₁ ≫ (nsmulCokernelIso L n).hom =
-      ModuleCat.ofHom (mk' (nsmulAddMonoidHom (α := L) n).range).toIntLinearMap := by
-  simp only [nsmulCokernelIso, Iso.trans_hom, ← Category.assoc]
-  change (ShortComplex.π₁.map (cokernel.π (nsmulRowMap L n)) ≫
-    (PreservesCokernel.iso ShortComplex.π₁ (nsmulRowMap L n)).hom) ≫
-      (ModuleCat.cokernelIsoRangeQuotient (nsmulRowMap L n).τ₁).hom = _
-  rw [PreservesCokernel.π_iso_hom]
-  exact ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom (nsmulRowMap L n).τ₁
 
 /-- The `n`-torsion of `V / L` is canonically `L / nL` when multiplication by
 `n` is bijective on `V`. On representatives the equivalence sends `[x]`
@@ -152,43 +83,33 @@ in Milne, *Abelian Varieties*, I.10, Remark 10.7. -/
     (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
     (nsmulAddMonoidHom (α := V ⧸ L) n).ker ≃+
       L ⧸ (nsmulAddMonoidHom (α := L) n).range := by
-  exact ((nsmulKernelIso L n).symm ≪≫
-    (nsmulSnake L n).δIso (nsmulSnake_kernel_isZero L n hn)
-      (nsmulSnake_cokernel_isZero L n hn) ≪≫
-    nsmulCokernelIso L n).toLinearEquiv.toAddEquiv
+  exact (AddEquiv.addSubgroupCongr
+    (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L n).symm)).trans
+    ((kerMapEquivQuotientOfEquiv L L
+      (AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) n) hn)
+      (AddSubgroup.map_le_iff_le_comap.mpr
+        (by intro x hx; exact L.nsmul_mem hx n))).trans
+      (quotientAddEquivOfEq
+        (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L n)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A torsion class represented by `x` maps to the class of `n • x` in `L / nL`. -/
 @[simp] theorem nsmulTorsionEquivQuotient_apply_mk (x : V) (hx : n • x ∈ L) :
     nsmulTorsionEquivQuotient L n hn
         ⟨(x : V ⧸ L), by simpa using (eq_zero_iff (n • x)).mpr hx⟩ =
       (⟨n • x, hx⟩ : L) := by
-  let t : (nsmulAddMonoidHom (α := V ⧸ L) n).ker :=
-    ⟨(x : V ⧸ L), by simpa using (eq_zero_iff (n • x)).mpr hx⟩
-  -- Points are tested by maps from the free integer module on one generator.
-  -- The lift keeps this test object in the same universe as the diagram.
-  let point {M : ModuleCat.{u} ℤ} (m : M) : ModuleCat.of ℤ (ULift.{u} ℤ) ⟶ M :=
-    ModuleCat.ofHom ((LinearMap.toSpanSingleton ℤ M m).comp ULift.moduleEquiv.toLinearMap)
-  have h₂ : point x ≫ (nsmulSnake L n).L₁.g =
-      (point t ≫ (nsmulKernelIso L n).inv) ≫ (nsmulSnake L n).v₀₁.τ₃ := by
-    rw [Category.assoc, nsmulKernelIso_inv_ι]
-    ext a
-    change ((a.down • x : V) : V ⧸ L) = a.down • (x : V ⧸ L)
-    exact map_zsmul (mk' L) a.down x
-  have h₁ : point (⟨n • x, hx⟩ : L) ≫ (nsmulSnake L n).L₂.f =
-      point x ≫ (nsmulSnake L n).v₁₂.τ₂ := by
-    ext a
-    change a.down • (n • x) = n • (a.down • x)
-    exact smul_comm a.down n x
-  have h := (nsmulSnake L n).δ_eq _ _ _ h₂ h₁
-  have h' := congrArg (fun f => f ≫ (nsmulCokernelIso L n).hom) h
-  simp only [Category.assoc] at h'
-  rw [nsmulCokernelIso_π_hom] at h'
-  have hval := ConcreteCategory.congr_hom h' (ULift.up (1 : ℤ))
-  change (nsmulCokernelIso L n).hom
-    ((nsmulSnake L n).δ ((nsmulKernelIso L n).inv t)) =
-      (mk' (nsmulAddMonoidHom (α := L) n).range) ⟨n • x, hx⟩
-  simpa [point] using! hval
+  let f := AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) n) hn
+  let h : L.map f.toAddMonoidHom ≤ L :=
+    AddSubgroup.map_le_iff_le_comap.mpr (by intro y hy; exact L.nsmul_mem hy n)
+  -- The kernel congruence preserves the underlying quotient representative.
+  change quotientAddEquivOfEq
+      (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L n)
+      (kerMapEquivQuotientOfEquiv L L f h
+        ⟨(x : V ⧸ L), by
+          change ((f x : V) : V ⧸ L) = 0
+          exact (eq_zero_iff (f x)).mpr hx⟩) =
+    (⟨n • x, hx⟩ : L)
+  rw [kerMapEquivQuotientOfEquiv_apply_mk L L f h x hx]
+  rfl
 
 /-- The inverse sends `[l]` to its unique `n`-division class in `V / L`. -/
 @[simp] theorem nsmulTorsionEquivQuotient_symm_apply_mk (l : L) :
@@ -293,5 +214,26 @@ theorem nsmulTorsionEquivQuotient_naturality (L : AddSubgroup V) (m d : ℕ)
   apply congrArg (fun l : L => (l : L ⧸ (nsmulAddMonoidHom (α := L) m).range))
   apply Subtype.ext
   exact mul_nsmul' v m d
+
+end QuotientAddGroup
+
+namespace QuotientAddGroup
+
+variable {V : Type u} [AddCommGroup V] (L : AddSubgroup V) (n : ℕ)
+
+/-- The quotient-torsion equivalence is the quotient-map kernel equivalence for
+multiplication by `n`, after identifying the induced map and the subgroup of multiples. -/
+theorem nsmulTorsionEquivQuotient_eq_kerMapEquivQuotientOfEquiv
+    (hn : Function.Bijective (nsmulAddMonoidHom (α := V) n)) :
+    nsmulTorsionEquivQuotient L n hn =
+      (AddEquiv.addSubgroupCongr
+        (congrArg AddMonoidHom.ker (map_nsmulAddMonoidHom L n).symm)).trans
+        ((kerMapEquivQuotientOfEquiv L L
+          (AddEquiv.ofBijective (nsmulAddMonoidHom (α := V) n) hn)
+          (AddSubgroup.map_le_iff_le_comap.mpr
+            (by intro x hx; exact L.nsmul_mem hx n))).trans
+          (quotientAddEquivOfEq
+            (AddSubgroup.addSubgroupOf_map_nsmulAddMonoidHom_eq_range L n))) := by
+  rfl
 
 end QuotientAddGroup

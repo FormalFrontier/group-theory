@@ -10,6 +10,7 @@ public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.IndexNSmul
+public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.Topology.CompactOpenSubgroup

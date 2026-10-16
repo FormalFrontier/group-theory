@@ -11,8 +11,8 @@ the rational-circle inclusion and comparison with continuous circle characters,
 open finite-index subgroups of compact commutative groups with dense finite generation,
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
-finitely generated abelian groups, torsion in additive quotients, and automorphisms
-of transitive group actions.
+finitely generated abelian groups, kernels of induced quotient maps, torsion in
+additive quotients, and automorphisms of transitive group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -142,6 +142,17 @@ apply to arbitrary surjective endomorphisms and do not formalize K-theory.
 See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
 [client examples](GroupTheoryTest/FGScalarSurjectivity.lean).
 
+**Kernels of induced quotient maps.** For normal subgroups `N ≤ G` and `M ≤ H`
+and a group equivalence `f : G ≃* H` with `f(N) ≤ M`,
+`QuotientGroup.kerMapEquivQuotientOfEquiv` identifies the kernel of the induced
+`G / N → H / M` with `M / f(N)`, using the subgroup of `M` defined by the image.
+The groups may be noncommutative and lie in independent universes; image normality
+is derived from the ambient equivalence. A kernel class `[g]` maps to `[f g]`,
+and the inverse sends `[m]` to `[f.symm m]`. The additive equivalence and both
+representative formulas are generated in `QuotientAddGroup`. See the
+[quotient-kernel API](GroupTheory/QuotientGroup/Kernel.lean) and the
+[independent rational-plane diagonal model](GroupTheoryTest/QuotientKernel.lean).
+
 **Torsion in additive quotients.** If multiplication by `n : ℕ` is bijective
 on an additive commutative group `V`, then
 `QuotientAddGroup.nsmulTorsionEquivQuotient` identifies the `n`-torsion subgroup
@@ -149,6 +160,8 @@ of `V / L` with `L / nL` for any additive subgroup `L`. It uses the ordinary
 kernel and range-quotient carriers. A class represented by `x`, with `n • x ∈ L`,
 maps to `[n • x]`; the inverse is given by unique `n`-division in `V`.
 No topology, lattice, finite-rank or divisibility-at-other-scalars assumption is needed.
+This is the scalar specialization of the quotient-kernel comparison, with an
+explicit equality identifying the two constructions after the canonical transports.
 See the [equivalence and representative API](GroupTheory/QuotientTorsion.lean)
 and the [rational half- and quarter-classes and unit-scalar boundaries](GroupTheoryTest/QuotientTorsion.lean).
 The scalar-transition statement identifies multiplication by `d` from
@@ -277,7 +290,8 @@ claim is implied by this guidance.
 | Finite cylinders and coordinate factorizations | [`OpenSubgroup.Pi`](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean), [`PiDiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean), [`Group.PiDiscreteFactor`](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean) |
 | Identity components and quotients | [`ConnectedComponentOpenSubgroup`](GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean), [`ConnectedComponentQuotient`](GroupTheory/Topology/ConnectedComponentQuotient.lean) |
 | Open quotients and compatible sections | [`OpenQuotient`](GroupTheory/Topology/OpenQuotient.lean), [`Sections`](GroupTheory/Topology/Sections.lean) |
-| Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean), [`QuotientTorsion.Cardinality`](GroupTheory/QuotientTorsion/Cardinality.lean) |
+| Kernels of quotient maps and scalar torsion | [`QuotientGroup.Kernel`](GroupTheory/QuotientGroup/Kernel.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean), [`QuotientTorsion.Cardinality`](GroupTheory/QuotientTorsion/Cardinality.lean) |
+| Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean) |
 
 ## References
 
@@ -298,9 +312,10 @@ claim is implied by this guidance.
   uses Mathlib's quotient-group and prime-cardinality equivalences; the explicit
   spanning argument uses its Schreier generators for a right transversal.
 - J. S. Milne, *Abelian Varieties*, version 2.0 (2008), I.10, Remark 10.7,
-  for the complex-torus torsion application. The quotient-torsion equivalence
-  specializes Mathlib's Snake lemma construction and representative equation,
-  formalized by Joël Riou.
+  for the complex-torus torsion application. The quotient-kernel comparison uses
+  Mathlib's first isomorphism theorem, kernel/range identities and subgroup/quotient
+  equivalence transports. Joël Riou's Snake-lemma formalization supplied the
+  scalar comparison's original homological proof and positive-sign equation.
 - Van Dantzig's compact-open subgroup theorem, used in Neukirch, Schmidt,
   and Wingberg, *Cohomology of Number Fields*, corrected second edition,
   Chapter I, §1, Proposition (1.1.9), for the identity-component discussion.
