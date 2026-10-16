@@ -4,9 +4,10 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import GroupTheory.QuotientTorsion
+import GroupTheory.QuotientTorsion.Cardinality
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Tactic.NormNum
+import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
 
 /-!
 # Scalar torsion classes in the rational quotient by the integers
@@ -21,6 +22,13 @@ The nonzero quarter-class maps by doubling to the nonzero half-class.
 The corresponding equivalence values are both computed as `[1]` using the
 representative API. The scalar-transition identity then identifies the
 reduction of the first value with the second.
+
+The same rational model has a finitely generated rank-one integer subgroup
+and exactly two doubling-torsion classes. This count uses the original
+quotient-torsion equivalence and Mathlib's free scalar-index formula, independently
+of the general finite-kernel and cardinality theorems. Both general theorems
+are also instantiated on this rational model. The zero scalar on a trivial
+ambient group and doubling on `ZMod 3` supply boundary cases.
 -/
 
 /-- In `ℚ / ℤ`, the nonzero class of `1 / 2` corresponds to `1` modulo `2ℤ`. -/
@@ -187,3 +195,104 @@ private theorem one_transition_boundary {A : Type*} [AddCommGroup A] (m : ℕ)
     (x : (nsmulAddMonoidHom (α := A) (m * 1)).ker) :
     (AddMonoidHom.restrict (AddMonoidHom.nsmul_mapsTo_ker m 1) x : A) = (x : A) :=
   one_nsmul _
+
+/-- The integer subgroup in the rational half-class model is finitely generated of rank one,
+and Mathlib's finite-free index formula gives exactly two doubling-torsion classes. -/
+private theorem rational_doubling_cardinality :
+    let L := AddSubgroup.zmultiples (1 : ℚ)
+    AddGroup.FG L ∧ Module.finrank ℤ L = 1 ∧
+      ∃ (hn : Function.Bijective (nsmulAddMonoidHom (α := ℚ) 2))
+        (hx : ((1 / 2 : ℚ) : ℚ ⧸ L) ∈
+          (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker),
+        Finite (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker ∧
+        Nat.card (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker = 2 ∧
+        ((1 / 2 : ℚ) : ℚ ⧸ L) ≠ 0 ∧
+        QuotientAddGroup.nsmulTorsionEquivQuotient L 2 hn
+            ⟨((1 / 2 : ℚ) : ℚ ⧸ L), hx⟩ =
+          ((⟨1, AddSubgroup.mem_zmultiples (1 : ℚ)⟩ : L) :
+            L ⧸ (nsmulAddMonoidHom (α := L) 2).range) := by
+  let L := AddSubgroup.zmultiples (1 : ℚ)
+  let f : ℤ →+ L :=
+    { toFun := fun z => ⟨z • (1 : ℚ), AddSubgroup.zsmul_mem_zmultiples 1 z⟩
+      map_zero' := by ext; simp
+      map_add' := by intros; ext; simp }
+  have hf : Function.Bijective f := by
+    constructor
+    · intro a b h
+      have h' := congrArg Subtype.val h
+      simpa [f, zsmul_eq_mul] using h'
+    · rintro ⟨q, hq⟩
+      obtain ⟨z, hz⟩ := AddSubgroup.mem_zmultiples_iff.mp hq
+      exact ⟨z, Subtype.ext hz⟩
+  let e : ℤ ≃ₗ[ℤ] L := (AddEquiv.ofBijective f hf).toIntLinearEquiv
+  let : Module.Free ℤ L := Module.Free.of_equiv e
+  let : Module.Finite ℤ L := Module.Finite.equiv e
+  have hFG : AddGroup.FG L := Module.Finite.iff_addGroup_fg.mp inferInstance
+  have hrank : Module.finrank ℤ L = 1 :=
+    e.finrank_eq.symm.trans (Module.finrank_self ℤ)
+  obtain ⟨hn, hx, hnonzero, hforward, _hinverse⟩ := rational_half_torsion
+  have hcard : Nat.card (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker = 2 := by
+    calc
+      _ = Nat.card (L ⧸ (nsmulAddMonoidHom (α := L) 2).range) :=
+        Nat.card_congr (QuotientAddGroup.nsmulTorsionEquivQuotient L 2 hn).toEquiv
+      _ = (nsmulAddMonoidHom (α := L) 2).range.index :=
+        (AddSubgroup.index_eq_card _).symm
+      _ = 2 ^ Module.finrank ℤ L := AddSubgroup.index_range_nsmul L 2
+      _ = 2 := by rw [hrank]; norm_num
+  exact ⟨hFG, hrank, hn, hx, Nat.finite_of_card_ne_zero (by rw [hcard]; decide),
+    hcard, hnonzero, hforward⟩
+
+/-- Doubling on the rational quotient by the integers has finite kernel of cardinality two. -/
+private theorem rational_doubling_quotient_torsion :
+    let L := AddSubgroup.zmultiples (1 : ℚ)
+    Finite (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker ∧
+      Nat.card (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker = 2 := by
+  let L := AddSubgroup.zmultiples (1 : ℚ)
+  obtain ⟨hFG, hrank, hn, _hx, _hfinite, _hcard, _hnonzero, _hforward⟩ :=
+    rational_doubling_cardinality
+  let : AddGroup.FG L := hFG
+  refine ⟨QuotientAddGroup.finite_ker_nsmul_quotient L 2 hn, ?_⟩
+  exact (QuotientAddGroup.natCard_ker_nsmul_quotient L 2 hn).trans (by rw [hrank]; norm_num)
+
+/-- Zero is a permitted scalar when the ambient group is trivial; the count is `0^0 = 1`. -/
+private theorem zero_torsion_cardinality :
+    let L : AddSubgroup PUnit := ⊤
+    AddGroup.FG L ∧ Function.Bijective (nsmulAddMonoidHom (α := PUnit) 0) ∧
+      Module.finrank ℤ L = 0 ∧
+      Finite (nsmulAddMonoidHom (α := PUnit ⧸ L) 0).ker ∧
+      Nat.card (nsmulAddMonoidHom (α := PUnit ⧸ L) 0).ker =
+        0 ^ Module.finrank ℤ L := by
+  let L : AddSubgroup PUnit := ⊤
+  let : Subsingleton (PUnit ⧸ L) := QuotientAddGroup.subsingleton_quotient_top
+  refine ⟨inferInstance, ?_, Module.finrank_zero_of_subsingleton, inferInstance, ?_⟩
+  · exact ⟨fun _ _ _ => Subsingleton.elim _ _, fun x => ⟨x, Subsingleton.elim _ _⟩⟩
+  · rw [Module.finrank_zero_of_subsingleton, pow_zero]
+    exact Nat.card_eq_one_iff_unique.mpr ⟨inferInstance, inferInstance⟩
+
+/-- Nonzero finite torsion in `L` is allowed: doubling on `ZMod 3` is bijective,
+while the whole subgroup has integer rank zero and the quotient kernel has one element. -/
+private theorem finite_torsion_subgroup_cardinality :
+    let L : AddSubgroup (ZMod 3) := ⊤
+    AddGroup.FG L ∧ Function.Bijective (nsmulAddMonoidHom (α := ZMod 3) 2) ∧
+      Module.finrank ℤ L = 0 ∧
+      (∃ x : L, x ≠ 0 ∧ (3 : ℕ) • x = 0) ∧
+      Finite (nsmulAddMonoidHom (α := ZMod 3 ⧸ L) 2).ker ∧
+      Nat.card (nsmulAddMonoidHom (α := ZMod 3 ⧸ L) 2).ker =
+        2 ^ Module.finrank ℤ L := by
+  let L : AddSubgroup (ZMod 3) := ⊤
+  let : Subsingleton (ZMod 3 ⧸ L) := QuotientAddGroup.subsingleton_quotient_top
+  have hrank : Module.finrank ℤ L = 0 :=
+    (isAddTorsion_iff_isTorsion_int.mp isAddTorsion_of_finite).finrank_eq_zero
+  refine ⟨inferInstance, ?_, hrank, ?_, inferInstance, ?_⟩
+  · have hcoprime : Nat.Coprime (Nat.card (ZMod 3)) 2 := by
+      norm_num [Nat.card_eq_fintype_card, ZMod.card]
+      decide
+    exact Nat.Coprime.nsmul_right_bijective hcoprime
+  · refine ⟨⟨1, AddSubgroup.mem_top _⟩, ?_, ?_⟩
+    · intro h
+      have h' := congrArg Subtype.val h
+      exact (by decide : (1 : ZMod 3) ≠ 0) h'
+    · apply Subtype.ext
+      exact ZModModule.char_nsmul_eq_zero 3 1
+  · rw [hrank, pow_zero]
+    exact Nat.card_eq_one_iff_unique.mpr ⟨inferInstance, inferInstance⟩

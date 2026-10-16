@@ -315,3 +315,31 @@ no all-scalar finiteness conclusion is asserted.
 Mathlib already supplies quotient finiteness at nonzero scalars.
 The [mixed examples](../GroupTheoryTest/IndexNSmul.lean) distinguish integer module
 finrank from minimum-generator rank and allow nonzero finite torsion.
+
+**Finite torsion in additive quotients.** For `{V : Type u} [AddCommGroup V]`,
+`L : AddSubgroup V` with `[AddGroup.FG L]`, and any `n : ℕ`, assume only
+`Function.Bijective (nsmulAddMonoidHom (α := V) n)`. The
+[cardinality extension](../GroupTheory/QuotientTorsion/Cardinality.lean) gives:
+
+- `QuotientAddGroup.finite_ker_nsmul_quotient`:
+  `Finite (nsmulAddMonoidHom (α := V ⧸ L) n).ker`.
+- `QuotientAddGroup.natCard_ker_nsmul_quotient`:
+  `Nat.card (nsmulAddMonoidHom (α := V ⧸ L) n).ker = n ^ Module.finrank ℤ L`.
+
+The finite-kernel conclusion is separate because natural cardinality alone does
+not assert finiteness. Integer module finrank measures torsion-free rank, so
+finite torsion in `L` is allowed. No freeness, ambient or quotient finite
+generation, global torsion-freeness, bijectivity at other scalars, or positivity
+premise is required. At zero the premise forces the ambient group trivial,
+and the equation is `1 = 0 ^ 0`.
+
+The [private models](../GroupTheoryTest/QuotientTorsion.lean) reuse the nonzero
+rational half-class to obtain a rank-one finitely generated subgroup,
+ambient doubling bijectivity, and a finite kernel of cardinality two. The direct
+count uses the original equivalence and Mathlib's free-index theorem; both general
+theorems are also instantiated on the same group. The zero-scalar trivial group and
+doubling on `ZMod 3` check the degenerate and nonzero finite-torsion cases independently.
+For a complex full lattice, separately supplying integer rank `2 * g` gives
+the finite-level count `n ^ (2 * g)`; the free case already admits the stock
+free-index route. No uniformization, lattice-rank calculation, tensor comparison,
+inverse limit, Tate-module theorem or scheme-point correspondence follows here.
