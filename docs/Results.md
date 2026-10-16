@@ -4,6 +4,23 @@
 
 The following results are available in this library.
 
+**Action automorphisms and centralizers.** For `(G : Type u) [Group G]`,
+`(C : Type v) [Category.{w} C]` and `A : Action C G`,
+`Action.autEquivCentralizer A` identifies `CategoryTheory.Aut A` with
+`Subgroup.centralizer (Set.range A.ρAut)` in `Aut A.V`. Its forward value is
+exactly `(Action.forget C G).mapIso α`; its inverse has underlying isomorphism
+the supplied centralizer element. The three universes are independent.
+`Action.autEquivPermCentralizer G X` specializes this to
+`Aut (Action.ofMulAction G X) ≃* centralizer (range (MulAction.toPermHom G X))`
+for an arbitrary `G`-set `X : Type v`, using stock `Aut.mulEquivPerm`.
+The characteristic lemmas identify all four forward/inverse hom/inv coordinates,
+the bundled forgetful homomorphisms, and equality by forward evaluation.
+Neither result assumes finiteness, transitivity, faithfulness, a point or topology.
+The [clients](../GroupTheoryTest/ActionCentralizer.lean) use independent swaps
+`(01)` and `(12)` of a trivial three-point action, whose products send `0` to
+`1` and `2` in the two orders, and the unique automorphism of the empty action.
+See the [API](../GroupTheory/GroupAction/Centralizer.lean).
+
 **Fixed-action continuity.**
 
 - `Topology.IsCoinducing.continuousConstSMul` transports continuity of fixed

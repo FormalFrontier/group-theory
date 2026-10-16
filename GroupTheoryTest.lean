@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheoryTest.ActionCentralizer
 public import GroupTheoryTest.CyclicNorm
 public import GroupTheoryTest.FGScalarSurjectivity
 public import GroupTheoryTest.FreeGroup.Rank

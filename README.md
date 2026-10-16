@@ -12,12 +12,25 @@ open finite-index subgroups of compact commutative groups with dense finite gene
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups, kernels of induced quotient maps, torsion in
-additive quotients, and automorphisms of transitive group actions.
+additive quotients, and automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
 
 ## Headline results
+
+**Action automorphisms as centralizers.** For a group `G` and an action `A`
+on an object of any category `C`, `Action.autEquivCentralizer` constructs
+`Aut A ≃* Subgroup.centralizer (Set.range A.ρAut)`. The group, object and
+morphism universes are independent. The forward map is exactly the forgotten
+isomorphism; its inverse equips a commuting isomorphism with equivariance.
+For `[Group G] [MulAction G X]`, `Action.autEquivPermCentralizer G X`
+specializes this to the centralizer of `MulAction.toPermHom G X` in `Equiv.Perm X`,
+reusing Mathlib's `CategoryTheory.Aut.mulEquivPerm`. Multiplication is ordinary
+composition `α (β x)` on both sides. No finite, transitive, faithful, nonempty
+or topological hypothesis is needed. See the
+[centralizer API](GroupTheory/GroupAction/Centralizer.lean) and its
+[noncommuting three-point and empty-set clients](GroupTheoryTest/ActionCentralizer.lean).
 
 **Automorphisms of transitive actions.** For a group `G` acting transitively
 on `X` and a chosen point `x`, `MulAction.normalizerQuotientEquivAut`
@@ -285,6 +298,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Action automorphisms and centralizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
 | Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
@@ -300,6 +314,14 @@ claim is implied by this guidance.
 | Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean) |
 
 ## References
+
+- J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion
+  of automorphisms of `G`-sets, motivates the centralizer identification for
+  permutation actions. The categorical theorem generalizes this setting;
+  it is not attributed to May as a statement for arbitrary categories.
+  The construction reuses Mathlib's bundled `Action`, `ρAut`, `mkIso`,
+  forgetful `mapAut`, and stock `CategoryTheory.Aut.mulEquivPerm`, together
+  with its subgroup equivalence transports.
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, §4,
   first lemma, p. 24, for the transitive-action normalizer quotient.

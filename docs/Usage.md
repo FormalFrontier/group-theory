@@ -70,6 +70,24 @@ infinite discrete targets and a surjective integer observer that rules out
 finite stages. Empty and trivial cases and a closed nonopen real normal
 subgroup test the boundaries of the canonical projection.
 
+### Action automorphisms
+
+Import `GroupTheory.GroupAction.Centralizer` (or `GroupTheory`). For an action
+`A` in a category, use `Action.autEquivCentralizer A α` to obtain its underlying
+automorphism as a centralizer element, or `(Action.autEquivCentralizer A).symm f`
+to equip a commuting isomorphism with equivariance. The lemmas
+`Action.coe_autEquivCentralizer` and `Action.mapIso_autEquivCentralizer_symm`
+characterize both forgetful maps.
+
+For `[Group G] [MulAction G X]`, use `Action.autEquivPermCentralizer G X` for
+permutations instead. Its `_apply`, `_apply_symm`, `_symm_hom_apply` and
+`_symm_inv_apply` lemmas are simp lemmas for the four coordinates. Use
+`Action.autEquivPermCentralizer_eq_iff` to prove equality with a supplied
+centralizer member by evaluation. Stock `map_mul`, `map_one` and `map_inv`
+apply directly to both multiplicative equivalences. The `_mul_apply` lemma
+makes the order `α.hom.hom (β.hom.hom x)` explicit. No unfolding of the
+constructors or choice of an element of `X` is needed.
+
 ### Compatibility
 
 Older Profinite Groups versions that also define
