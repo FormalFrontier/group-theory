@@ -12,12 +12,27 @@ open finite-index subgroups of compact commutative groups with dense finite gene
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups, kernels of induced quotient maps, torsion in
-additive quotients, and automorphism groups of group actions.
+additive quotients, additive and biadditive Grothendieck extensions, and
+automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
 
 ## Headline results
+
+**Additive and biadditive Grothendieck extensions.** For an additive commutative
+monoid `A` and an additive commutative group `G`,
+`Algebra.GrothendieckAddGroup.liftAddEquiv` packages Mathlib's universal-property
+equivalence as `(A →+ G) ≃+ (Algebra.GrothendieckAddGroup A →+ G)`. Its
+underlying equivalence is exactly Mathlib's `lift`, with inverse restriction
+along the canonical map `of`. For another additive commutative monoid `B`,
+`Algebra.GrothendieckAddGroup.lift₂` extends any curried biadditive map
+`A →+ B →+ G` to both canonical completions, with generator formulas,
+extensionality and uniqueness. The three universes are independent. No
+cancellation or nontriviality hypothesis is required; the API reuses Mathlib's
+completion and introduces no replacement carrier or ring structure. See the
+[Grothendieck lift API](GroupTheory/MonoidLocalization/GrothendieckGroup.lean)
+and its [integer-valued clients](GroupTheoryTest/GrothendieckGroup.lean).
 
 **Action automorphisms as centralizers.** For a group `G` and an action `A`
 on an object of any category `C`, `Action.autEquivCentralizer` constructs
@@ -305,6 +320,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
