@@ -51,4 +51,16 @@ example : lift₂ natMulInt (of (M := ℕ) 2 - of 5) (of (M := ℕ) 3) = -9 := b
   rw [map_sub, AddMonoidHom.sub_apply, lift₂_of, lift₂_of]
   rfl
 
+/-- Doubling both inputs and negating the output commutes with bilinear extension,
+even on a difference of generators. -/
+example :
+    lift₂ (((natMulInt.compl₂ (AddMonoidHom.id ℕ + AddMonoidHom.id ℕ)).comp
+      (AddMonoidHom.id ℕ + AddMonoidHom.id ℕ)).compr₂ (-AddMonoidHom.id ℤ))
+        (of (M := ℕ) 2 - of 5) (of (M := ℕ) 3) = 36 := by
+  rw [lift₂_compr₂, lift₂_comp]
+  simp only [AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,
+    AddMonoidHom.comp_apply, map_sub, lift_of, AddMonoidHom.add_apply,
+    AddMonoidHom.id_apply, AddMonoidHom.neg_apply, AddMonoidHom.sub_apply, lift₂_of]
+  rfl
+
 end GroupTheoryTest.GrothendieckGroup

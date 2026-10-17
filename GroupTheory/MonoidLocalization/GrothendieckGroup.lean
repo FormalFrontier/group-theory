@@ -34,7 +34,7 @@ nontriviality of the target group.
 
 @[expose] public section
 
-universe u v w
+universe u v w u' v' w'
 
 namespace Algebra.GrothendieckAddGroup
 
@@ -123,5 +123,23 @@ theorem lift₂_unique (f : A →+ B →+ G)
   apply hom_ext₂
   intro a b
   exact (lift₂_of f a b).trans (h a b).symm
+
+/-- Extending a biadditive map commutes with precomposition in both source monoids. -/
+theorem lift₂_comp {A' : Type u'} {B' : Type v'}
+    [AddCommMonoid A'] [AddCommMonoid B']
+    (f : A →+ B →+ G) (g : A' →+ A) (h : B' →+ B) :
+    lift₂ ((f.compl₂ h).comp g) =
+      ((lift₂ f).compl₂ (lift (of.comp h))).comp (lift (of.comp g)) := by
+  apply hom_ext₂
+  intro a b
+  simp only [lift₂_of, AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, lift_of]
+
+/-- Extending a biadditive map commutes with postcomposition by an additive homomorphism. -/
+theorem lift₂_compr₂ {H : Type w'} [AddCommGroup H]
+    (f : A →+ B →+ G) (h : G →+ H) :
+    lift₂ (f.compr₂ h) = (lift₂ f).compr₂ h := by
+  apply hom_ext₂
+  intro a b
+  simp only [lift₂_of, AddMonoidHom.compr₂_apply]
 
 end Algebra.GrothendieckAddGroup
