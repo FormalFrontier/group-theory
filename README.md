@@ -145,6 +145,32 @@ agreement with Mathlib's stronger separately continuous API. Every observer
 index; no compactness or explicit openness premise is needed.
 See the [left-versus-both-sided boundary examples](docs/Results.md).
 
+**Total boundedness from finite-index subgroup bases.** For `G : Type u`
+with `[Group G] [UniformSpace G] [IsLeftUniformGroup G]`, take any index type
+`ι : Type v`, predicate `p : ι → Prop` and family `H : ι → Subgroup G`.
+The universes `u` and `v` are independent. Given
+`B : (nhds (1 : G)).HasBasis p (fun i => (H i : Set G))`,
+`Filter.HasBasis.totallyBounded_univ_iff_subgroup_finiteIndex` states
+
+```lean
+TotallyBounded (Set.univ : Set G) ↔ ∀ i, p i → (H i).FiniteIndex
+```
+
+The additive form,
+`Filter.HasBasis.totallyBounded_univ_iff_addSubgroup_finiteIndex`, uses
+`[AddGroup A] [UniformSpace A] [IsLeftUniformAddGroup A]`, a basis at `0`
+and additive subgroups, with the same independent index universe and predicate.
+Neither form assumes normality, separation, countability, a nonempty index type,
+completeness or compactness. See the
+[total-boundedness criterion](GroupTheory/Topology/Algebra/Group/TotalBounded.lean)
+and its [applications](GroupTheoryTest/Topology/FiniteIndex.lean): in the 3-adic
+integers, closed norm balls of radius `(1 / 3) ^ n` identify with powers of `(3)`
+and give the neighborhood basis, while reduction to finite `ZMod (3 ^ n)` gives
+finite index without using compactness. Both the additive criterion and the
+multiplicative criterion on `Multiplicative ℤ_[3]` are applied. In the infinite
+discrete group `ℤ`, the zero subgroup is a neighborhood basis but has infinite
+index; applying the additive criterion shows that `ℤ` is not totally bounded.
+
 **Compact open subgroup neighborhoods.** Every identity neighborhood in a
 locally compact totally disconnected topological group contains a compact open
 subgroup; neighborhoods need not be open, and no ambient compactness or separate
@@ -349,6 +375,7 @@ claim is implied by this guidance.
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |
 | Finite index from dense finite generation | [`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean) |
+| Total boundedness and finite-index subgroup bases | [`TotalBounded`](GroupTheory/Topology/Algebra/Group/TotalBounded.lean) |
 | Discrete-valued maps and compact-group factorization | [`CompactDiscrete`](GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean), [`DiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean) |
 | Finite cylinders and coordinate factorizations | [`OpenSubgroup.Pi`](GroupTheory/Topology/Algebra/OpenSubgroup/Pi.lean), [`PiDiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/PiDiscreteFactor.lean), [`Group.PiDiscreteFactor`](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean) |
 | Identity components and quotients | [`ConnectedComponentOpenSubgroup`](GroupTheory/Topology/ConnectedComponentOpenSubgroup.lean), [`ConnectedComponentQuotient`](GroupTheory/Topology/ConnectedComponentQuotient.lean) |

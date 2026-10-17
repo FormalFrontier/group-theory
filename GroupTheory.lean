@@ -25,6 +25,7 @@ public import GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.Quotient
+public import GroupTheory.Topology.Algebra.Group.TotalBounded
 public import GroupTheory.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheory.Topology.OpenKernel
 public import GroupTheory.Topology.CircleCharacter
