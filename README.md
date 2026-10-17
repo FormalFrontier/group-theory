@@ -12,8 +12,9 @@ open finite-index subgroups of compact commutative groups with dense finite gene
 continuous compatible sections of monoid diagrams, open quotients of compact
 totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups, kernels of induced quotient maps, torsion in
-additive quotients, additive and biadditive Grothendieck extensions, and
-automorphism groups of group actions.
+additive quotients, additive and biadditive Grothendieck extensions, ring structures
+and multiplicative universal properties on additive Grothendieck groups of semirings,
+and automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -30,9 +31,27 @@ along the canonical map `of`. For another additive commutative monoid `B`,
 `A →+ B →+ G` to both canonical completions, with generator formulas,
 extensionality and uniqueness. The three universes are independent. No
 cancellation or nontriviality hypothesis is required; the API reuses Mathlib's
-completion and introduces no replacement carrier or ring structure. See the
+completion and introduces no replacement carrier. See the
 [Grothendieck lift API](GroupTheory/MonoidLocalization/GrothendieckGroup.lean)
 and its [integer-valued clients](GroupTheoryTest/GrothendieckGroup.lean).
+
+**Ring structures and multiplicative Grothendieck lifts.** For any semiring `A`,
+`Algebra.GrothendieckAddGroup A` has a canonical `Ring` instance; for a
+commutative semiring it has a canonical `CommRing` instance with the same
+underlying ring. Both retain the existing additive group, including its
+natural and integer scalar operations. The canonical `ofRingHom` retains the
+entire additive generator `of`. The bundled multiplication `mulAddHom` already
+exists for a non-unital, non-associative semiring, with generator computation,
+extensionality and uniqueness; associativity, units and commutativity use the
+corresponding source laws separately. For any ring `S`, `liftRingHom` extends
+`A →+* S` to a ring homomorphism from the completion, with its entire underlying
+additive homomorphism equal to the existing additive `lift`. Generator evaluation,
+extensionality and uniqueness characterize the extension. The equivalence
+`liftRingEquiv` has this canonical lift as its forward function and restriction
+along `ofRingHom` as its inverse. The source and target universes are independent;
+no commutativity of the target, cancellation or nontriviality is required. See the
+[ring API](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) and the
+[signed-natural and one-element clients](GroupTheoryTest/GrothendieckGroup.lean).
 
 **Action automorphisms as centralizers.** For a group `G` and an action `A`
 on an object of any category `C`, `Action.autEquivCentralizer` constructs
@@ -321,6 +340,7 @@ claim is implied by this guidance.
 | Mathematics | Modules |
 | --- | --- |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
+| Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
@@ -399,6 +419,13 @@ claim is implied by this guidance.
   `Subgroup.isOpen_of_isClosed_of_finiteIndex`. No new quotient or action
   construction is introduced, and no external source text or source-coverage
   claim is made for them.
+- Mathlib's Grothendieck completion and universal-property formalization by
+  Alex J. Best and Yaël Dillies supplies the carrier, additive group, generator
+  and additive lift. The ring structures and multiplicative lifts compose the
+  biadditive extension and generator-extensionality APIs with Mathlib's bundled
+  multiplication in `Mathlib.Algebra.Ring.Basic`, by
+  Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov and
+  Neil Strickland.
 - Mathlib's finite-supported product neighborhoods, finite intersections of
   open subgroups and products of open quotient maps supply the finite-coordinate
   extension. The cylinder argument uses Monica Omar's product-membership API,

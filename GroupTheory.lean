@@ -12,6 +12,7 @@ public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
 public import GroupTheory.IndexNSmul
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
+public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
