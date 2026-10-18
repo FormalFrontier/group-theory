@@ -16,6 +16,7 @@ public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
+public import GroupTheory.RepresentationInvariants
 public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections
 public import GroupTheory.Topology.ConnectedComponentQuotient

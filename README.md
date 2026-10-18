@@ -21,6 +21,21 @@ in more detail.
 
 ## Headline results
 
+**Left exactness of fixed vectors.** For a monoid `G` and modules over any semiring
+`R`, [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) provides
+the fixed submodule and the restriction `f.fixedSubmoduleMap` of an intertwining map.
+The modules need only be additive commutative monoids, and all carrier universes are
+independent. `fixedSubmoduleMap_injective` preserves ambient injectivity. If `f` is
+injective and `Function.Exact f g`, then `fixedSubmoduleMap_exact` proves
+`Function.Exact f.fixedSubmoduleMap g.fixedSubmoduleMap` on the original module and
+representation data. No finiteness, topology, group structure on `G` or additive
+inverses are required. The identity, composition, inclusion and unique-factorization
+APIs are compatible with the usual submodule maps. When `R` is a commutative ring,
+`G` is a group and the module is an additive commutative group, the fixed submodule
+equals Mathlib's existing invariant submodule.
+The module explains a nontrivial split sequence for the coordinate-swap action on `ℕ²`
+and why the sign action on `ℤ`, reduced modulo two, does not preserve surjectivity.
+
 **Right transversals and subgroup towers.**
 [`GroupTheory.Transversal`](GroupTheory/Transversal.lean) provides subgroup factors,
 representative permutations, changes of representatives, and inner-times-outer
@@ -372,6 +387,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Fixed vectors and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
@@ -391,6 +407,12 @@ claim is implied by this guidance.
 | Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean) |
 
 ## References
+
+- The fixed-vector construction generalizes Mathlib's `Representation.invariants`,
+  formalized by Antoine Labelle, and reuses its intertwining-map API by Stepan Nesterov
+  and Edison Xie and its `LinearMap.codRestrict` API in a file by Mario Carneiro.
+  Left exactness uses `LinearMap.exact_iff` from Mathlib's exactness API by Antoine
+  Chambert-Loir, together with its kernel and range membership APIs.
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion
   of automorphisms of `G`-sets, motivates the centralizer identification for
