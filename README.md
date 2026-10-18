@@ -21,6 +21,13 @@ in more detail.
 
 ## Headline results
 
+**Right transversals and subgroup towers.**
+[`GroupTheory.Transversal`](GroupTheory/Transversal.lean) provides subgroup factors,
+representative permutations, changes of representatives, and inner-times-outer
+product transversals for arbitrary nested subgroups, without finiteness assumptions.
+It generalizes the pure Continuous Group Cohomology formalization
+and reuses Mathlib’s complement and subgroup-image API.
+
 **Additive and biadditive Grothendieck extensions.** For an additive commutative
 monoid `A` and an additive commutative group `G`,
 `Algebra.GrothendieckAddGroup.liftAddEquiv` packages Mathlib's universal-property
