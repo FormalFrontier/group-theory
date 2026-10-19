@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.Quotient
+public import GroupTheory.GroupAction.DoubleCoset
 import GroupTheory.GroupAction.Quotient
 import GroupTheory.GroupAction.QuotientMap
 import Mathlib.Algebra.Group.Action.Option
@@ -1208,5 +1209,145 @@ private theorem no_coset_iso_to_bottom :
   obtain ⟨g, hg⟩ := (Action.nonempty_quotient_iso_iff_exists_eq_map_conj K ⊥).mp h
   exact no_coset_hom_to_bottom
     ((MulActionHom.nonempty_quotient_iff_exists_le_map_conj K ⊥).mpr ⟨g, hg.le⟩)
+
+end GroupTheoryTest.Topology.Algebra.Group.Quotient
+
+namespace GroupTheoryTest.Topology.Algebra.Group.Quotient
+
+section CosetPairOrbits
+
+-- These are pairs in the existing left-coset actions of the same permutation group.
+private def diagonalCosetPair : (P ⧸ K) × (P ⧸ K) :=
+  (QuotientGroup.mk (1 : P), QuotientGroup.mk (1 : P))
+
+private def offDiagonalCosetPair : (P ⧸ K) × (P ⧸ K) :=
+  (QuotientGroup.mk (1 : P), QuotientGroup.mk sigma)
+
+private noncomputable def cosetPairOrbitEquivDoubleCoset :
+    MulAction.orbitRel.Quotient P ((P ⧸ K) × (P ⧸ K)) ≃
+      DoubleCoset.Quotient (K : Set P) (K : Set P) :=
+  MulAction.orbitQuotientProdQuotientEquivDoubleCoset K K
+
+private theorem coset_pair_orbit_equiv_characteristic :
+    cosetPairOrbitEquivDoubleCoset
+        (_root_.Quotient.mk (MulAction.orbitRel P _) diagonalCosetPair) =
+      DoubleCoset.mk K K (1 : P) ∧
+    cosetPairOrbitEquivDoubleCoset
+        (_root_.Quotient.mk (MulAction.orbitRel P _) offDiagonalCosetPair) =
+      DoubleCoset.mk K K sigma ∧
+    cosetPairOrbitEquivDoubleCoset.symm (DoubleCoset.mk K K (1 : P)) =
+      _root_.Quotient.mk (MulAction.orbitRel P _) diagonalCosetPair ∧
+    cosetPairOrbitEquivDoubleCoset.symm (DoubleCoset.mk K K sigma) =
+      _root_.Quotient.mk (MulAction.orbitRel P _) offDiagonalCosetPair := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simpa only [cosetPairOrbitEquivDoubleCoset, diagonalCosetPair, inv_one, one_mul] using
+      MulAction.orbitQuotientProdQuotientEquivDoubleCoset_apply_mk K K (1 : P) (1 : P)
+  · simpa only [cosetPairOrbitEquivDoubleCoset, offDiagonalCosetPair, inv_one, one_mul] using
+      MulAction.orbitQuotientProdQuotientEquivDoubleCoset_apply_mk K K (1 : P) sigma
+  · exact MulAction.orbitQuotientProdQuotientEquivDoubleCoset_symm_apply_mk K K (1 : P)
+  · exact MulAction.orbitQuotientProdQuotientEquivDoubleCoset_symm_apply_mk K K sigma
+
+private theorem coset_pair_orbit_cardinalities :
+    Nat.card ↥(MulAction.orbit P diagonalCosetPair) = 3 ∧
+      Nat.card ↥(MulAction.orbit P offDiagonalCosetPair) = 6 := by
+  have hd : MulAction.stabilizer P diagonalCosetPair = K := by
+    ext p
+    change
+      ((QuotientGroup.mk (p * 1) : P ⧸ K), (QuotientGroup.mk (p * 1) : P ⧸ K)) =
+        (QuotientGroup.mk (1 : P), QuotientGroup.mk (1 : P)) ↔ p ∈ K
+    simp only [mul_one, Prod.mk.injEq, and_self, QuotientGroup.eq, K.inv_mem_iff]
+  have ho : MulAction.stabilizer P offDiagonalCosetPair = ⊥ := by
+    ext p
+    constructor
+    · intro hp
+      have hfix : p • offDiagonalCosetPair = offDiagonalCosetPair := hp
+      have h₁ := congrArg Prod.fst hfix
+      have h₂ := congrArg Prod.snd hfix
+      change (QuotientGroup.mk (p * 1) : P ⧸ K) = QuotientGroup.mk (1 : P) at h₁
+      change (QuotientGroup.mk (p * sigma) : P ⧸ K) = QuotientGroup.mk sigma at h₂
+      have hpK : p ∈ K := by
+        simpa only [mul_one, inv_inv] using K.inv_mem (QuotientGroup.eq.mp h₁)
+      rcases (mem_K p).mp hpK with rfl | rfl
+      · exact Subgroup.one_mem _
+      · exact False.elim ((by decide :
+          (((tau * sigma)⁻¹ * sigma) (2 : Fin 3)) ≠ 2)
+          (K_fixes_two (QuotientGroup.eq.mp h₂)))
+    · intro hp
+      have hp1 : p = 1 := Subgroup.mem_bot.mp hp
+      subst p
+      exact one_smul P offDiagonalCosetPair
+  constructor
+  · calc
+      Nat.card ↥(MulAction.orbit P diagonalCosetPair) =
+          Nat.card (P ⧸ MulAction.stabilizer P diagonalCosetPair) :=
+        Nat.card_congr (MulAction.orbitEquivQuotientStabilizer P diagonalCosetPair)
+      _ = 3 := by rw [hd]; exact partition_K_index
+  · calc
+      Nat.card ↥(MulAction.orbit P offDiagonalCosetPair) =
+          Nat.card (P ⧸ MulAction.stabilizer P offDiagonalCosetPair) :=
+        Nat.card_congr (MulAction.orbitEquivQuotientStabilizer P offDiagonalCosetPair)
+      _ = 6 := by
+        rw [ho]
+        change (⊥ : Subgroup P).index = 6
+        rw [Subgroup.index_bot, Nat.card_eq_fintype_card, Fintype.card_perm]
+        norm_num [Nat.factorial_succ]
+
+private theorem double_coset_cardinalities_and_distinct :
+    Nat.card ↥(DoubleCoset.doubleCoset (1 : P) (K : Set P) (K : Set P)) = 2 ∧
+      Nat.card ↥(DoubleCoset.doubleCoset sigma (K : Set P) (K : Set P)) = 4 ∧
+      DoubleCoset.mk K K (1 : P) ≠ DoubleCoset.mk K K sigma := by
+  have h₁ : DoubleCoset.doubleCoset (1 : P) (K : Set P) (K : Set P) = (K : Set P) := by
+    ext p
+    rw [DoubleCoset.mem_doubleCoset]
+    constructor
+    · rintro ⟨h, hh, k, hk, rfl⟩
+      simpa only [mul_one, SetLike.mem_coe] using K.mul_mem hh hk
+    · intro hp
+      exact ⟨p, hp, 1, K.one_mem, by simp only [mul_one]⟩
+  have hσ : DoubleCoset.doubleCoset sigma (K : Set P) (K : Set P) =
+      (↑({sigma, tau * sigma, sigma * tau, tau * sigma * tau} : Finset P) : Set P) := by
+    ext p
+    simp only [DoubleCoset.mem_doubleCoset, SetLike.mem_coe, mem_K,
+      Finset.mem_insert, Finset.mem_singleton]
+    constructor
+    · rintro ⟨h, hh, k, hk, rfl⟩
+      rcases hh with rfl | rfl <;> rcases hk with rfl | rfl <;> simp
+    · intro hp
+      rcases hp with rfl | rfl | rfl | rfl
+      · exact ⟨1, Or.inl rfl, 1, Or.inl rfl, by simp⟩
+      · exact ⟨tau, Or.inr rfl, 1, Or.inl rfl, by simp⟩
+      · exact ⟨1, Or.inl rfl, tau, Or.inr rfl, by simp⟩
+      · exact ⟨tau, Or.inr rfl, tau, Or.inr rfl, rfl⟩
+  refine ⟨?_, ?_, ?_⟩
+  · classical
+    rw [h₁]
+    change Nat.card K = 2
+    rw [Nat.card_eq_fintype_card, Fintype.card_zpowers, tau_order]
+  · rw [hσ]
+    change Nat.card ↥({sigma, tau * sigma, sigma * tau, tau * sigma * tau} : Finset P) = 4
+    rw [Nat.card_eq_finsetCard]
+    decide
+  · intro heq
+    obtain ⟨h, hh, k, hk, hσeq⟩ := DoubleCoset.eq.mp heq
+    apply sigma_not_mem_K
+    rw [hσeq]
+    simpa only [mul_one] using K.mul_mem hh hk
+
+private theorem top_left_coset_orbit_and_doubleCoset_subsingleton
+    {G : Type*} [Group G] (K : Subgroup G) :
+    Subsingleton (MulAction.orbitRel.Quotient G
+      ((G ⧸ (⊤ : Subgroup G)) × (G ⧸ K))) ∧
+      Subsingleton (DoubleCoset.Quotient (⊤ : Set G) (K : Set G)) := by
+  have hdc : Subsingleton (DoubleCoset.Quotient (⊤ : Set G) (K : Set G)) := by
+    refine ⟨fun x y => ?_⟩
+    refine _root_.Quotient.inductionOn₂ x y ?_
+    intro g g'
+    exact (DoubleCoset.eq (H := (⊤ : Subgroup G)) (K := K)).mpr
+      ⟨g' * g⁻¹, Subgroup.mem_top _, 1, K.one_mem, by simp⟩
+  refine ⟨⟨fun x y => ?_⟩, hdc⟩
+  exact (MulAction.orbitQuotientProdQuotientEquivDoubleCoset (⊤ : Subgroup G) K).injective
+    (hdc.elim _ _)
+
+end CosetPairOrbits
 
 end GroupTheoryTest.Topology.Algebra.Group.Quotient

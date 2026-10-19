@@ -14,7 +14,8 @@ totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups, kernels of induced quotient maps, torsion in
 additive quotients, additive and biadditive Grothendieck extensions, ring structures
 and multiplicative universal properties on additive Grothendieck groups of semirings,
-canonical coset-action isomorphisms, and automorphism groups of group actions.
+canonical coset-action isomorphisms, product-coset orbits and double cosets,
+and automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -129,6 +130,23 @@ supplies the categorical isomorphism.
 Existence of equivariant maps in both directions alone is not the isomorphism
 criterion. See the [coset-action API](GroupTheory/GroupAction/Quotient.lean)
 and [nonnormal permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean).
+
+**Product-coset orbits and double cosets.** For any group `G : Type u` and
+arbitrary subgroups `H, K`,
+[`MulAction.orbitQuotientProdQuotientEquivDoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean)
+identifies the orbits of the canonical diagonal left action of a single `G` on
+`(G ⧸ H) × (G ⧸ K)` with `DoubleCoset.Quotient (H : Set G) (K : Set G)`.
+The forward map sends `orbit(xH, yK)` to `H (x⁻¹ * y) K`; its inverse sends
+`H g K` to `orbit(H, gK)`. These are classes, not unique representatives.
+No finiteness, normality or topological assumption is required. Both representative
+formulas are simp lemmas. The criterion
+`MulAction.orbitRel_prod_quotient_mk_eq_mk_iff` says two pairs represented by
+`(x, y)` and `(x', y')` have the same orbit exactly when
+`∃ h ∈ H, ∃ k ∈ K, x'⁻¹ * y' = h * (x⁻¹ * y) * k`.
+The [three-point permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
+use `H = K = ⟨(01)⟩` in `S₃`, with orbit sizes three and six and double-coset
+sizes two and four. They use both directions of the equivalence and include
+an arbitrary-group `H = ⊤` boundary with one orbit class and one double-coset class.
 
 **Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
 [`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
@@ -458,6 +476,7 @@ claim is implied by this guidance.
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
+| Product-coset orbits and double cosets | [`GroupAction.DoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean), [permutation and boundary examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Equivariant maps between nested coset spaces | [`GroupAction.QuotientMap`](GroupTheory/GroupAction/QuotientMap.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
@@ -523,6 +542,9 @@ claim is implied by this guidance.
   with Mathlib's conjugated-stabilizer formula.
   Maps between nested coset spaces reuse `Subgroup.quotientMapOfLE` and generalize
   the finite-coset morphism in `Mathlib.CategoryTheory.Action.Concrete`.
+- The product-coset orbit equivalence reuses Mathlib's double-coset quotient,
+  left-coset and orbit quotient APIs, and componentwise product action; the
+  [module references](GroupTheory/GroupAction/DoubleCoset.lean) credit their authors.
 - Mathlib's `OpenSubgroup` and `MulAction.stabilizer` supply the algebraic interface;
   its compact-neighborhood and clopen-basis results supply the topological inputs.
 - Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected

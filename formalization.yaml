@@ -395,6 +395,14 @@ status:
     This criterion concerns the canonical left-coset actions, not merely
     equivariant maps in both directions or arbitrary infinite endomaps.
 
+    For any group G and arbitrary subgroups H and K, the orbit quotient of
+    the canonical single-G diagonal left action on (G / H) × (G / K) is
+    equivalent to DoubleCoset.Quotient (H : Set G) (K : Set G). The forward
+    formula is orbit(xH, yK) ↦ H (x⁻¹ * y) K; the inverse is H g K ↦ orbit(H, gK).
+    Both have simp projection lemmas, and equality of pair orbits is equivalent
+    to x'⁻¹ * y' = h * (x⁻¹ * y) * k for some h ∈ H and k ∈ K. No finiteness,
+    normality or topological assumption is required.
+
     For [AddGroup.FG A] on an additive commutative group and natural n ≥ 2,
     surjectivity of the map x ↦ n • x implies finite A, coprimality
     of n with Nat.card A and a uniform two-sided integer-scalar inverse.
@@ -546,6 +554,14 @@ status:
       file: GroupTheory/GroupAction/Quotient.lean
     - declaration: Action.quotientIsoOfEqMapConj_hom_one
       file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulAction.orbitQuotientProdQuotientEquivDoubleCoset
+      file: GroupTheory/GroupAction/DoubleCoset.lean
+    - declaration: MulAction.orbitQuotientProdQuotientEquivDoubleCoset_apply_mk
+      file: GroupTheory/GroupAction/DoubleCoset.lean
+    - declaration: MulAction.orbitQuotientProdQuotientEquivDoubleCoset_symm_apply_mk
+      file: GroupTheory/GroupAction/DoubleCoset.lean
+    - declaration: MulAction.orbitRel_prod_quotient_mk_eq_mk_iff
+      file: GroupTheory/GroupAction/DoubleCoset.lean
     - declaration: MulActionHom.quotientMapOfLE
       file: GroupTheory/GroupAction/QuotientMap.lean
     - declaration: MulActionHom.coe_quotientMapOfLE
