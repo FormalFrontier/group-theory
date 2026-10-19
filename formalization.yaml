@@ -499,6 +499,24 @@ status:
       file: GroupTheory/FGScalarSurjectivity.lean
     - declaration: AddCommGroup.nsmul_bijective_iff_finite_coprime
       file: GroupTheory/FGScalarSurjectivity.lean
+    - declaration: MulAction.mem_fixedPoints_subgroup_iff
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints_apply
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints_symm_apply_mk
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotient_ext
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotient_ext_iff
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints_symm_eq_iff
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints_comp
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.quotientEquivFixedPoints_symm_stabilizer
+      file: GroupTheory/GroupAction/Quotient.lean
 
 review:
   status: in-progress

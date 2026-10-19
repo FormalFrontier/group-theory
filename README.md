@@ -84,6 +84,18 @@ no commutativity of the target, cancellation or nontriviality is required. See t
 [ring API](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) and the
 [signed-natural and one-element clients](GroupTheoryTest/GrothendieckGroup.lean).
 
+**Equivariant maps from cosets.** For any group `G`, subgroup `H` and `G`-set `X`,
+[`MulActionHom.quotientEquivFixedPoints`](GroupTheory/GroupAction/Quotient.lean)
+constructs `((G ⧸ H) →[G] X) ≃ {x : X // H ≤ MulAction.stabilizer G x}`.
+The group and target universes are independent. The forward map evaluates at
+`QuotientGroup.mk (1 : G)`; the inverse sends the coset of `g` to `g • x`.
+Neither normality of `H` nor transitivity or nonemptiness of `X` is required.
+This is a plain equivalence: the `H`-fixed points need not be stable under `G`.
+Evaluation formulas, extensionality, uniqueness, target naturality and agreement
+with Mathlib's map from stabilizer cosets characterize the construction.
+The [permutation-action clients](GroupTheoryTest/CosetActionHom.lean) recover both
+an orbit map and a constant map, with empty-target and one-point boundaries.
+
 **Action automorphisms as centralizers.** For a group `G` and an action `A`
 on an object of any category `C`, `Action.autEquivCentralizer` constructs
 `Aut A ≃* Subgroup.centralizer (Set.range A.ρAut)`. The group, object and
@@ -400,6 +412,7 @@ claim is implied by this guidance.
 | Fixed vectors and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
+| Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
@@ -456,6 +469,10 @@ claim is implied by this guidance.
 - Van Dantzig's compact-open subgroup theorem, used in Neukirch, Schmidt,
   and Wingberg, *Cohomology of Number Fields*, corrected second edition,
   Chapter I, §1, Proposition (1.1.9), for the identity-component discussion.
+- The coset-map universal property reuses Mathlib's coset and orbit–stabilizer
+  constructions by Chris Hughes, Thomas Browning and Yury Kudryashov, and its
+  equivariant-map API by Kenny Lau and Antoine Chambert-Loir. Its clients use
+  Yaël Dillies's option actions and Kenny Lau's one-point action instances.
 - Mathlib's `OpenSubgroup` and `MulAction.stabilizer` supply the algebraic interface;
   its compact-neighborhood and clopen-basis results supply the topological inputs.
 - Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected

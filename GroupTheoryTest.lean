@@ -7,6 +7,7 @@ module
 
 import GroupTheoryTest.Topology.Algebra.Group.Units
 public import GroupTheoryTest.ActionCentralizer
+public import GroupTheoryTest.CosetActionHom
 public import GroupTheoryTest.CyclicNorm
 public import GroupTheoryTest.FGScalarSurjectivity
 public import GroupTheoryTest.FreeGroup.Rank

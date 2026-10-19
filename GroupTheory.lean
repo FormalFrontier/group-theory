@@ -11,6 +11,7 @@ public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
+public import GroupTheory.GroupAction.Quotient
 public import GroupTheory.IndexNSmul
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
