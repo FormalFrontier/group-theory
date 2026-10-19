@@ -6,8 +6,11 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Action.Sigma
+public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.DoubleCoset
 public import Mathlib.GroupTheory.GroupAction.Quotient
+public import GroupTheory.GroupAction.Quotient
 
 /-!
 # Product coset orbits and double cosets
@@ -18,6 +21,14 @@ The correspondence sends the orbit of `(xH, yK)` to `H (x⁻¹ * y) K`. Its inve
 `H g K` to the orbit of `(H, gK)`. These formulas specify classes, not unique representatives.
 Neither subgroup needs to be normal.
 
+Restricting the canonical left action on `G ⧸ K` to `H` gives orbit classes indexed by
+`H \ G / K`: the orbit of `gK` corresponds to `H g K`. The stabilizer is a subgroup of `H`,
+namely the inverse image of `gKg⁻¹` under `H.subtype`. Mathlib's
+`MulAction.orbitEquivQuotientStabilizer`, with its equivariance lemmas, identifies each orbit
+with the quotient of `H` by that stabilizer. Reindexing Mathlib's canonical partition fibers
+gives an equivariant double-coset-indexed sigma decomposition. Its fibers are whole orbits,
+not stabilizer quotients at implicitly chosen basepoints.
+
 ## Main declarations
 
 * `MulAction.orbitQuotientProdQuotientEquivDoubleCoset`: the equivalence of quotients.
@@ -25,6 +36,9 @@ Neither subgroup needs to be normal.
 * `MulAction.orbitQuotientProdQuotientEquivDoubleCoset_symm_apply_mk`:
   its inverse projection formula.
 * `MulAction.orbitRel_prod_quotient_mk_eq_mk_iff`: equality of pair orbits in double-coset terms.
+* `MulAction.orbitQuotientQuotientEquivDoubleCoset`: restricted coset-orbit classes.
+* `MulAction.stabilizer_subgroup_quotient`: the restricted stabilizer as a subgroup of `H`.
+* `MulAction.quotientEquivSigmaDoubleCoset`: the canonical decomposition into orbit fibers.
 
 ## Implementation notes
 
@@ -34,6 +48,13 @@ The normalization is simultaneous left multiplication by `x⁻¹`. Extensionalit
 and quotient induction; functions to an independent `Type v` use `Setoid.liftEquiv` and
 `Setoid.lift_unique`.
 
+For restriction, the relation on `G ⧸ K` is identified with the kernel of the canonical
+map to double cosets. `Setoid.quotientQuotientEquivQuotient` and `Quotient.congrRight`
+then give the class equivalence without choosing representatives. The decomposition is
+`MulAction.selfEquivSigmaOrbits'` followed by `Equiv.sigmaCongrLeft'`; the stock sigma
+action fixes the index and acts on its orbit fiber. Displaying stabilizer-quotient fibers
+instead would require an explicit section of the orbit projection.
+
 ## References
 
 The quotient constructions and actions are those of
@@ -42,6 +63,9 @@ The quotient constructions and actions are those of
 and Kim Morrison; `GroupTheory/GroupAction/Defs.lean` by Chris Hughes;
 `GroupTheory/GroupAction/Quotient.lean` by Chris Hughes and Thomas Browning; and
 `Algebra/Group/Action/Prod.lean` by Simon Hudon, Patrick Massot and Eric Wieser.
+The restricted decomposition also uses the quotient-of-quotient equivalence from
+`Data/Setoid/Basic.lean`, the quotient and sigma congruences from `Logic/Equiv/Defs.lean`,
+and the sigma actions from `Algebra/Group/Action/Sigma.lean` by Yaël Dillies.
 -/
 
 @[expose] public section
@@ -167,5 +191,145 @@ theorem orbitRel_prod_quotient_mk_eq_mk_iff (H K : Subgroup G) (x y x' y' : G) :
     rw [orbitQuotientProdQuotientEquivDoubleCoset_apply_mk,
       orbitQuotientProdQuotientEquivDoubleCoset_apply_mk]
     exact DoubleCoset.eq.mpr hd
+
+end MulAction
+
+namespace DoubleCoset
+
+variable {G : Type u} [Group G]
+
+/-- Equality of left `K`-cosets implies equality of `H`–`K` double cosets. -/
+theorem leftRel_le_setoid (H K : Subgroup G) :
+    QuotientGroup.leftRel K ≤ setoid (H : Set G) (K : Set G) := by
+  intro x y hxy
+  exact rel_iff.mpr ⟨1, H.one_mem, x⁻¹ * y, QuotientGroup.leftRel_apply.mp hxy,
+    by simp⟩
+
+end DoubleCoset
+
+namespace MulAction
+
+variable {G : Type u} [Group G]
+
+/-- The restricted `H`-orbit relation on `G ⧸ K` is the kernel of the canonical map
+from left cosets to `H`–`K` double cosets. All actions are the canonical quotient and
+subgroup-restriction actions. -/
+theorem orbitRel_quotient_iff_ker_doubleCoset (H K : Subgroup G) (q q' : G ⧸ K) :
+    orbitRel H (G ⧸ K) q q' ↔
+      Setoid.ker (Quot.mapRight (DoubleCoset.leftRel_le_setoid H K)) q q' := by
+  refine QuotientGroup.induction_on q ?_
+  intro x
+  refine QuotientGroup.induction_on q' ?_
+  intro y
+  change (∃ h : H, h • QuotientGroup.mk (s := K) y = QuotientGroup.mk (s := K) x) ↔
+    DoubleCoset.mk H K x = DoubleCoset.mk H K y
+  constructor
+  · rintro ⟨h, hh⟩
+    have hk : x⁻¹ * ((h : G) * y) ∈ K :=
+      QuotientGroup.eq.mp (by
+        simpa only [Subgroup.smul_def, Quotient.smul_mk, smul_eq_mul] using hh.symm)
+    apply DoubleCoset.eq.mpr
+    refine ⟨(h : G)⁻¹, H.inv_mem h.property, x⁻¹ * ((h : G) * y), hk, ?_⟩
+    simp [mul_assoc]
+  · intro hxy
+    rcases DoubleCoset.eq.mp hxy with ⟨h, hh, k, hk, rfl⟩
+    refine ⟨⟨h⁻¹, H.inv_mem hh⟩, ?_⟩
+    simpa only [Subgroup.mk_smul, Quotient.smul_mk, smul_eq_mul,
+      mul_assoc, inv_mul_cancel_left] using
+      (QuotientGroup.mk_mul_of_mem (s := K) x hk)
+
+/-- Orbits of the restricted left `H`-action on `G ⧸ K` correspond to `H`–`K` double
+cosets. The map sends `[[g]K]H` to `H g K`, and the inverse sends `H g K` to `[[g]K]H`.
+Both functions come from the quotient-of-quotient equivalence and an identity-on-points
+relation congruence; no coset representatives are selected. -/
+def orbitQuotientQuotientEquivDoubleCoset (H K : Subgroup G) :
+    orbitRel.Quotient H (G ⧸ K) ≃ DoubleCoset.Quotient (H : Set G) (K : Set G) :=
+  (_root_.Quotient.congrRight (orbitRel_quotient_iff_ker_doubleCoset H K)).trans
+    (Setoid.quotientQuotientEquivQuotient (QuotientGroup.leftRel K)
+      (DoubleCoset.setoid (H : Set G) (K : Set G)) (DoubleCoset.leftRel_le_setoid H K))
+
+/-- The restricted orbit of `gK` maps to the double coset of `g`. -/
+@[simp]
+theorem orbitQuotientQuotientEquivDoubleCoset_apply_mk (H K : Subgroup G) (g : G) :
+    orbitQuotientQuotientEquivDoubleCoset H K
+        (_root_.Quotient.mk (orbitRel H (G ⧸ K)) (QuotientGroup.mk (s := K) g)) =
+      DoubleCoset.mk H K g :=
+  rfl
+
+/-- The double coset of `g` maps back to the restricted orbit of `gK`. -/
+@[simp]
+theorem orbitQuotientQuotientEquivDoubleCoset_symm_apply_mk (H K : Subgroup G) (g : G) :
+    (orbitQuotientQuotientEquivDoubleCoset H K).symm (DoubleCoset.mk H K g) =
+      _root_.Quotient.mk (orbitRel H (G ⧸ K)) (QuotientGroup.mk (s := K) g) :=
+  rfl
+
+/-- The stabilizer of `gK` for the restricted `H`-action is the inverse image of `gKg⁻¹`
+in `H`. This is an equality in `Subgroup H`, not an equality with an ambient intersection. -/
+theorem stabilizer_subgroup_quotient (H K : Subgroup G) (g : G) :
+    stabilizer H (QuotientGroup.mk (s := K) g) =
+      (K.map (MulAut.conj g).toMonoidHom).comap H.subtype := by
+  have hg : stabilizer G (QuotientGroup.mk (s := K) g) =
+      K.map (MulAut.conj g).toMonoidHom := by
+    simpa only [Quotient.smul_mk, smul_eq_mul, mul_one, stabilizer_quotient] using
+      stabilizer_smul_eq_stabilizer_map_conj g (QuotientGroup.mk (1 : G) : G ⧸ K)
+  exact congrArg (Subgroup.comap H.subtype) hg
+
+/-- An element of `H` fixes `gK` exactly when its conjugate by `g⁻¹` lies in `K`. -/
+theorem mem_stabilizer_subgroup_quotient_iff (H K : Subgroup G) (g : G) (h : H) :
+    h ∈ stabilizer H (QuotientGroup.mk (s := K) g) ↔ g⁻¹ * (h : G) * g ∈ K := by
+  rw [stabilizer_subgroup_quotient, Subgroup.mem_comap, Subgroup.mem_map_equiv,
+    MulAut.conj_symm_apply]
+  rfl
+
+/-- The canonical restricted coset action decomposes into its orbit fibers indexed by
+`H`–`K` double cosets. The fiber at `d` is the whole orbit corresponding to `d`, with its
+stock restricted action; it does not choose a basepoint or a lift to `G`.
+The stock sigma action fixes `d` and acts on that fiber. -/
+def quotientEquivSigmaDoubleCoset (H K : Subgroup G) :
+    (G ⧸ K) ≃ Σ d : DoubleCoset.Quotient (H : Set G) (K : Set G),
+      ((orbitQuotientQuotientEquivDoubleCoset H K).symm d).orbit :=
+  (selfEquivSigmaOrbits' H (G ⧸ K)).trans
+    (Equiv.sigmaCongrLeft' (orbitQuotientQuotientEquivDoubleCoset H K))
+
+/-- The index of a coset in the decomposition is its double-coset class. -/
+@[simp]
+theorem quotientEquivSigmaDoubleCoset_apply_fst (H K : Subgroup G) (q : G ⧸ K) :
+    (quotientEquivSigmaDoubleCoset H K q).1 =
+      orbitQuotientQuotientEquivDoubleCoset H K
+        (_root_.Quotient.mk (orbitRel H (G ⧸ K)) q) := by
+  rfl
+
+/-- The fiber point in the decomposition is the original coset. -/
+@[simp]
+theorem quotientEquivSigmaDoubleCoset_apply_snd (H K : Subgroup G) (q : G ⧸ K) :
+    (quotientEquivSigmaDoubleCoset H K q).2.val = q := by
+  exact (quotientEquivSigmaDoubleCoset H K).symm_apply_apply q
+
+/-- The inverse decomposition forgets the index and the orbit-membership proof. -/
+@[simp]
+theorem quotientEquivSigmaDoubleCoset_symm_apply (H K : Subgroup G)
+    (d : DoubleCoset.Quotient (H : Set G) (K : Set G))
+    (q : ((orbitQuotientQuotientEquivDoubleCoset H K).symm d).orbit) :
+    (quotientEquivSigmaDoubleCoset H K).symm ⟨d, q⟩ = q.val := by
+  rfl
+
+/-- The double-coset-indexed decomposition commutes with the restricted `H`-action. -/
+@[simp]
+theorem quotientEquivSigmaDoubleCoset_smul (H K : Subgroup G) (h : H) (q : G ⧸ K) :
+    quotientEquivSigmaDoubleCoset H K (h • q) =
+      h • quotientEquivSigmaDoubleCoset H K q := by
+  apply (quotientEquivSigmaDoubleCoset H K).symm.injective
+  rw [Equiv.symm_apply_apply]
+  exact congrArg (h • ·) (quotientEquivSigmaDoubleCoset_apply_snd H K q).symm
+
+/-- The inverse double-coset-indexed decomposition commutes with the action. -/
+@[simp]
+theorem quotientEquivSigmaDoubleCoset_symm_smul (H K : Subgroup G) (h : H)
+    (z : Σ d : DoubleCoset.Quotient (H : Set G) (K : Set G),
+      ((orbitQuotientQuotientEquivDoubleCoset H K).symm d).orbit) :
+    (quotientEquivSigmaDoubleCoset H K).symm (h • z) =
+      h • (quotientEquivSigmaDoubleCoset H K).symm z := by
+  rcases z with ⟨d, q⟩
+  rfl
 
 end MulAction

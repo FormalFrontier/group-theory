@@ -18,6 +18,10 @@ point fixed by `H`, expressed as the condition `H ≤ MulAction.stabilizer G x`.
 sends the coset of `g` to `g • x`. No normality of `H` or transitivity of `X` is needed.
 The fixed-point subtype need not be stable under `G`, so the result is a plain equivalence.
 
+`MulAction.orbitEquivQuotientStabilizer_smul` and its inverse smul lemma express the
+equivariance of Mathlib's existing orbit–stabilizer equivalence, preserving independent
+universes for the acting group and the acted-on type.
+
 For another subgroup `K`, `MulActionHom.nonempty_quotient_iff_exists_le_map_conj`
 characterizes existence of an equivariant map `G ⧸ H → G ⧸ K` by containment
 `H ≤ gKg⁻¹` for some `g : G`. The associated map sends the coset of `x` to the
@@ -65,6 +69,27 @@ theorem mem_fixedPoints_subgroup_iff {H : Subgroup G} {x : X} :
     exact hx ⟨g, hg⟩
   · intro hx g
     exact hx g.property
+
+/-- The inverse of the orbit–stabilizer equivalence commutes with the action.
+The acting group and the acted-on type may live in independent universes. -/
+@[simp]
+theorem orbitEquivQuotientStabilizer_symm_smul (x : X) (g : G)
+    (q : G ⧸ stabilizer G x) :
+    (orbitEquivQuotientStabilizer G x).symm (g • q) =
+      g • (orbitEquivQuotientStabilizer G x).symm q := by
+  apply Subtype.ext
+  exact ofQuotientStabilizer_smul G x g q
+
+/-- The orbit–stabilizer equivalence commutes with the action.
+Together with its inverse formula, this makes the existing plain equivalence equivariant;
+no new action or orbit carrier is required. -/
+@[simp]
+theorem orbitEquivQuotientStabilizer_smul (x : X) (g : G) (y : orbit G x) :
+    orbitEquivQuotientStabilizer G x (g • y) =
+      g • orbitEquivQuotientStabilizer G x y := by
+  apply (orbitEquivQuotientStabilizer G x).symm.injective
+  rw [Equiv.symm_apply_apply, orbitEquivQuotientStabilizer_symm_smul,
+    Equiv.symm_apply_apply]
 
 end MulAction
 

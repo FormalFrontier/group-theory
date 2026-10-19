@@ -172,6 +172,24 @@ use `H = K = ⟨(01)⟩` in `S₃`, with orbit sizes three and six and double-co
 sizes two and four. They use both directions of the equivalence and include
 an arbitrary-group `H = ⊤` boundary with one orbit class and one double-coset class.
 
+**Restricted coset actions.** For any group `G : Type u` and subgroups `H, K`,
+[`MulAction.orbitQuotientQuotientEquivDoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean)
+identifies the orbits of the canonical restricted `H`-action on `G ⧸ K` with
+`H`–`K` double cosets. It sends `orbit(gK)` to `H g K`, with the inverse formula
+on the same representative. The stabilizer at `gK`, as a subgroup of `H`, is
+`(K.map (MulAut.conj g).toMonoidHom).comap H.subtype`.
+Mathlib's `MulAction.orbitEquivQuotientStabilizer` identifies each orbit with
+`H ⧸ MulAction.stabilizer H (QuotientGroup.mk (s := K) g)`; the characteristic
+smul lemmas in [the coset-action API](GroupTheory/GroupAction/Quotient.lean)
+express equivariance without restricting the independent group and carrier universes.
+`MulAction.quotientEquivSigmaDoubleCoset` reindexes Mathlib's primed orbit partition
+by double cosets and commutes with the stock sigma action, which fixes the index.
+Its fibers are whole orbits: no representative or basepoint section is selected.
+Neither subgroup needs to be normal; no finiteness, topology or extra nonemptiness
+hypothesis is used. The [three-point permutation model](GroupTheoryTest/GroupAction/RestrictedCoset.lean)
+uses a nonnormal point stabilizer, an identity coset fixed by it, and a second orbit
+with two distinct cosets.
+
 **Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
 [`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
 bundles the canonical map `(G ⧸ H) →[G] (G ⧸ K)` for the left actions.
