@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
 public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank

@@ -21,6 +21,15 @@ in more detail.
 
 ## Headline results
 
+**Dense maps on units.** For monoids `M` and `N`,
+[`DenseRange.units_map`](GroupTheory/Topology/Algebra/Group/Units.lean) shows that
+a dense homomorphism `f : M →* N` which reflects units induces a dense map on unit
+groups if the canonical coercion `Nˣ → N` is an open embedding. Only `N` needs a
+topology; no continuity assumption on `f` is imposed. The
+[examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) verify the hypotheses
+for the rational inclusion into the reals and use the integer quotient modulo five
+to demonstrate why unit reflection cannot be omitted.
+
 **Left exactness of fixed vectors.** For a monoid `G` and modules over any semiring
 `R`, [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) provides
 the fixed submodule and the restriction `f.fixedSubmoduleMap` of an intertwining map.
@@ -387,6 +396,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Fixed vectors and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |

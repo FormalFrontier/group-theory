@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+import GroupTheoryTest.Topology.Algebra.Group.Units
 public import GroupTheoryTest.ActionCentralizer
 public import GroupTheoryTest.CyclicNorm
 public import GroupTheoryTest.FGScalarSurjectivity
