@@ -17,6 +17,11 @@ point fixed by `H`, expressed as the condition `H ≤ MulAction.stabilizer G x`.
 sends the coset of `g` to `g • x`. No normality of `H` or transitivity of `X` is needed.
 The fixed-point subtype need not be stable under `G`, so the result is a plain equivalence.
 
+For another subgroup `K`, `MulActionHom.nonempty_quotient_iff_exists_le_map_conj`
+characterizes existence of an equivariant map `G ⧸ H → G ⧸ K` by containment
+`H ≤ gKg⁻¹` for some `g : G`. The associated map sends the coset of `x` to the
+coset of `x * g`; neither subgroup needs to be normal.
+
 ## Implementation notes
 
 The inverse uses Mathlib's `MulAction.ofQuotientStabilizer` after
@@ -28,6 +33,8 @@ The inverse uses Mathlib's `MulAction.ofQuotientStabilizer` after
 The construction uses the coset maps and orbit–stabilizer maps in Mathlib's
 `Mathlib.GroupTheory.Coset.Basic` and `Mathlib.GroupTheory.GroupAction.Quotient`,
 and the equivariant-map API in `Mathlib.GroupTheory.GroupAction.Hom`.
+The existence criterion combines this universal property with Mathlib's stabilizer
+formula for a translated point in `Mathlib.GroupTheory.GroupAction.Basic`.
 -/
 
 @[expose] public section
@@ -154,5 +161,24 @@ theorem quotientEquivFixedPoints_symm_stabilizer (x : X) :
   refine Quotient.inductionOn' q ?_
   intro g
   rw [quotientEquivFixedPoints_symm_apply_mk, MulAction.ofQuotientStabilizer_mk]
+
+/-- An equivariant map between left-coset actions exists exactly when `H` is contained
+in a conjugate `gKg⁻¹` of `K`. The fixed-point universal property at the coset of `g`
+gives the map `[x] ↦ [x * g]`; its well-definedness is `g⁻¹ * h * g ∈ K` for `h ∈ H`.
+No normality or finiteness hypothesis is required. -/
+theorem nonempty_quotient_iff_exists_le_map_conj (H K : Subgroup G) :
+    Nonempty ((G ⧸ H) →[G] (G ⧸ K)) ↔
+      ∃ g : G, H ≤ K.map (MulAut.conj g).toMonoidHom := by
+  rw [(quotientEquivFixedPoints G H (G ⧸ K)).nonempty_congr,
+    nonempty_subtype, QuotientGroup.exists_mk]
+  apply exists_congr
+  intro g
+  have hg : MulAction.stabilizer G (QuotientGroup.mk g : G ⧸ K) =
+      K.map (MulAut.conj g).toMonoidHom := by
+    simpa only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one,
+      MulAction.stabilizer_quotient] using
+      MulAction.stabilizer_smul_eq_stabilizer_map_conj g
+        (QuotientGroup.mk (1 : G) : G ⧸ K)
+  rw [hg]
 
 end MulActionHom

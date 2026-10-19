@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.Quotient
+import GroupTheory.GroupAction.Quotient
 import GroupTheory.GroupAction.QuotientMap
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Data.Int.Basic
@@ -1136,5 +1137,25 @@ private theorem J_nontrivial_observed_translation :
   exact fun h => (by norm_num : (1 : ℤ) ≠ 0) (ofAdd_eq_one.mp h)
 
 end PartitionProduct
+
+-- Conjugate containment, not inclusion, controls maps between left-coset actions.
+private theorem conjugate_coset_hom_exists_not_le :
+    Nonempty ((P ⧸ K.map (MulAut.conj sigma).toMonoidHom) →[P] (P ⧸ K)) ∧
+      ¬ K.map (MulAut.conj sigma).toMonoidHom ≤ K := by
+  constructor
+  · exact (MulActionHom.nonempty_quotient_iff_exists_le_map_conj _ _).mpr ⟨sigma, le_rfl⟩
+  · intro h
+    have htau : sigma * tau * sigma⁻¹ ∈ K.map (MulAut.conj sigma).toMonoidHom :=
+      ⟨tau, Subgroup.mem_zpowers tau, rfl⟩
+    exact (by decide : (sigma * tau * sigma⁻¹) (2 : Fin 3) ≠ 2)
+      (K_fixes_two (h htau))
+
+private theorem no_coset_hom_to_bottom :
+    ¬ Nonempty ((P ⧸ K) →[P] (P ⧸ (⊥ : Subgroup P))) := by
+  rw [MulActionHom.nonempty_quotient_iff_exists_le_map_conj]
+  rintro ⟨g, hg⟩
+  have htau := hg (Subgroup.mem_zpowers tau)
+  rw [Subgroup.map_bot, Subgroup.mem_bot] at htau
+  exact (by decide : tau ≠ (1 : P)) htau
 
 end GroupTheoryTest.Topology.Algebra.Group.Quotient

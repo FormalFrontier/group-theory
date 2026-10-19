@@ -517,6 +517,8 @@ status:
       file: GroupTheory/GroupAction/Quotient.lean
     - declaration: MulActionHom.quotientEquivFixedPoints_symm_stabilizer
       file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: MulActionHom.nonempty_quotient_iff_exists_le_map_conj
+      file: GroupTheory/GroupAction/Quotient.lean
     - declaration: MulActionHom.quotientMapOfLE
       file: GroupTheory/GroupAction/QuotientMap.lean
     - declaration: MulActionHom.coe_quotientMapOfLE

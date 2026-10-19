@@ -170,10 +170,8 @@ private theorem exists_normalizer_inv_smul_eq [IsPretransitive G X] (x : X)
 
 private noncomputable def quotientStabilizerEquiv [IsPretransitive G X] (x : X) :
     (G ⧸ stabilizer G x) ≃ X :=
-  Equiv.ofBijective (ofQuotientStabilizer (X := X) G x)
-    ⟨injective_ofQuotientStabilizer (X := X) G x, fun y => by
-      obtain ⟨g, rfl⟩ := exists_smul_eq G x y
-      exact ⟨QuotientGroup.mk g, rfl⟩⟩
+  ((orbitEquivQuotientStabilizer G x).symm.trans
+    (Set.equivOfEq (orbit_eq_univ G x))).trans (Equiv.Set.univ X)
 
 private theorem quotientStabilizerEquiv_smul [IsPretransitive G X] (x : X)
     (g : G) (q : G ⧸ stabilizer G x) :

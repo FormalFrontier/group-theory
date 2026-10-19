@@ -95,6 +95,16 @@ Evaluation formulas, extensionality, uniqueness, target naturality and agreement
 with Mathlib's map from stabilizer cosets characterize the construction.
 The [permutation-action clients](GroupTheoryTest/CosetActionHom.lean) recover both
 an orbit map and a constant map, with empty-target and one-point boundaries.
+For any two subgroups `H, K`,
+`MulActionHom.nonempty_quotient_iff_exists_le_map_conj` gives
+`Nonempty ((G ⧸ H) →[G] (G ⧸ K)) ↔ ∃ g : G, H ≤ K.map (MulAut.conj g).toMonoidHom`.
+Thus a map exists exactly when `H ≤ gKg⁻¹` for some `g`; the corresponding map
+sends `[x]` to `[x * g]`. Neither subgroup needs to be normal, and no finiteness
+assumption is imposed. The existing
+[three-point permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
+take `K = ⟨(01)⟩` and `g = (12)`: there is an equivariant map
+`G ⧸ (gKg⁻¹) → G ⧸ K` even though `gKg⁻¹ ≰ K`, whereas there is no
+equivariant map `G ⧸ K → G ⧸ ⊥`.
 
 **Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
 [`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
@@ -484,6 +494,8 @@ claim is implied by this guidance.
   constructions by Chris Hughes, Thomas Browning and Yury Kudryashov, and its
   equivariant-map API by Kenny Lau and Antoine Chambert-Loir. Its clients use
   Yaël Dillies's option actions and Kenny Lau's one-point action instances.
+  The existence criterion for maps between cosets combines this universal property
+  with Mathlib's conjugated-stabilizer formula.
   Maps between nested coset spaces reuse `Subgroup.quotientMapOfLE` and generalize
   the finite-coset morphism in `Mathlib.CategoryTheory.Action.Concrete`.
 - Mathlib's `OpenSubgroup` and `MulAction.stabilizer` supply the algebraic interface;
