@@ -43,3 +43,4 @@ public import GroupTheory.Subgroup.IndexTwo
 public import GroupTheory.FreeGroup.IndexTwo
 public import GroupTheory.Transversal
 public import GroupTheory.Topology.CrossedHom
+public import GroupTheory.Topology.Algebra.MulAction

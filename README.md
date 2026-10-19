@@ -22,6 +22,14 @@ in more detail.
 
 ## Headline results
 
+**Continuous actions on discrete spaces.** For a group with a topology whose fixed
+left translations are continuous, acting on a discrete space,
+[`MulAction.continuous_smul_const_iff_stabilizer_isOpen`](GroupTheory/Topology/Algebra/MulAction.lean)
+characterizes continuity of each orbit map by openness of its stabilizer.
+`MulAction.continuousSMul_iff_stabilizer_isOpen` characterizes joint continuity by
+openness of all stabilizers. Additive versions are included. Joint continuity of
+multiplication, continuity of inversion, separation and normality are not required.
+
 **Dense maps on units.** For monoids `M` and `N`,
 [`DenseRange.units_map`](GroupTheory/Topology/Algebra/Group/Units.lean) shows that
 a dense homomorphism `f : M →* N` which reflects units induces a dense map on unit

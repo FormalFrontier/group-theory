@@ -88,6 +88,7 @@ variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
 /-- A subgroup is open exactly when its canonical left-coset quotient is discrete,
 assuming only continuity of fixed left translations. Compactness and normality
 are not required. The supplied quotient topology is unchanged. -/
+@[to_additive]
 theorem isOpen_iff_discreteTopology_quotient (H : Subgroup G) :
     IsOpen (H : Set G) ↔ DiscreteTopology (G ⧸ H) := by
   constructor
