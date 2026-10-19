@@ -96,6 +96,16 @@ with Mathlib's map from stabilizer cosets characterize the construction.
 The [permutation-action clients](GroupTheoryTest/CosetActionHom.lean) recover both
 an orbit map and a constant map, with empty-target and one-point boundaries.
 
+**Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
+[`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
+bundles the canonical map `(G ⧸ H) →[G] (G ⧸ K)` for the left actions.
+It is surjective, sends each representative to the same representative,
+preserves identity inclusions and composition, and commutes with `toQuotient`.
+No normality or finiteness assumption is required. When both coset spaces
+are finite, the underlying function agrees with Mathlib's finite
+`G`-set morphism. The existing [permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
+exhibit distinct source classes that merge, while a third class stays distinct.
+
 **Action automorphisms as centralizers.** For a group `G` and an action `A`
 on an object of any category `C`, `Action.autEquivCentralizer` constructs
 `Aut A ≃* Subgroup.centralizer (Set.range A.ρAut)`. The group, object and
@@ -413,6 +423,7 @@ claim is implied by this guidance.
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
+| Equivariant maps between nested coset spaces | [`GroupAction.QuotientMap`](GroupTheory/GroupAction/QuotientMap.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
@@ -473,6 +484,8 @@ claim is implied by this guidance.
   constructions by Chris Hughes, Thomas Browning and Yury Kudryashov, and its
   equivariant-map API by Kenny Lau and Antoine Chambert-Loir. Its clients use
   Yaël Dillies's option actions and Kenny Lau's one-point action instances.
+  Maps between nested coset spaces reuse `Subgroup.quotientMapOfLE` and generalize
+  the finite-coset morphism in `Mathlib.CategoryTheory.Action.Concrete`.
 - Mathlib's `OpenSubgroup` and `MulAction.stabilizer` supply the algebraic interface;
   its compact-neighborhood and clopen-basis results supply the topological inputs.
 - Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, corrected

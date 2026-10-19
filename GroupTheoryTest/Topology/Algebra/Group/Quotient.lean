@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.Quotient
+import GroupTheory.GroupAction.QuotientMap
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Fintype.Perm
@@ -934,6 +935,34 @@ private theorem bottom_projection_injective :
     Function.Injective (QuotientGroup.mk : P → P ⧸ (⊥ : Subgroup P)) := by
   intro x y h
   exact eq_of_inv_mul_eq_one (Subgroup.mem_bot.mp (QuotientGroup.eq.mp h))
+
+-- The identity inclusion retains distinct classes, whereas bottom → K merges 1 and tau.
+private theorem nested_coset_identity_distinguishes_sigma :
+    MulActionHom.quotientMapOfLE (le_refl K) (QuotientGroup.mk (1 : P)) ≠
+      MulActionHom.quotientMapOfLE (le_refl K) (QuotientGroup.mk sigma) := by
+  simp only [MulActionHom.quotientMapOfLE_refl, MulActionHom.id_apply]
+  intro h
+  exact sigma_not_mem_K (by simpa only [inv_one, one_mul] using QuotientGroup.eq.mp h)
+
+private theorem nested_coset_collision :
+    (QuotientGroup.mk (1 : P) : P ⧸ (⊥ : Subgroup P)) ≠ QuotientGroup.mk tau ∧
+      MulActionHom.quotientMapOfLE (bot_le : (⊥ : Subgroup P) ≤ K)
+          (QuotientGroup.mk (1 : P)) =
+        MulActionHom.quotientMapOfLE (bot_le : (⊥ : Subgroup P) ≤ K)
+          (QuotientGroup.mk tau) ∧
+      MulActionHom.quotientMapOfLE (bot_le : (⊥ : Subgroup P) ≤ K)
+          (QuotientGroup.mk (1 : P)) ≠
+        MulActionHom.quotientMapOfLE (bot_le : (⊥ : Subgroup P) ≤ K)
+          (QuotientGroup.mk sigma) := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro h
+    exact (by decide : (1 : P) ≠ tau) (bottom_projection_injective h)
+  · rw [MulActionHom.quotientMapOfLE_apply_mk, MulActionHom.quotientMapOfLE_apply_mk]
+    apply QuotientGroup.eq.mpr
+    simpa only [inv_one, one_mul] using Subgroup.mem_zpowers tau
+  · simpa only [MulActionHom.quotientMapOfLE_apply_mk,
+      MulActionHom.quotientMapOfLE_refl, MulActionHom.id_apply] using
+      nested_coset_identity_distinguishes_sigma
 
 private theorem partition_bottom_not_t1 : ¬ T1Space (P ⧸ (⊥ : Subgroup P)) := by
   intro h
