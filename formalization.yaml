@@ -90,6 +90,11 @@ project:
     continuity, joint multiplication, continuous inversion or ambient separation
     is required. The existing quotient and coinduced topology are unchanged.
 
+    For any group G and arbitrary subgroups H and K, the canonical left-coset
+    G-sets G / H and G / K are isomorphic exactly when H and K are conjugate.
+    An equality H = gKg⁻¹ gives right translation [z] ↦ [z * g], with inverse
+    [z] ↦ [z * g⁻¹]. No finiteness, normality or topological assumption is needed.
+
     For finitely generated abelian groups, surjectivity of the
     n-scalar map with n ≥ 2 forces finiteness and coprimality with Nat.card A
     and yields a uniform two-sided integer-scalar inverse; the converse
@@ -378,6 +383,18 @@ status:
     separate continuity, inversion and T0/T1/T2; independent closedness and
     algebraic index-three witnesses supply the new API's premises.
 
+    Action.nonempty_quotient_iso_iff_exists_eq_map_conj characterizes isomorphisms
+    between Action.ofMulAction G (G ⧸ H) and Action.ofMulAction G (G ⧸ K) by
+    an equality H = K.map (MulAut.conj g).toMonoidHom for some g : G.
+    Only Group G and arbitrary subgroups H and K are required. The controlled
+    constructor Action.quotientIsoOfEqMapConj has forward formula [z] ↦ [z * g]
+    and inverse formula [z] ↦ [z * g⁻¹]; its hom_mk, inv_mk and hom_one lemmas
+    characterize these maps. The identity coset maps to the coset of g, not
+    a unique representative. Both maps use MulActionHom.quotientEquivFixedPoints;
+    Mathlib's Action.mkIso supplies the categorical isomorphism.
+    This criterion concerns the canonical left-coset actions, not merely
+    equivariant maps in both directions or arbitrary infinite endomaps.
+
     For [AddGroup.FG A] on an additive commutative group and natural n ≥ 2,
     surjectivity of the map x ↦ n • x implies finite A, coprimality
     of n with Nat.card A and a uniform two-sided integer-scalar inverse.
@@ -518,6 +535,16 @@ status:
     - declaration: MulActionHom.quotientEquivFixedPoints_symm_stabilizer
       file: GroupTheory/GroupAction/Quotient.lean
     - declaration: MulActionHom.nonempty_quotient_iff_exists_le_map_conj
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: Action.nonempty_quotient_iso_iff_exists_eq_map_conj
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: Action.quotientIsoOfEqMapConj
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: Action.quotientIsoOfEqMapConj_hom_mk
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: Action.quotientIsoOfEqMapConj_inv_mk
+      file: GroupTheory/GroupAction/Quotient.lean
+    - declaration: Action.quotientIsoOfEqMapConj_hom_one
       file: GroupTheory/GroupAction/Quotient.lean
     - declaration: MulActionHom.quotientMapOfLE
       file: GroupTheory/GroupAction/QuotientMap.lean

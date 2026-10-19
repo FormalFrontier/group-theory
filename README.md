@@ -14,7 +14,7 @@ totally disconnected spaces, finite cyclic norms and natural scalar maps of
 finitely generated abelian groups, kernels of induced quotient maps, torsion in
 additive quotients, additive and biadditive Grothendieck extensions, ring structures
 and multiplicative universal properties on additive Grothendieck groups of semirings,
-and automorphism groups of group actions.
+canonical coset-action isomorphisms, and automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -105,6 +105,30 @@ assumption is imposed. The existing
 take `K = ⟨(01)⟩` and `g = (12)`: there is an equivariant map
 `G ⧸ (gKg⁻¹) → G ⧸ K` even though `gKg⁻¹ ≰ K`, whereas there is no
 equivariant map `G ⧸ K → G ⧸ ⊥`.
+
+**Coset-action isomorphisms and conjugacy.** For any group `G : Type u` and
+subgroups `H, K`, `Action.nonempty_quotient_iso_iff_exists_eq_map_conj` states
+
+```lean
+Nonempty (Action.ofMulAction G (G ⧸ H) ≅ Action.ofMulAction G (G ⧸ K)) ↔
+  ∃ g : G, H = K.map (MulAut.conj g).toMonoidHom
+```
+
+Thus the canonical left-coset `G`-sets are isomorphic exactly when the subgroups
+are conjugate. The group may be infinite and the subgroups need not be normal;
+no topology, freeness or faithfulness is assumed.
+Given `h : H = K.map (MulAut.conj g).toMonoidHom`,
+`Action.quotientIsoOfEqMapConj H K g h` constructs the isomorphism
+`[z] ↦ [z * g]`, with inverse `[z] ↦ [z * g⁻¹]`.
+The lemmas `Action.quotientIsoOfEqMapConj_hom_mk`,
+`Action.quotientIsoOfEqMapConj_inv_mk` and `Action.quotientIsoOfEqMapConj_hom_one`
+give the representative formulas and the identity-coset image `[g]`.
+This image is the coset of `g`, not a unique representative.
+Both maps use `MulActionHom.quotientEquivFixedPoints`; Mathlib's `Action.mkIso`
+supplies the categorical isomorphism.
+Existence of equivariant maps in both directions alone is not the isomorphism
+criterion. See the [coset-action API](GroupTheory/GroupAction/Quotient.lean)
+and [nonnormal permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean).
 
 **Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
 [`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
@@ -433,6 +457,7 @@ claim is implied by this guidance.
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
+| Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Equivariant maps between nested coset spaces | [`GroupAction.QuotientMap`](GroupTheory/GroupAction/QuotientMap.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |

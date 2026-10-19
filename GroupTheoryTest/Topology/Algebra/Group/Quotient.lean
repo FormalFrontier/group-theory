@@ -1159,3 +1159,54 @@ private theorem no_coset_hom_to_bottom :
   exact (by decide : tau ≠ (1 : P)) htau
 
 end GroupTheoryTest.Topology.Algebra.Group.Quotient
+
+namespace GroupTheoryTest.Topology.Algebra.Group.Quotient
+
+open CategoryTheory
+
+-- The same nonnormal subgroup and its conjugate give an actual controlled isomorphism.
+private noncomputable def conjugateCosetIso :
+    Action.ofMulAction P (P ⧸ K.map (MulAut.conj sigma).toMonoidHom) ≅
+      Action.ofMulAction P (P ⧸ K) :=
+  Action.quotientIsoOfEqMapConj _ _ sigma rfl
+
+private theorem conjugate_coset_iso_characteristic :
+    conjugateCosetIso.hom.hom (QuotientGroup.mk tau) = QuotientGroup.mk (tau * sigma) ∧
+      conjugateCosetIso.inv.hom (QuotientGroup.mk tau) = QuotientGroup.mk (tau * sigma) ∧
+      conjugateCosetIso.hom.hom (QuotientGroup.mk (1 : P)) = QuotientGroup.mk sigma := by
+  refine ⟨Action.quotientIsoOfEqMapConj_hom_mk _ _ sigma rfl tau, ?_,
+    Action.quotientIsoOfEqMapConj_hom_one _ _ sigma rfl⟩
+  have hs : sigma⁻¹ = sigma := by simp only [sigma, Equiv.swap_inv]
+  have hi := Action.quotientIsoOfEqMapConj_inv_mk
+    (K.map (MulAut.conj sigma).toMonoidHom) K sigma rfl tau
+  rw [hs] at hi
+  exact hi
+
+-- Isomorphism needs conjugacy, not inclusion or normality.
+private theorem conjugate_coset_iso_exists_not_le :
+    Nonempty (Action.ofMulAction P (P ⧸ K.map (MulAut.conj sigma).toMonoidHom) ≅
+      Action.ofMulAction P (P ⧸ K)) ∧
+      ¬ K.map (MulAut.conj sigma).toMonoidHom ≤ K ∧ ¬ K.Normal := by
+  exact ⟨(Action.nonempty_quotient_iso_iff_exists_eq_map_conj _ _).mpr ⟨sigma, rfl⟩,
+    conjugate_coset_hom_exists_not_le.2, partition_K_not_normal⟩
+
+private theorem identity_coset_iso_characteristic :
+    (Action.quotientIsoOfEqMapConj K K (1 : P) (by simp)).hom.hom
+        (QuotientGroup.mk tau) = (QuotientGroup.mk tau : P ⧸ K) ∧
+      (Action.quotientIsoOfEqMapConj K K (1 : P) (by simp)).inv.hom
+        (QuotientGroup.mk tau) = (QuotientGroup.mk tau : P ⧸ K) := by
+  constructor
+  · simpa only [mul_one] using
+      Action.quotientIsoOfEqMapConj_hom_mk K K (1 : P) (by simp) tau
+  · simpa only [inv_one, mul_one] using
+      Action.quotientIsoOfEqMapConj_inv_mk K K (1 : P) (by simp) tau
+
+private theorem no_coset_iso_to_bottom :
+    ¬ Nonempty (Action.ofMulAction P (P ⧸ K) ≅
+      Action.ofMulAction P (P ⧸ (⊥ : Subgroup P))) := by
+  intro h
+  obtain ⟨g, hg⟩ := (Action.nonempty_quotient_iso_iff_exists_eq_map_conj K ⊥).mp h
+  exact no_coset_hom_to_bottom
+    ((MulActionHom.nonempty_quotient_iff_exists_le_map_conj K ⊥).mpr ⟨g, hg.le⟩)
+
+end GroupTheoryTest.Topology.Algebra.Group.Quotient
