@@ -8,6 +8,8 @@ module
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.ConstMulAction
+public import GroupTheory.GroupAction.Quotient
+public import GroupTheory.Topology.Algebra.MulActionHom
 
 /-!
 # Subgroups and the topology of left-coset quotients
@@ -23,6 +25,12 @@ Fixed left actions on the canonical quotient inherit continuity from the source,
 for every subgroup; the additive quotient has the corresponding fixed-addition
 instance.
 
+Continuous equivariant maps on `G ⧸ H` carry the compact-open subspace topology.
+`ContinuousMulActionHom.quotientHomeomorphFixedPoints` identifies this space with
+`MulAction.fixedPoints H X` in its usual subspace topology. For this construction,
+right translations of `G` must be continuous and the action on `X` must be jointly
+continuous. No continuity of varying inversion is needed.
+
 ## Implementation notes
 
 The quotient and its coinduced topology are Mathlib's existing objects. A singleton
@@ -30,7 +38,11 @@ fiber over the class of `g` is the left coset `g • H`; `IsOpen.smul`, `IsClose
 and the coinducing projection relate subgroup properties to quotient singletons.
 A finite T1 space is discrete. These facts do not require the stronger
 arbitrary-subgroup open-projection theorem, whose right-saturation argument
-requires right translations.
+requires right translations. The continuous coset-map construction uses the
+existing algebraic equivalence `MulActionHom.quotientEquivFixedPoints` and
+`MulAction.mem_fixedPoints_subgroup_iff`. Its inverse family descends the joint
+action along the identity times the open quotient projection, then uses the
+one-way compact-open currying theorem, not a joint-evaluation converse.
 
 ## References
 
@@ -40,6 +52,9 @@ requires right translations.
 * Mathlib's `QuotientGroup.discreteTopology_iff`, `QuotientGroup.t1Space_iff`,
   `Subgroup.quotient_finite_of_isOpen`, `Subgroup.isOpen_of_isClosed_of_finiteIndex`
   and `Subgroup.isClosed_of_isOpen` provide separately continuous specializations.
+* Mathlib's compact-open topology, fixed-point evaluation and
+  `ContinuousMap.continuous_of_continuous_uncurry`, together with products of
+  open quotient maps, supply the continuous-family interfaces.
 -/
 
 @[expose] public section
@@ -174,3 +189,217 @@ theorem isClopen_iff_isClosed (H : Subgroup G) [H.FiniteIndex] :
   exact (H.isClopen_iff_isOpen).trans H.isOpen_iff_isClosed
 
 end Subgroup
+
+namespace QuotientGroup
+
+/-- The left-coset projection is an open quotient map when each right translation
+of the group is continuous. The subgroup need not be normal or closed. This
+extends `QuotientGroup.isOpenQuotientMap_mk` without requiring left translations. -/
+theorem isOpenQuotientMap_mk_of_continuousConstSMul_op
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul Gᵐᵒᵖ G]
+    (H : Subgroup G) : IsOpenQuotientMap (mk : G → G ⧸ H) := by
+  refine IsOpenQuotientMap.of_isOpenMap_isQuotientMap ?_ (isQuotientMap_mk H)
+  intro U hU
+  rw [← (isQuotientMap_mk H).isCoinducing.isOpen_preimage, preimage_image_mk_eq_mul]
+  exact hU.mul_right
+
+/-- Under separately continuous multiplication, the right-translation formulation
+of openness agrees with Mathlib's open quotient map on the same coset space. -/
+theorem isOpenQuotientMap_mk_of_continuousConstSMul_op_eq
+    {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
+    (H : Subgroup G) :
+    isOpenQuotientMap_mk_of_continuousConstSMul_op H =
+      (isOpenQuotientMap_mk (N := H) : IsOpenQuotientMap (mk : G → G ⧸ H)) := by
+  exact Subsingleton.elim _ _
+
+end QuotientGroup
+
+universe v
+
+namespace ContinuousMulActionHom
+
+section FixedPointMap
+
+variable (G : Type u) [Group G] [TopologicalSpace G]
+variable (H : Subgroup G) (X : Type v) [TopologicalSpace X]
+variable [MulAction G X]
+
+/-- If the orbit map of an `H`-fixed point is continuous, its associated algebraic
+coset map is continuous. This uses only the quotient topology, not joint
+continuity of the action or right-translation continuity of the group. -/
+theorem continuous_quotientEquivFixedPoints_symm (x : ↥(MulAction.fixedPoints H X))
+    (hx : Continuous (fun g : G => g • x.val)) :
+    Continuous (((MulActionHom.quotientEquivFixedPoints G H X).symm
+      ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩) : G ⧸ H → X) := by
+  apply (QuotientGroup.isQuotientMap_mk H).continuous_iff.mpr
+  have hcomp :
+      (((MulActionHom.quotientEquivFixedPoints G H X).symm
+          ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩) : G ⧸ H → X) ∘
+          (QuotientGroup.mk : G → G ⧸ H) =
+        fun g : G => g • x.val := by
+    funext g
+    exact MulActionHom.quotientEquivFixedPoints_symm_apply_mk
+      ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩ g
+  rw [hcomp]
+  exact hx
+
+variable [ContinuousSMul G X]
+
+/-- The continuous equivariant map on cosets determined by an `H`-fixed point,
+using the algebraic coset-map equivalence. -/
+def ofQuotientFixedPoint (x : ↥(MulAction.fixedPoints H X)) :
+    ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X :=
+  ofMulActionHom
+    ((MulActionHom.quotientEquivFixedPoints G H X).symm
+      ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩)
+    (continuous_quotientEquivFixedPoints_symm G H X x
+      (continuous_id.smul continuous_const))
+
+/-- Forgetting continuity recovers the algebraic map associated to the fixed point. -/
+@[simp]
+theorem ofQuotientFixedPoint_toMulActionHom (x : ↥(MulAction.fixedPoints H X)) :
+    (ofQuotientFixedPoint G H X x).toMulActionHom =
+      (MulActionHom.quotientEquivFixedPoints G H X).symm
+        ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩ := rfl
+
+/-- On the coset represented by `g`, the map associated to `x` has value `g • x`. -/
+@[simp]
+theorem ofQuotientFixedPoint_apply_mk (x : ↥(MulAction.fixedPoints H X)) (g : G) :
+    ofQuotientFixedPoint G H X x (QuotientGroup.mk g) = g • x.val := by
+  exact MulActionHom.quotientEquivFixedPoints_symm_apply_mk
+    ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩ g
+
+/-- Joint evaluation of the coset maps determined by `H`-fixed points is continuous
+when right translations of `G` are continuous and the action on `X` is jointly
+continuous. No local compactness or separation assumptions are needed. -/
+theorem continuous_uncurry_ofQuotientFixedPoint [ContinuousConstSMul Gᵐᵒᵖ G] :
+    Continuous (fun p : ↥(MulAction.fixedPoints H X) × (G ⧸ H) =>
+      ofQuotientFixedPoint G H X p.1 p.2) := by
+  have hpair : Continuous
+      (fun p : ↥(MulAction.fixedPoints H X) × G => (p.2, p.1.val)) :=
+    continuous_snd.prodMk (continuous_subtype_val.comp continuous_fst)
+  have hsmul : Continuous
+      (fun p : ↥(MulAction.fixedPoints H X) × G => p.2 • p.1.val) :=
+    (continuous_smul (M := G) (X := X)).comp hpair
+  -- Descend in parameter × quotient order, as required for currying.
+  have hq := (IsOpenQuotientMap.id (X := ↥(MulAction.fixedPoints H X))).prodMap
+    (QuotientGroup.isOpenQuotientMap_mk_of_continuousConstSMul_op H)
+  apply hq.isQuotientMap.continuous_iff.mpr
+  have hcomp :
+      (fun p : ↥(MulAction.fixedPoints H X) × (G ⧸ H) =>
+          ofQuotientFixedPoint G H X p.1 p.2) ∘
+          Prod.map (@_root_.id ↥(MulAction.fixedPoints H X))
+            (QuotientGroup.mk : G → G ⧸ H) =
+        fun p : ↥(MulAction.fixedPoints H X) × G => p.2 • p.1.val := by
+    funext p
+    exact ofQuotientFixedPoint_apply_mk G H X p.1 p.2
+  rw [hcomp]
+  exact hsmul
+
+/-- The family of coset maps determined by `H`-fixed points is continuous for the
+compact-open subspace topology when right translations of `G` are continuous
+and the action on `X` is jointly continuous. -/
+theorem continuous_ofQuotientFixedPoint [ContinuousConstSMul Gᵐᵒᵖ G] :
+    Continuous (ofQuotientFixedPoint G H X) := by
+  exact continuous_of_continuous_uncurry (ofQuotientFixedPoint G H X)
+    (continuous_uncurry_ofQuotientFixedPoint G H X)
+
+end FixedPointMap
+
+/-- Continuous equivariant maps from `G ⧸ H` correspond homeomorphically to the
+`H`-fixed points of `X`. The forward function evaluates at the identity coset;
+the inverse sends the coset of `g` to `g • x`.
+
+The topology on maps is induced from the compact-open topology on `C(G ⧸ H, X)`.
+The fixed points have the canonical subspace topology of `X`, with the canonical
+restricted `H`-action. The subgroup is arbitrary. Continuous right translations
+and a jointly continuous action suffice: neither continuous inversion, left
+translations, local compactness, separation nor nonemptiness is assumed.
+The underlying functions use `MulActionHom.quotientEquivFixedPoints`. -/
+def quotientHomeomorphFixedPoints
+    (G : Type u) [Group G] [TopologicalSpace G] [ContinuousConstSMul Gᵐᵒᵖ G]
+    (H : Subgroup G) (X : Type v) [TopologicalSpace X]
+    [MulAction G X] [ContinuousSMul G X] :
+    ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X ≃ₜ ↥(MulAction.fixedPoints H X) where
+  toEquiv :=
+    { toFun := fun f =>
+        ⟨(MulActionHom.quotientEquivFixedPoints G H X f.toMulActionHom).val,
+          MulAction.mem_fixedPoints_subgroup_iff.mpr
+            (MulActionHom.quotientEquivFixedPoints G H X f.toMulActionHom).property⟩
+      invFun := ofQuotientFixedPoint G H X
+      left_inv := by
+        intro f
+        apply toMulActionHom_injective
+        exact (MulActionHom.quotientEquivFixedPoints G H X).symm_apply_apply
+          f.toMulActionHom
+      right_inv := by
+        intro x
+        apply Subtype.ext
+        exact (ofQuotientFixedPoint_apply_mk G H X x 1).trans (one_smul G x.val) }
+  continuous_toFun := by
+    exact
+      (continuous_eval_const (F := ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X)
+        (QuotientGroup.mk (1 : G))).subtype_mk _
+  continuous_invFun := continuous_ofQuotientFixedPoint G H X
+
+section Characteristic
+
+variable {G : Type u} [Group G] [TopologicalSpace G]
+variable {H : Subgroup G} {X : Type v} [TopologicalSpace X] [MulAction G X]
+
+/-- Two continuous equivariant coset maps agree if they agree at the identity coset. -/
+theorem quotient_ext {f g : ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X}
+    (h : f (QuotientGroup.mk (1 : G)) = g (QuotientGroup.mk (1 : G))) : f = g := by
+  exact toMulActionHom_injective (MulActionHom.quotient_ext h)
+
+/-- Equality of continuous equivariant coset maps is detected at the identity coset. -/
+theorem quotient_ext_iff {f g : ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X} :
+    f = g ↔ f (QuotientGroup.mk (1 : G)) = g (QuotientGroup.mk (1 : G)) := by
+  exact ⟨fun h => DFunLike.congr_fun h _, quotient_ext⟩
+
+variable [ContinuousConstSMul Gᵐᵒᵖ G] [ContinuousSMul G X]
+
+/-- The homeomorphism evaluates at the identity coset. -/
+@[simp]
+theorem quotientHomeomorphFixedPoints_apply
+    (f : ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X) :
+    (quotientHomeomorphFixedPoints G H X f).val = f (QuotientGroup.mk (1 : G)) := rfl
+
+/-- After forgetting continuity, the forward map is the algebraic fixed-point map,
+with its fixed-point predicate expressed as stabilizer containment. -/
+theorem quotientHomeomorphFixedPoints_forget
+    (f : ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X) :
+    MulActionHom.quotientEquivFixedPoints G H X f.toMulActionHom =
+      ⟨(quotientHomeomorphFixedPoints G H X f).val,
+        MulAction.mem_fixedPoints_subgroup_iff.mp
+          (quotientHomeomorphFixedPoints G H X f).property⟩ := by
+  exact Subtype.ext rfl
+
+/-- The inverse homeomorphism forgets to the original algebraic inverse. -/
+@[simp]
+theorem quotientHomeomorphFixedPoints_symm_toMulActionHom
+    (x : ↥(MulAction.fixedPoints H X)) :
+    ((quotientHomeomorphFixedPoints G H X).symm x).toMulActionHom =
+      (MulActionHom.quotientEquivFixedPoints G H X).symm
+        ⟨x.val, MulAction.mem_fixedPoints_subgroup_iff.mp x.property⟩ := rfl
+
+/-- The inverse homeomorphism sends a representative `g` to `g • x`. -/
+@[simp]
+theorem quotientHomeomorphFixedPoints_symm_apply_mk
+    (x : ↥(MulAction.fixedPoints H X)) (g : G) :
+    (quotientHomeomorphFixedPoints G H X).symm x (QuotientGroup.mk g) = g • x.val := by
+  exact ofQuotientFixedPoint_apply_mk G H X x g
+
+/-- The inverse gives the unique continuous equivariant map with the specified
+value at the identity coset. -/
+theorem quotientHomeomorphFixedPoints_symm_eq_iff
+    (x : ↥(MulAction.fixedPoints H X))
+    (f : ContinuousMulActionHom (@_root_.id G) (G ⧸ H) X) :
+    (quotientHomeomorphFixedPoints G H X).symm x = f ↔
+      f (QuotientGroup.mk (1 : G)) = x.val := by
+  rw [quotient_ext_iff, quotientHomeomorphFixedPoints_symm_apply_mk, one_smul]
+  exact eq_comm
+
+end Characteristic
+
+end ContinuousMulActionHom

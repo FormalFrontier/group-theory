@@ -115,6 +115,22 @@ take `K = ⟨(01)⟩` and `g = (12)`: there is an equivariant map
 `G ⧸ (gKg⁻¹) → G ⧸ K` even though `gKg⁻¹ ≰ K`, whereas there is no
 equivariant map `G ⧸ K → G ⧸ ⊥`.
 
+**Continuous equivariant maps from cosets.**
+[`ContinuousMulActionHom`](GroupTheory/Topology/Algebra/MulActionHom.lean) bundles
+continuous maps compatible with arbitrary scalar operations along any function
+`φ : M → N`. It carries the topology induced from compact-open continuous maps,
+not the pointwise function topology. For a group `G`, arbitrary subgroup `H` and
+a jointly continuous action on `X`,
+[`ContinuousMulActionHom.quotientHomeomorphFixedPoints`](GroupTheory/Topology/Algebra/Group/Quotient.lean)
+expresses the coset-map universal property as a homeomorphism onto the canonical
+`H`-fixed-point subspace. It assumes continuity of right translations of `G`,
+with no continuous inversion, left-translation continuity, normality, closedness,
+local compactness or separation assumption. Its forward map evaluates at `[1]`;
+its inverse sends `[g]` to `g • x` and forgets to the algebraic equivalence above.
+The [circle model](GroupTheoryTest/Topology/Algebra/ContinuousCosetMap.lean) constructs
+two distinct continuous maps using the parameters `1` and `-1`, directly from the
+algebraic equivalence and quotient continuity, without using the homeomorphism.
+
 **Coset-action isomorphisms and conjugacy.** For any group `G : Type u` and
 subgroups `H, K`, `Action.nonempty_quotient_iso_iff_exists_eq_map_conj` states
 

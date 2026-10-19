@@ -25,6 +25,7 @@ public import GroupTheoryTest.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.ConstMulAction
+public import GroupTheoryTest.Topology.Algebra.ContinuousCosetMap
 public import GroupTheoryTest.Topology.Algebra.Group.Quotient
 public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
