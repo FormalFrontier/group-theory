@@ -12,6 +12,7 @@ public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
 public import GroupTheory.GroupAction.DoubleCoset
+public import GroupTheory.GroupAction.InvariantSetoid
 public import GroupTheory.GroupAction.Quotient
 public import GroupTheory.GroupAction.QuotientMap
 public import GroupTheory.IndexNSmul

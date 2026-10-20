@@ -15,7 +15,7 @@ finitely generated abelian groups, kernels of induced quotient maps, torsion in
 additive quotients, additive and biadditive Grothendieck extensions, ring structures
 and multiplicative universal properties on additive Grothendieck groups of semirings,
 canonical coset-action isomorphisms, product-coset orbits and double cosets,
-and automorphism groups of group actions.
+invariant equivalence relations, and automorphism groups of group actions.
 The library depends directly on mathlib, not on a source repository or the
 incubator. The mathematical guides explain the proof ideas, examples and limits
 in more detail.
@@ -199,6 +199,18 @@ No normality or finiteness assumption is required. When both coset spaces
 are finite, the underlying function agrees with Mathlib's finite
 `G`-set morphism. The existing [permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
 exhibit distinct source classes that merge, while a third class stays distinct.
+
+**Invariant equivalence relations.** For a group `G` acting pretransitively on `X`
+and a chosen point `a : X`,
+[`MulAction.stabilizerInvariantSetoidOrderIso`](GroupTheory/GroupAction/InvariantSetoid.lean)
+identifies subgroups containing `MulAction.stabilizer G a` with left-`G`-invariant
+`Setoid`s on `X`, ordered by relation refinement. The group and carrier universes
+are independent. For the stock coset action on `G ⧸ H`, the relation at `K ≥ H`
+is exactly `Setoid.ker (MulActionHom.quotientMapOfLE hHK)`; on representatives it
+is `g⁻¹ * h ∈ K`. The inverse recovers the subgroup from the identity class.
+No finiteness, normality or topological assumption is required. The
+[nonnormal three-point model](GroupTheoryTest/GroupAction/InvariantSetoid.lean)
+separates this kernel from the orbit relation of the restricted left `K`-action.
 
 **Action automorphisms as centralizers.** For a group `G` and an action `A`
 on an object of any category `C`, `Action.autEquivCentralizer` constructs
@@ -520,6 +532,7 @@ claim is implied by this guidance.
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Product-coset orbits and double cosets | [`GroupAction.DoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean), [permutation and boundary examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Equivariant maps between nested coset spaces | [`GroupAction.QuotientMap`](GroupTheory/GroupAction/QuotientMap.lean) |
+| Invariant equivalence relations and overgroups of point stabilizers | [`GroupAction.InvariantSetoid`](GroupTheory/GroupAction/InvariantSetoid.lean), [nonnormal model](GroupTheoryTest/GroupAction/InvariantSetoid.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
@@ -584,6 +597,13 @@ claim is implied by this guidance.
   with Mathlib's conjugated-stabilizer formula.
   Maps between nested coset spaces reuse `Subgroup.quotientMapOfLE` and generalize
   the finite-coset morphism in `Mathlib.CategoryTheory.Action.Concrete`.
+- The invariant-relation correspondence reuses Antoine Chambert-Loir's Mathlib
+  block classification `MulAction.block_stabilizerOrderIso` and the partition
+  API `Setoid.mkClasses` / `Setoid.Partition.orderIso`, in a Mathlib file by
+  Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang and Johan Commelin.
+  The block classification cites Helmut Wielandt, *Finite Permutation Groups*,
+  translated by R. Bercov, Academic Press, 1964, Theorem 7.5; this bibliographic
+  reference is taken from Mathlib.
 - The product-coset orbit equivalence reuses Mathlib's double-coset quotient,
   left-coset and orbit quotient APIs, and componentwise product action; the
   [module references](GroupTheory/GroupAction/DoubleCoset.lean) credit their authors.
