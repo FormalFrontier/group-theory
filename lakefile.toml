@@ -1,6 +1,7 @@
 name = "groupTheory"
 version = "0.1.0"
 defaultTargets = ["GroupTheory", "GroupTheoryTest"]
+lintDriver = "batteries/runLinter"
 
 [leanOptions]
 autoImplicit = false
@@ -18,4 +19,9 @@ name = "GroupTheory"
 
 [[lean_lib]]
 name = "GroupTheoryTest"
-roots = ["GroupTheoryTest", "GroupTheoryTest.GroupAction.CentralizerTransitivity"]
+roots = [
+  "GroupTheoryTest",
+  "GroupTheoryTest.GroupAction.CentralizerTransitivity",
+  "GroupTheoryTest.Topology.Algebra.Group.PiQuotientSimp"
+]
+leanOptions.weak.linter.privateModule = false

@@ -124,8 +124,7 @@ theorem mixed_quotient_nontrivial :
   have hsurj : Function.Surjective (QuotientGroup.connectedComponentQuotientLift projection) := by
     intro targetElement
     refine ⟨QuotientGroup.connectedComponentQuotientMk MixedGroup (1, targetElement), ?_⟩
-    simpa [projection] using
-      QuotientGroup.connectedComponentQuotientLift_mk_apply projection (1, targetElement)
+    simp [projection]
   exact hsurj.nontrivial
 
 end GroupTheoryTest.Topology.ConnectedComponentQuotient

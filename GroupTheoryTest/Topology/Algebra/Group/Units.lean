@@ -64,5 +64,5 @@ private theorem integer_cast_zmod_five_unit_obstruction :
 private theorem rational_cast_units_dense :
     DenseRange (Units.map ((Rat.castHom ℝ).toMonoidHom)) := by
   obtain ⟨hdense, hlocal, hopen⟩ := rational_cast_dense_local_open
-  letI : IsLocalHom ((Rat.castHom ℝ).toMonoidHom) := hlocal
+  let : IsLocalHom ((Rat.castHom ℝ).toMonoidHom) := hlocal
   exact hdense.units_map hopen

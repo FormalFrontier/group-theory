@@ -260,6 +260,9 @@ def transRightRepEquiv (K : Subgroup G) (J : Subgroup K)
 lemma transRightRepEquiv_apply_coe (K : Subgroup G) (J : Subgroup K)
     (U : J.RightTransversal) (T : K.RightTransversal)
     (p : ↥(U : Set K) × ↥(T : Set G)) :
-    (transRightRepEquiv K J U T p : G) = towerRep K J U T p := rfl
+    (@DFunLike.coe
+      ((↥(U : Set K) × ↥(T : Set G)) ≃ Set.range (towerRep K J U T))
+      (↥(U : Set K) × ↥(T : Set G)) (fun _ => Set.range (towerRep K J U T))
+      EquivLike.toFunLike (transRightRepEquiv K J U T) p : G) = towerRep K J U T p := rfl
 
 end Subgroup.RightTransversal

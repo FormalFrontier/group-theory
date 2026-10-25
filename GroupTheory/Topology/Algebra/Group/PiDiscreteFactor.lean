@@ -84,7 +84,6 @@ theorem piQuotient_apply (s : Finset I) (N : ∀ i : s, Subgroup (G i))
 
 /-- The kernel of the selected quotient projection is exactly its finite
 cylinder; no condition is imposed on unselected coordinates. -/
-@[simp]
 theorem mem_ker_piQuotient (s : Finset I) (N : ∀ i : s, Subgroup (G i))
     [∀ i : s, (N i).Normal] (x : ∀ i, G i) :
     x ∈ (piQuotient s N).toMonoidHom.ker ↔ ∀ i : s, x i ∈ N i := by
@@ -97,6 +96,14 @@ theorem mem_ker_piQuotient (s : Finset I) (N : ∀ i : s, Subgroup (G i))
     funext i
     simpa only [piQuotient_apply, Pi.one_apply] using
       (QuotientGroup.eq_one_iff (N := N i) (x i)).mpr (hx i)
+
+/-- The selected quotient is one exactly when every selected coordinate lies
+in its specified normal subgroup. -/
+@[simp]
+theorem piQuotient_apply_eq_one (s : Finset I) (N : ∀ i : s, Subgroup (G i))
+    [∀ i : s, (N i).Normal] (x : ∀ i, G i) :
+    piQuotient s N x = 1 ↔ ∀ i : s, x i ∈ N i := by
+  exact mem_ker_piQuotient s N x
 
 /-- Every tuple in the selected quotient product has a preimage in the full
 product, including when the selected set is empty. -/

@@ -270,9 +270,9 @@ private theorem rational_quarter_to_half :
   let h2' := AddMonoidHom.nsmul_bijective_of_mul 2 2 h4
   let f2 := AddEquiv.ofBijective (nsmulAddMonoidHom (α := ℚ) 2) h2'
   let f4 := AddEquiv.ofBijective (nsmulAddMonoidHom (α := ℚ) 4) h4
-  let hf2 : L.map f2.toAddMonoidHom ≤ L :=
+  let hf2 : L.map (f2 : ℚ →+ ℚ) ≤ L :=
     AddSubgroup.map_le_iff_le_comap.mpr (by intro q hq; exact L.nsmul_mem hq 2)
-  let hf4 : L.map f4.toAddMonoidHom ≤ L :=
+  let hf4 : L.map (f4 : ℚ →+ ℚ) ≤ L :=
     AddSubgroup.map_le_iff_le_comap.mpr (by intro q hq; exact L.nsmul_mem hq 4)
   let c2 := AddEquiv.addSubgroupCongr
     (congrArg AddMonoidHom.ker (QuotientAddGroup.map_nsmulAddMonoidHom L 2).symm)
@@ -287,14 +287,14 @@ private theorem rational_quarter_to_half :
         (by intro q hq; exact hq) q = q :=
     QuotientAddGroup.map_id_apply L (by intro q hq; exact hq) q
   let kernelMap :
-      (QuotientAddGroup.map L L f2.toAddMonoidHom
+      (QuotientAddGroup.map L L (f2 : ℚ →+ ℚ)
         (AddSubgroup.map_le_iff_le_comap.mp hf2)).ker →+
-      (QuotientAddGroup.map L L f4.toAddMonoidHom
+      (QuotientAddGroup.map L L (f4 : ℚ →+ ℚ)
         (AddSubgroup.map_le_iff_le_comap.mp hf4)).ker :=
     AddMonoidHom.restrict (f := QuotientAddGroup.map L L (AddMonoidHom.id ℚ)
       (by intro q hq; exact hq)) (by
-        have hf2' : f2.toAddMonoidHom = nsmulAddMonoidHom (α := ℚ) 2 := rfl
-        have hf4' : f4.toAddMonoidHom = nsmulAddMonoidHom (α := ℚ) 4 := rfl
+        have hf2' : (f2 : ℚ →+ ℚ) = nsmulAddMonoidHom (α := ℚ) 2 := rfl
+        have hf4' : (f4 : ℚ →+ ℚ) = nsmulAddMonoidHom (α := ℚ) 4 := rfl
         intro q hq
         have hq2 : q ∈ (nsmulAddMonoidHom (α := ℚ ⧸ L) 2).ker := by
           simpa only [hf2', QuotientAddGroup.map_nsmulAddMonoidHom,
@@ -312,11 +312,11 @@ private theorem rational_quarter_to_half :
   let subgroupMap : L →+ L :=
     AddMonoidHom.restrict (f := nsmulAddMonoidHom (α := ℚ) 2)
       (by intro q hq; exact L.nsmul_mem hq 2)
-  let latticeMap := QuotientAddGroup.map ((L.map f2.toAddMonoidHom).addSubgroupOf L)
-      ((L.map f4.toAddMonoidHom).addSubgroupOf L) subgroupMap (by
+  let latticeMap := QuotientAddGroup.map ((L.map (f2 : ℚ →+ ℚ)).addSubgroupOf L)
+      ((L.map (f4 : ℚ →+ ℚ)).addSubgroupOf L) subgroupMap (by
         intro l hl
-        change (l : ℚ) ∈ L.map f2.toAddMonoidHom at hl
-        change nsmulAddMonoidHom 2 (l : ℚ) ∈ L.map f4.toAddMonoidHom
+        change (l : ℚ) ∈ L.map (f2 : ℚ →+ ℚ) at hl
+        change nsmulAddMonoidHom 2 (l : ℚ) ∈ L.map (f4 : ℚ →+ ℚ)
         obtain ⟨q, hq, hql⟩ := AddSubgroup.mem_map.mp hl
         exact AddSubgroup.mem_map.mpr
           ⟨q, hq, (hcomm q).trans (congrArg (nsmulAddMonoidHom 2) hql)⟩)
@@ -327,10 +327,10 @@ private theorem rational_quarter_to_half :
     QuotientAddGroup.kerMapEquivQuotientOfEquiv_naturality L L f2 hf2 L L f4 hf4
       (AddMonoidHom.id ℚ) (nsmulAddMonoidHom 2)
       (by intro q hq; exact hq) (by intro q hq; exact L.nsmul_mem hq 2) hcomm
-  have hquot (z : L ⧸ (L.map f2.toAddMonoidHom).addSubgroupOf L) :
+  have hquot (z : L ⧸ (L.map (f2 : ℚ →+ ℚ)).addSubgroupOf L) :
       quotientDouble (e2 z) = e4 (latticeMap z) := by
     obtain ⟨l, rfl⟩ := QuotientAddGroup.mk'_surjective _ z
-    simp only [quotientDouble, e2, e4, latticeMap] <;> rfl
+    simp only [quotientDouble, e2, e4, latticeMap]; rfl
   have hkernel : kernelMap (c2 y) = c4 (inclusion y) := by
     apply Subtype.ext
     change QuotientAddGroup.map L L (AddMonoidHom.id ℚ)

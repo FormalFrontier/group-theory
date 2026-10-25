@@ -60,7 +60,7 @@ private theorem diagonal_not_scalar :
 
 /-- Multiplication by two and three sends integer coordinates to integer coordinates. -/
 private theorem diagonal_preserves :
-    integerLattice.map diagonal.toAddMonoidHom ≤ integerLattice := by
+    integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ)) ≤ integerLattice := by
   rintro _ ⟨p, hp, rfl⟩
   obtain ⟨a, ha⟩ := AddSubgroup.mem_zmultiples_iff.mp (AddSubgroup.mem_prod.mp hp).1
   obtain ⟨b, hb⟩ := AddSubgroup.mem_zmultiples_iff.mp (AddSubgroup.mem_prod.mp hp).2
@@ -76,7 +76,7 @@ private theorem diagonal_preserves :
 /-- The endomorphism induced by the diagonal equivalence on the quotient plane. -/
 private def diagonalQuotient : ((ℚ × ℚ) ⧸ integerLattice) →+
     ((ℚ × ℚ) ⧸ integerLattice) :=
-  map integerLattice integerLattice diagonal.toAddMonoidHom
+  map integerLattice integerLattice (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ))
     (AddSubgroup.map_le_iff_le_comap.mp diagonal_preserves)
 
 private def firstBasis : integerLattice :=
@@ -125,15 +125,17 @@ private def thirdClass : diagonalQuotient.ker :=
 
 /-- The first integer basis class modulo the diagonal image of the integer lattice. -/
 private def firstImageClass :
-    integerLattice ⧸ (integerLattice.map diagonal.toAddMonoidHom).addSubgroupOf integerLattice :=
+    integerLattice ⧸
+      (integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ))).addSubgroupOf integerLattice :=
   (firstBasis : integerLattice ⧸
-    (integerLattice.map diagonal.toAddMonoidHom).addSubgroupOf integerLattice)
+    (integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ))).addSubgroupOf integerLattice)
 
 /-- The second integer basis class modulo the diagonal image of the integer lattice. -/
 private def secondImageClass :
-    integerLattice ⧸ (integerLattice.map diagonal.toAddMonoidHom).addSubgroupOf integerLattice :=
+    integerLattice ⧸
+      (integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ))).addSubgroupOf integerLattice :=
   (secondBasis : integerLattice ⧸
-    (integerLattice.map diagonal.toAddMonoidHom).addSubgroupOf integerLattice)
+    (integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ))).addSubgroupOf integerLattice)
 
 private theorem half_not_integer : (1 / 2 : ℚ) ∉ AddSubgroup.zmultiples (1 : ℚ) := by
   intro h
@@ -163,7 +165,7 @@ private theorem thirdClass_ne_zero : (thirdClass : (ℚ × ℚ) ⧸ integerLatti
 
 private theorem firstImageClass_ne_zero : firstImageClass ≠ 0 := by
   intro h
-  have hmem : (firstBasis : ℚ × ℚ) ∈ integerLattice.map diagonal.toAddMonoidHom :=
+  have hmem : (firstBasis : ℚ × ℚ) ∈ integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ)) :=
     (eq_zero_iff firstBasis).mp h
   have hpre : diagonal.symm (firstBasis : ℚ × ℚ) ∈ integerLattice :=
     AddSubgroup.mem_map_equiv.mp hmem
@@ -172,7 +174,7 @@ private theorem firstImageClass_ne_zero : firstImageClass ≠ 0 := by
 
 private theorem secondImageClass_ne_zero : secondImageClass ≠ 0 := by
   intro h
-  have hmem : (secondBasis : ℚ × ℚ) ∈ integerLattice.map diagonal.toAddMonoidHom :=
+  have hmem : (secondBasis : ℚ × ℚ) ∈ integerLattice.map (diagonal : (ℚ × ℚ) →+ (ℚ × ℚ)) :=
     (eq_zero_iff secondBasis).mp h
   have hpre : diagonal.symm (secondBasis : ℚ × ℚ) ∈ integerLattice :=
     AddSubgroup.mem_map_equiv.mp hmem

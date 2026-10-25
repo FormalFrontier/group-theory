@@ -217,8 +217,24 @@ theorem index_eq_two_iff_existsUnique_indexTwoCharacter_ker (H : Subgroup G) :
 /-- Every displayed generator belongs to its specified character kernel. -/
 theorem indexTwoGenerators_mem_ker (c j : Fin 3) :
     b.indexTwoGenerators c j ∈ (b.indexTwoCharacter c).ker := by
-  fin_cases c <;> fin_cases j <;>
-    simp [MonoidHom.mem_ker, map_mul, map_pow, map_inv] <;> decide
+  fin_cases c <;> fin_cases j
+  · simp only [Fin.zero_eta, Fin.isValue, indexTwoGenerators_zero_apply_zero, MonoidHom.mem_ker,
+      map_pow, indexTwoCharacter_zero_apply_zero]
+    decide
+  · simp [MonoidHom.mem_ker]
+  · simp [MonoidHom.mem_ker, map_mul, map_inv]
+  · simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta, indexTwoGenerators_one_apply_zero,
+      MonoidHom.mem_ker, map_pow, indexTwoCharacter_one_apply_one]
+    decide
+  · simp [MonoidHom.mem_ker]
+  · simp [MonoidHom.mem_ker, map_mul, map_inv]
+  · simp only [Fin.reduceFinMk, Fin.isValue, Fin.zero_eta, indexTwoGenerators_two_apply_zero,
+      MonoidHom.mem_ker, map_pow, indexTwoCharacter_two_apply_zero]
+    decide
+  · simp [MonoidHom.mem_ker, map_mul, map_inv]
+  · simp only [Fin.reduceFinMk, Fin.isValue, indexTwoGenerators_two_apply_two, MonoidHom.mem_ker,
+      map_mul, indexTwoCharacter_two_apply_zero, indexTwoCharacter_two_apply_one]
+    decide
 
 /-- The displayed words genuinely generate the specified character kernel. -/
 theorem closure_range_indexTwoGenerators (c : Fin 3) :

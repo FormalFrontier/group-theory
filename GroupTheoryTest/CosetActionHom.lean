@@ -29,8 +29,6 @@ additional assertions proved here.
 * Mathlib's one-point action instances (Kenny Lau) supply the boundary actions.
 -/
 
-set_option linter.privateModule false
-
 @[expose] public section
 
 namespace MulActionHom
@@ -81,7 +79,7 @@ example : IsEmpty
 
 -- With trivial group and one-point target, the inverse gives the unique map.
 example :
-    ∃! f : @MulActionHom Unit Unit (@id Unit) (Unit ⧸ (⊤ : Subgroup Unit))
+    ∃! _f : @MulActionHom Unit Unit (@id Unit) (Unit ⧸ (⊤ : Subgroup Unit))
       (MulAction.quotient Unit (⊤ : Subgroup Unit)).toSMul
       Unit (inferInstance : MulAction Unit Unit).toSMul, True := by
   let e := quotientEquivFixedPoints Unit (⊤ : Subgroup Unit) Unit

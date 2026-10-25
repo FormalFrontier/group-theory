@@ -193,6 +193,7 @@ private theorem canonical_fixed_action [ContinuousConstSMul G G]
     (H : Subgroup G) (g : G) : Continuous (fun q : G ⧸ H => g • q) := by
   exact continuous_const_smul g
 
+omit [TopologicalSpace G] in
 private theorem projection_hom_coercion (H : Subgroup G) :
     (MulActionHom.toQuotient H : G → G ⧸ H) = QuotientGroup.mk := by
   rfl
@@ -215,16 +216,19 @@ private theorem projection_transport_dot [ContinuousConstSMul G G]
       (MulActionHom.toQuotient H)
   exact continuous_const_smul g
 
+omit [TopologicalSpace G] in
 private theorem projection_semiconj (H : Subgroup G) (g : G) :
     Function.Semiconj (QuotientGroup.mk : G → G ⧸ H)
       (fun x : G => g * x) (fun q : G ⧸ H => g • q) := by
   intro x
   exact (MulAction.Quotient.smul_mk H g x).symm
 
+omit [TopologicalSpace G] in
 private theorem projection_map_smul (H : Subgroup G) (g x : G) :
     MulActionHom.toQuotient H (g • x) = g • MulActionHom.toQuotient H x := by
   exact map_smul (MulActionHom.toQuotient H) g x
 
+omit [TopologicalSpace G] in
 private theorem canonical_action_laws (H : Subgroup G) (g h : G) (q : G ⧸ H) :
     (1 : G) • q = q ∧ (g * h) • q = g • h • q := by
   exact ⟨one_smul G q, mul_smul g h q⟩
@@ -242,6 +246,7 @@ private theorem fixed_action_homeomorph [ContinuousConstSMul G G]
         (Homeomorph.smul (α := G ⧸ H) g q) = q := by
   exact ⟨(Homeomorph.smul g).continuous, (Homeomorph.smul g).symm_apply_apply q⟩
 
+omit [TopologicalSpace G] in
 private theorem canonical_stabilizer (H : Subgroup G) :
     MulAction.stabilizer G (QuotientGroup.mk (1 : G) : G ⧸ H) = H := by
   exact MulAction.stabilizer_quotient H

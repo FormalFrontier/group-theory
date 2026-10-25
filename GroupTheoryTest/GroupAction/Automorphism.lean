@@ -45,7 +45,8 @@ private theorem regular_composition_orientation :
     let m := regularParameter (Equiv.swap 1 2)
     let e := MulAction.normalizerQuotientEquivAut (G := S3) (1 : S3)
     ((show S3 from (e (QuotientGroup.mk n) * e (QuotientGroup.mk m)).hom.hom (1 : S3)) 0 = 2) ∧
-      ((show S3 from (e (QuotientGroup.mk m) * e (QuotientGroup.mk n)).hom.hom (1 : S3)) 0 = 1) := by
+      ((show S3 from (e (QuotientGroup.mk m) * e (QuotientGroup.mk n)).hom.hom (1 : S3))
+        0 = 1) := by
   dsimp only
   rw [← map_mul, ← map_mul, ← QuotientGroup.mk_mul, ← QuotientGroup.mk_mul]
   simp only [MulAction.normalizerQuotientEquivAut_mk_apply_self]

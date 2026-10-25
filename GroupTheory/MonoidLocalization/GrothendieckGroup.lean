@@ -42,7 +42,8 @@ variable {A : Type u} {G : Type w} [AddCommMonoid A] [AddCommGroup G]
 
 /-- The lift agrees with the supplied homomorphism on canonical generators. -/
 @[simp]
-theorem lift_of (f : A →+ G) (a : A) : lift f (of a) = f a := by
+theorem lift_of (f : A →+ G) (a : A) :
+    lift f (AddLocalization.addMonoidOf ⊤ a) = f a := by
   exact DFunLike.congr_fun ((lift (M := A) (G := G)).symm_apply_apply f) a
 
 /-- Homomorphisms out of the Grothendieck additive group are determined by generators. -/
@@ -56,7 +57,8 @@ theorem hom_ext {f g : GrothendieckAddGroup A →+ G}
 theorem lift_add (f g : A →+ G) : lift (f + g) = lift f + lift g := by
   apply hom_ext
   intro a
-  simp only [lift_of, AddMonoidHom.add_apply]
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of,
+    AddMonoidHom.add_apply]
 
 /-- The additive universal property of the Grothendieck additive group, with restriction
 along `of` as its inverse. -/
@@ -66,7 +68,8 @@ noncomputable def liftAddEquiv : (A →+ G) ≃+ (GrothendieckAddGroup A →+ G)
 /-- The underlying equivalence of the additive lift is Mathlib's Grothendieck lift. -/
 @[simp]
 theorem liftAddEquiv_toEquiv :
-    (liftAddEquiv (A := A) (G := G)).toEquiv = lift := rfl
+    (liftAddEquiv (A := A) (G := G) :
+      (A →+ G) ≃ (GrothendieckAddGroup A →+ G)) = lift := rfl
 
 /-- The additive lift has the same forward map as the Grothendieck lift. -/
 @[simp]
@@ -87,23 +90,24 @@ noncomputable def lift₂ (f : A →+ B →+ G) :
 /-- On a generator in the first variable, the bilinear extension is the lift in the second. -/
 @[simp]
 theorem lift₂_of_left (f : A →+ B →+ G) (a : A) :
-    lift₂ f (of a) = lift (f a) := by
+    lift₂ f (AddLocalization.addMonoidOf ⊤ a) = lift (f a) := by
   exact lift_of ((liftAddEquiv (A := B) (G := G)).toAddMonoidHom.comp f) a
 
 /-- The bilinear extension agrees with the supplied map on pairs of generators. -/
-@[simp]
 theorem lift₂_of (f : A →+ B →+ G) (a : A) (b : B) :
-    lift₂ f (of a) (of b) = f a b := by
+    lift₂ f (AddLocalization.addMonoidOf ⊤ a) (AddLocalization.addMonoidOf ⊤ b) =
+      f a b := by
   rw [lift₂_of_left, lift_of]
 
 /-- On a generator in the second variable, the bilinear extension is the lift in the first. -/
 @[simp]
 theorem lift₂_of_right (f : A →+ B →+ G) (x : GrothendieckAddGroup A) (b : B) :
-    lift₂ f x (of b) = lift (f.flip b) x := by
+    lift₂ f x (AddLocalization.addMonoidOf ⊤ b) = lift (f.flip b) x := by
   have h : (lift₂ f).flip (of b) = lift (f.flip b) := by
     apply hom_ext
     intro a
-    simp only [AddMonoidHom.flip_apply, lift₂_of, lift_of]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply,
+      AddMonoidHom.flip_apply, lift₂_of, lift_of]
   exact DFunLike.congr_fun h x
 
 /-- Curried biadditive maps on Grothendieck additive groups are determined by pairs of
@@ -132,7 +136,8 @@ theorem lift₂_comp {A' : Type u'} {B' : Type v'}
       ((lift₂ f).compl₂ (lift (of.comp h))).comp (lift (of.comp g)) := by
   apply hom_ext₂
   intro a b
-  simp only [lift₂_of, AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, lift_of]
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift₂_of,
+    AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, lift_of]
 
 /-- Extending a biadditive map commutes with postcomposition by an additive homomorphism. -/
 theorem lift₂_compr₂ {H : Type w'} [AddCommGroup H]
@@ -140,6 +145,7 @@ theorem lift₂_compr₂ {H : Type w'} [AddCommGroup H]
     lift₂ (f.compr₂ h) = (lift₂ f).compr₂ h := by
   apply hom_ext₂
   intro a b
-  simp only [lift₂_of, AddMonoidHom.compr₂_apply]
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift₂_of,
+    AddMonoidHom.compr₂_apply]
 
 end Algebra.GrothendieckAddGroup

@@ -35,6 +35,7 @@ open Algebra.GrothendieckAddGroup
 
 /-- The additive extension of the natural-number cast evaluates a negative difference. -/
 example : liftAddEquiv (Nat.castAddMonoidHom ℤ) (of (M := ℕ) 2 - of 5) = -3 := by
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply]
   rw [liftAddEquiv_apply, map_sub, lift_of, lift_of]
   rfl
 
@@ -56,6 +57,7 @@ private def natMulInt : ℕ →+ ℕ →+ ℤ where
 
 /-- The bilinear extension of natural-number multiplication evaluates a negative argument. -/
 example : lift₂ natMulInt (of (M := ℕ) 2 - of 5) (of (M := ℕ) 3) = -9 := by
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply]
   rw [map_sub, AddMonoidHom.sub_apply, lift₂_of, lift₂_of]
   rfl
 
@@ -66,7 +68,8 @@ example :
       (AddMonoidHom.id ℕ + AddMonoidHom.id ℕ)).compr₂ (-AddMonoidHom.id ℤ))
         (of (M := ℕ) 2 - of 5) (of (M := ℕ) 3) = 36 := by
   rw [lift₂_compr₂, lift₂_comp]
-  simp only [AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply,
+    AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,
     AddMonoidHom.comp_apply, map_sub, lift_of, AddMonoidHom.add_apply,
     AddMonoidHom.id_apply, AddMonoidHom.neg_apply, AddMonoidHom.sub_apply, lift₂_of]
   rfl
@@ -101,6 +104,7 @@ private theorem natSignedProduct_ne_zero : natSignedProduct ≠ 0 := by
   rw [natSignedProduct_eq] at hdet
   change lift (Nat.castAddMonoidHom ℤ) ((-6 : ℤ) • of (M := ℕ) 1) =
     lift (Nat.castAddMonoidHom ℤ) 0 at hdet
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply] at hdet
   rw [map_zsmul, lift_of, map_zero] at hdet
   norm_num at hdet
 

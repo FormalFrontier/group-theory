@@ -87,7 +87,13 @@ example (number : ℕ) :
     MonCat.sectionsπContinuousMonoidHom natDiagram (Discrete.mk PUnit.unit)
         (MonCat.sectionsLift natDiagram (fun _ => ContinuousMonoidHom.id ℕ)
           (by intro i j f x; rfl) number) = number := by
-  exact MonCat.sectionsπ_sectionsLift_apply natDiagram _ _ _ number
+  exact
+    (MonCat.sectionsπContinuousMonoidHom_apply natDiagram (Discrete.mk PUnit.unit)
+      (MonCat.sectionsLift natDiagram (fun _ => ContinuousMonoidHom.id ℕ)
+        (by intro i j f x; rfl) number)).trans
+      (MonCat.sectionsπ_sectionsLift_apply natDiagram
+        (fun _ => ContinuousMonoidHom.id ℕ) (by intro i j f x; rfl)
+        (Discrete.mk PUnit.unit) number)
 
 /-- The two projections out of a product as parallel arrows. -/
 public abbrev pairDiagram : WalkingParallelPair ⥤ MonCat :=

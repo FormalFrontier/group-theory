@@ -66,7 +66,9 @@ noncomputable def mulAddHom :
 
 /-- The extended multiplication agrees with multiplication on pairs of generators. -/
 @[simp]
-theorem mulAddHom_of (a b : A) : mulAddHom (of a) (of b) = of (a * b) := by
+theorem mulAddHom_of (a b : A) :
+    mulAddHom (AddLocalization.addMonoidOf ⊤ a) (AddLocalization.addMonoidOf ⊤ b) =
+      of (a * b) := by
   exact lift₂_of ((AddMonoidHom.mul : A →+ A →+ A).compr₂ of) a b
 
 /-- Generator values uniquely characterize the curried additive multiplication. -/
@@ -81,7 +83,8 @@ theorem mulAddHom_eq_iff
     mulAddHom = f ↔ ∀ a b : A, f (of a) (of b) = of (a * b) := by
   constructor
   · intro h a b
-    rw [← h, mulAddHom_of]
+    cases h
+    exact mulAddHom_of a b
   · exact mulAddHom_unique f
 
 end Multiplication
@@ -103,7 +106,7 @@ theorem mulAddHom_assoc {A : Type u} [NonUnitalSemiring A]
     intro c
     change mulAddHom (mulAddHom (of a) (of b)) (of c) =
       mulAddHom (of a) (mulAddHom (of b) (of c))
-    simp only [mulAddHom_of, mul_assoc]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, mulAddHom_of, mul_assoc]
   exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun h x) y) z
 
 /-- The generator of one is a left identity for the extended multiplication. -/
@@ -112,7 +115,8 @@ theorem one_mulAddHom {A : Type u} [NonAssocSemiring A] (x : GrothendieckAddGrou
   have h : mulAddHom (of (M := A) 1) = AddMonoidHom.id (GrothendieckAddGroup A) := by
     apply hom_ext
     intro a
-    simp only [mulAddHom_of, one_mul, AddMonoidHom.id_apply]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, mulAddHom_of,
+      one_mul, AddMonoidHom.id_apply]
   exact DFunLike.congr_fun h x
 
 /-- The generator of one is a right identity for the extended multiplication. -/
@@ -122,7 +126,8 @@ theorem mulAddHom_one {A : Type u} [NonAssocSemiring A] (x : GrothendieckAddGrou
       AddMonoidHom.id (GrothendieckAddGroup A) := by
     apply hom_ext
     intro a
-    simp only [AddMonoidHom.flip_apply, mulAddHom_of, mul_one, AddMonoidHom.id_apply]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply,
+      AddMonoidHom.flip_apply, mulAddHom_of, mul_one, AddMonoidHom.id_apply]
   exact DFunLike.congr_fun h x
 
 /-- Commutativity of the source multiplication extends to the additive completion. -/
@@ -131,11 +136,13 @@ theorem mulAddHom_comm {A : Type u} [NonUnitalNonAssocSemiring A] [IsMulCommutat
   have h : mulAddHom (A := A) = (mulAddHom (A := A)).flip := by
     apply hom_ext₂
     intro a b
-    simp only [AddMonoidHom.flip_apply, mulAddHom_of]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply,
+      AddMonoidHom.flip_apply, mulAddHom_of]
     exact congrArg (of (M := A)) (mul_comm' a b)
   exact DFunLike.congr_fun (DFunLike.congr_fun h x) y
 
 -- Retain the additive structures and bundled maps before registering ring instances.
+@[instance_reducible]
 private def additiveGroup (A : Type u) [AddCommMonoid A] :
     AddCommGroup (GrothendieckAddGroup A) := inferInstance
 
@@ -201,7 +208,9 @@ theorem intCast_def {A : Type u} [Semiring A] (z : ℤ) :
 
 /-- The canonical generator preserves one. -/
 @[simp]
-theorem of_one {A : Type u} [Semiring A] : of (M := A) 1 = 1 := rfl
+theorem of_one {A : Type u} [Semiring A] :
+    AddLocalization.addMonoidOf (⊤ : AddSubmonoid A) 1 =
+      (1 : GrothendieckAddGroup A) := rfl
 
 /-- The canonical generator preserves multiplication. -/
 theorem of_mul {A : Type u} [Semiring A] (a b : A) :
@@ -210,7 +219,7 @@ theorem of_mul {A : Type u} [Semiring A] (a b : A) :
 /-- The canonical generator preserves natural casts. -/
 @[simp]
 theorem of_natCast {A : Type u} [Semiring A] (n : ℕ) :
-    of (M := A) (n : A) = (n : GrothendieckAddGroup A) := by
+    AddLocalization.addMonoidOf ⊤ (n : A) = (n : GrothendieckAddGroup A) := by
   change of (M := A) (n : A) = n • of (M := A) 1
   exact (congrArg (of (M := A)) (nsmul_one n)).symm.trans
     (map_nsmul (of (M := A)) n (1 : A))
@@ -224,7 +233,7 @@ noncomputable def ofRingHom (A : Type u) [Semiring A] : A →+* GrothendieckAddG
 /-- The canonical ring homomorphism retains the entire additive generator. -/
 @[simp]
 theorem ofRingHom_toAddMonoidHom (A : Type u) [Semiring A] :
-    (ofRingHom A).toAddMonoidHom = of (M := A) := rfl
+    (ofRingHom A : A →+ GrothendieckAddGroup A) = of (M := A) := rfl
 
 /-- The canonical ring homomorphism evaluates as the additive generator. -/
 @[simp]
@@ -283,13 +292,13 @@ noncomputable def liftRingHom (f : A →+* S) : GrothendieckAddGroup A →+* S :
       intro a b
       change lift f.toAddMonoidHom (mulAddHom (of a) (of b)) =
         lift f.toAddMonoidHom (of a) * lift f.toAddMonoidHom (of b)
-      simp only [mulAddHom_of, lift_of]
+      simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, mulAddHom_of, lift_of]
       exact f.map_mul a b }
 
 /-- The entire underlying additive homomorphism is the Grothendieck additive lift. -/
 @[simp]
 theorem liftRingHom_toAddMonoidHom (f : A →+* S) :
-    (liftRingHom f).toAddMonoidHom = lift f.toAddMonoidHom := rfl
+    (liftRingHom f : GrothendieckAddGroup A →+ S) = lift f.toAddMonoidHom := rfl
 
 /-- The ring lift evaluates as the additive lift. -/
 theorem liftRingHom_apply (f : A →+* S) (x : GrothendieckAddGroup A) :
@@ -297,7 +306,8 @@ theorem liftRingHom_apply (f : A →+* S) (x : GrothendieckAddGroup A) :
 
 /-- The ring lift agrees with the supplied homomorphism on canonical generators. -/
 @[simp]
-theorem liftRingHom_of (f : A →+* S) (a : A) : liftRingHom f (of a) = f a := by
+theorem liftRingHom_of (f : A →+* S) (a : A) :
+    liftRingHom f (AddLocalization.addMonoidOf ⊤ a) = f a := by
   exact lift_of f.toAddMonoidHom a
 
 /-- Ring homomorphisms out of the completion are determined by canonical generators. -/
@@ -331,12 +341,14 @@ noncomputable def liftRingEquiv : (A →+* S) ≃ (GrothendieckAddGroup A →+* 
 /-- The entire forward function of the universal-property equivalence is the ring lift. -/
 @[simp]
 theorem liftRingEquiv_toFun :
-    (liftRingEquiv (A := A) (S := S)).toFun = liftRingHom := rfl
+    (liftRingEquiv (A := A) (S := S) :
+      (A →+* S) → (GrothendieckAddGroup A →+* S)) = liftRingHom := rfl
 
 /-- The entire inverse function is restriction along the canonical ring homomorphism. -/
 @[simp]
 theorem liftRingEquiv_invFun :
-    (liftRingEquiv (A := A) (S := S)).invFun =
+    ((liftRingEquiv (A := A) (S := S)).symm :
+      (GrothendieckAddGroup A →+* S) → (A →+* S)) =
       (fun F => F.comp (ofRingHom A)) := rfl
 
 /-- The universal-property equivalence evaluates as the canonical ring lift. -/

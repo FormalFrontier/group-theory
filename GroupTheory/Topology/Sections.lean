@@ -33,7 +33,9 @@ namespace MonCat
 variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 variable [stageTopologies : ∀ j : J, TopologicalSpace (F.obj j)]
 
-local instance : ∀ j : J, TopologicalSpace ((F ⋙ forget MonCat).obj j) :=
+/-- Forgetting a monoid object's algebraic structure retains its given stage topology. -/
+local instance forgetObjTopologicalSpace :
+    ∀ j : J, TopologicalSpace ((F ⋙ forget MonCat).obj j) :=
   fun j => stageTopologies j
 
 /-- The continuous coordinate projection from compatible monoid sections. -/
@@ -79,7 +81,7 @@ def sectionsLift (q : ∀ j : J, H →ₜ* F.obj j)
 theorem sectionsπ_sectionsLift_apply (q : ∀ j : J, H →ₜ* F.obj j)
     (hq : ∀ {i j : J} (f : i ⟶ j) (x : H), F.map f (q i x) = q j x)
     (j : J) (x : H) :
-    sectionsπContinuousMonoidHom F j (sectionsLift F q hq x) = q j x := rfl
+    (sectionsLift F q hq x).val j = q j x := rfl
 
 /-- Projecting a lifted family recovers its specified continuous homomorphism. -/
 theorem sectionsπ_comp_sectionsLift (q : ∀ j : J, H →ₜ* F.obj j)
@@ -145,7 +147,7 @@ theorem sectionsHomEquiv_symm_apply_apply
     (q : { q : ∀ j : J, H →ₜ* F.obj j //
       ∀ {i j : J} (f : i ⟶ j) (x : H), F.map f (q i x) = q j x })
     (j : J) (x : H) :
-    sectionsπContinuousMonoidHom F j ((sectionsHomEquiv F).symm q x) = q.val j x := by
+    ((sectionsHomEquiv F).symm q x).val j = q.val j x := by
   rfl
 
 /-- The sections topology is induced by all its coordinate projections. -/
@@ -164,7 +166,9 @@ namespace GrpCat
 variable {J : Type v} [Category.{w} J] (G : J ⥤ GrpCat.{u})
 variable [stageTopologies : ∀ j : J, TopologicalSpace (G.obj j)]
 
-local instance : ∀ j : J, TopologicalSpace ((G ⋙ forget GrpCat).obj j) :=
+/-- Forgetting a group object's algebraic structure retains its given stage topology. -/
+local instance forgetObjTopologicalSpace :
+    ∀ j : J, TopologicalSpace ((G ⋙ forget GrpCat).obj j) :=
   fun j => stageTopologies j
 
 /-- Continuous coordinate projection for group-valued sections, extending the

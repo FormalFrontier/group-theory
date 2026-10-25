@@ -312,7 +312,6 @@ theorem quotientIsoOfEqMapConj_inv_mk (H K : Subgroup G) (g : G)
   simp only [MulAction.Quotient.smul_mk, smul_eq_mul, mul_one]
 
 /-- The coset of the chosen conjugating element is the image of the identity coset. -/
-@[simp]
 theorem quotientIsoOfEqMapConj_hom_one (H K : Subgroup G) (g : G)
     (h : H = K.map (MulAut.conj g).toMonoidHom) :
     (quotientIsoOfEqMapConj H K g h).hom.hom (QuotientGroup.mk (1 : G)) =

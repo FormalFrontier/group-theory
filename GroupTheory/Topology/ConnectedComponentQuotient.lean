@@ -161,7 +161,7 @@ variable [TotallyDisconnectedSpace H]
 
 @[simp]
 theorem connectedComponentQuotientLift_mk_apply (hom : G →ₜ* H) (element : G) :
-    connectedComponentQuotientLift hom (connectedComponentQuotientMk G element) =
+    connectedComponentQuotientLift hom (element : connectedComponentQuotient G) =
       hom element := by
   rfl
 

@@ -200,10 +200,13 @@ theorem autEquivPermCentralizer_symm_inv_apply
     ((autEquivPermCentralizer G X).symm f).inv.hom x = (f : Equiv.Perm X).symm x := rfl
 
 /-- Multiplication is ordinary composition, in the same order as permutations. -/
-@[simp]
 theorem autEquivPermCentralizer_mul_apply (α β : Aut (ofMulAction G X)) (x : X) :
     (autEquivPermCentralizer G X (α * β) : Equiv.Perm X) x =
-      α.hom.hom (β.hom.hom x) := rfl
+      α.hom.hom (β.hom.hom x) := by
+  exact congrArg
+    (fun f : Subgroup.centralizer (Set.range (MulAction.toPermHom G X)) =>
+      (f : Equiv.Perm X) x)
+    ((autEquivPermCentralizer G X).map_mul α β)
 
 /-- Equality with a given centralizer element can be checked on forward values. -/
 theorem autEquivPermCentralizer_eq_iff (α : Aut (ofMulAction G X))

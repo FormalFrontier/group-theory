@@ -47,7 +47,7 @@ theorem continuous_smul_const_iff_stabilizer_isOpen [ContinuousConstSMul G G] (x
     change IsOpen ((fun g : G => g • x) ⁻¹' {x})
     exact (isOpen_discrete {x}).preimage hx
   · intro hx
-    letI : DiscreteTopology (G ⧸ stabilizer G x) :=
+    let : DiscreteTopology (G ⧸ stabilizer G x) :=
       (Subgroup.isOpen_iff_discreteTopology_quotient (stabilizer G x)).mp hx
     have h : Continuous (ofQuotientStabilizer G x ∘
         (QuotientGroup.mk : G → G ⧸ stabilizer G x)) :=
@@ -63,7 +63,7 @@ theorem continuousSMul_iff_stabilizer_isOpen [ContinuousConstSMul G G] :
     ContinuousSMul G X ↔ ∀ x : X, IsOpen (stabilizer G x : Set G) := by
   constructor
   · intro h x
-    letI : ContinuousSMul G X := h
+    let : ContinuousSMul G X := h
     apply (continuous_smul_const_iff_stabilizer_isOpen x).mp
     simpa only [Function.comp_def, id_eq] using
       (continuous_smul : Continuous fun p : G × X => p.1 • p.2).comp

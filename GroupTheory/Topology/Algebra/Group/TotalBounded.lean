@@ -47,7 +47,7 @@ namespace Filter.HasBasis
 
 /-- A left-uniform group with a subgroup basis at the identity is totally bounded
 if and only if every subgroup in that basis has finite index. -/
-@[to_additive totallyBounded_univ_iff_addSubgroup_finiteIndex
+@[to_additive
 /-- A left-uniform additive group with an additive-subgroup basis at zero is
 totally bounded if and only if every additive subgroup in that basis has finite index. -/]
 theorem totallyBounded_univ_iff_subgroup_finiteIndex
@@ -73,7 +73,7 @@ theorem totallyBounded_univ_iff_subgroup_finiteIndex
     -- The entourage condition is equality of left cosets, with the opposite orientation.
     exact ⟨y, hy, ((QuotientGroup.eq (s := H i)).2 hxy).symm⟩
   · intro h i hi
-    letI : Finite (G ⧸ H i) :=
+    let : Finite (G ⧸ H i) :=
       (Subgroup.finiteIndex_iff_finite_quotient (H := H i)).1 (h i hi)
     refine ⟨(fun q : G ⧸ H i => q.out) '' Set.univ,
       Set.finite_univ.image _, ?_⟩
