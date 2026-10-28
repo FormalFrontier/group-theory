@@ -22,422 +22,120 @@ in more detail.
 
 ## Headline results
 
-**Continuous actions on discrete spaces.** For a group with a topology whose fixed
-left translations are continuous, acting on a discrete space,
-[`MulAction.continuous_smul_const_iff_stabilizer_isOpen`](GroupTheory/Topology/Algebra/MulAction.lean)
-characterizes continuity of each orbit map by openness of its stabilizer.
-`MulAction.continuousSMul_iff_stabilizer_isOpen` characterizes joint continuity by
-openness of all stabilizers. Additive versions are included. Joint continuity of
-multiplication, continuity of inversion, separation and normality are not required.
+These results are available in the library. The [result guide](docs/Results.md)
+gives detailed statements, examples and API qualifications, including the
+constructions and prior results reused from Mathlib.
 
-**Dense maps on units.** For monoids `M` and `N`,
-[`DenseRange.units_map`](GroupTheory/Topology/Algebra/Group/Units.lean) shows that
-a dense homomorphism `f : M →* N` which reflects units induces a dense map on unit
-groups if the canonical coercion `Nˣ → N` is an open embedding. Only `N` needs a
-topology; no continuity assumption on `f` is imposed. The
-[examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) verify the hypotheses
-for the rational inclusion into the reals and use the integer quotient modulo five
-to demonstrate why unit reflection cannot be omitted.
+### Actions, cosets and fixed vectors
 
-**Left exactness of fixed vectors.** For a monoid `G` and modules over any semiring
-`R`, [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) provides
-the fixed submodule and the restriction `f.fixedSubmoduleMap` of an intertwining map.
-The modules need only be additive commutative monoids, and all carrier universes are
-independent. `fixedSubmoduleMap_injective` preserves ambient injectivity. If `f` is
-injective and `Function.Exact f g`, then `fixedSubmoduleMap_exact` proves
-`Function.Exact f.fixedSubmoduleMap g.fixedSubmoduleMap` on the original module and
-representation data. No finiteness, topology, group structure on `G` or additive
-inverses are required. The identity, composition, inclusion and unique-factorization
-APIs are compatible with the usual submodule maps. When `R` is a commutative ring,
-`G` is a group and the module is an additive commutative group, the fixed submodule
-equals Mathlib's existing invariant submodule.
-The module explains a nontrivial split sequence for the coordinate-swap action on `ℕ²`
-and why the sign action on `ℤ`, reduced modulo two, does not preserve surjectivity.
+- **[Coset maps and conjugacy](GroupTheory/GroupAction/Quotient.lean).** For any group and arbitrary subgroups
+  `H, K`, equivariant maps `G/H → G/K` exist exactly when `H ≤ gKg⁻¹` for some
+  `g`. The coset actions are isomorphic exactly when the subgroups are conjugate;
+  maps both ways alone are not enough.
+  For any `G`-set `X`, equivariant maps `G/H → X` correspond to `H`-fixed
+  points as a plain equivalence, not as a `G`-stable fixed subaction.
+  Diagonal orbits on `G/H × G/K`, and restricted `H`-orbits on `G/K`, are
+  described by [double-coset classes](GroupTheory/GroupAction/DoubleCoset.lean),
+  without selecting representatives.
+  For a pretransitive action with a chosen point, invariant equivalence
+  relations correspond to overgroups of its stabilizer; see the
+  [invariant-setoid API](GroupTheory/GroupAction/InvariantSetoid.lean).
+- **[Action automorphisms](GroupTheory/GroupAction/Centralizer.lean).** For an action of a group in any category, its
+  automorphisms identify with a centralizer. For a transitive `G`-set with
+  chosen `x`, the [normalizer quotient](GroupTheory/GroupAction/Automorphism.lean)
+  `N_G(G_x)/G_x` identifies with the automorphism group. Under ordinary composition,
+  `[n]` sends `g • x` to `(g * n⁻¹) • x`: the inverse parameter matters.
+- **[Left exactness of fixed vectors](GroupTheory/RepresentationInvariants.lean).** For monoid representations on modules
+  over a semiring, additive commutative monoids suffice. Intertwining maps
+  `f, g` with injective `f` and `Function.Exact f g` give injectivity and
+  exactness on fixed submodules, not preservation of surjectivity without further
+  hypotheses.
+- **[Norms and fixed-vector surjections](GroupTheory/RepresentationNorm.lean).** For finite-group
+  representations over a semiring on additive commutative monoids, a surjective
+  intertwining map is surjective on fixed submodules if every fixed target vector
+  is a value of the target norm. It suffices that multiplication by the group order
+  is surjective on the target fixed submodule, or bijective on the ambient target.
+  No divisibility or cancellation in the source is required. The
+  [norm naturality API](GroupTheory/RepresentationNormNaturality.lean) allows the
+  two coefficient carriers to lie in independent universes.
+- **[Free-group ranks](GroupTheory/FreeGroup/Rank.lean).** For finite-index `H` in a finitely generated free
+  group, `rank H + [G:H] = rank G * [G:H] + 1`, including ambient rank zero.
+  Mathlib supplies subgroup freeness and finite generation.
 
-**Right transversals and subgroup towers.**
-[`GroupTheory.Transversal`](GroupTheory/Transversal.lean) provides subgroup factors,
-representative permutations, changes of representatives, and inner-times-outer
-product transversals for arbitrary nested subgroups, without finiteness assumptions.
-It generalizes the pure Continuous Group Cohomology formalization
-and reuses Mathlib’s complement and subgroup-image API.
+[Detailed action results](docs/Results.md#actions-cosets-and-fixed-vectors)
+also include right transversals, subgroup towers and nested coset maps.
 
-**Additive and biadditive Grothendieck extensions.** For an additive commutative
-monoid `A` and an additive commutative group `G`,
-`Algebra.GrothendieckAddGroup.liftAddEquiv` packages Mathlib's universal-property
-equivalence as `(A →+ G) ≃+ (Algebra.GrothendieckAddGroup A →+ G)`. Its
-underlying equivalence is exactly Mathlib's `lift`, with inverse restriction
-along the canonical map `of`. For another additive commutative monoid `B`,
-`Algebra.GrothendieckAddGroup.lift₂` extends any curried biadditive map
-`A →+ B →+ G` to both canonical completions, with generator formulas,
-extensionality and uniqueness. The three universes are independent. No
-cancellation or nontriviality hypothesis is required; the API reuses Mathlib's
-completion and introduces no replacement carrier. See the
-[Grothendieck lift API](GroupTheory/MonoidLocalization/GrothendieckGroup.lean)
-and its [integer-valued clients](GroupTheoryTest/GrothendieckGroup.lean).
+### Topological refinements
 
-**Ring structures and multiplicative Grothendieck lifts.** For any semiring `A`,
-`Algebra.GrothendieckAddGroup A` has a canonical `Ring` instance; for a
-commutative semiring it has a canonical `CommRing` instance with the same
-underlying ring. Both retain the existing additive group, including its
-natural and integer scalar operations. The canonical `ofRingHom` retains the
-entire additive generator `of`. The bundled multiplication `mulAddHom` already
-exists for a non-unital, non-associative semiring, with generator computation,
-extensionality and uniqueness; associativity, units and commutativity use the
-corresponding source laws separately. For any ring `S`, `liftRingHom` extends
-`A →+* S` to a ring homomorphism from the completion, with its entire underlying
-additive homomorphism equal to the existing additive `lift`. Generator evaluation,
-extensionality and uniqueness characterize the extension. The equivalence
-`liftRingEquiv` has this canonical lift as its forward function and restriction
-along `ofRingHom` as its inverse. The source and target universes are independent;
-no commutativity of the target, cancellation or nontriviality is required. See the
-[ring API](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) and the
-[signed-natural and one-element clients](GroupTheoryTest/GrothendieckGroup.lean).
+- **[Discrete actions](GroupTheory/Topology/Algebra/MulAction.lean) and subgroup quotients.** Assume continuous fixed
+  **left** translations in a group with a topology. For an action on a
+  discrete space, orbit-map continuity is equivalent to an open stabilizer;
+  joint action continuity is equivalent to all stabilizers being open.
+  For arbitrary `H`, the [canonical quotient](GroupTheory/Topology/Algebra/Group/Quotient.lean)
+  `G/H` is discrete iff `H` is open, and
+  T1 iff `H` is closed; open subgroups are clopen. Finite index makes closed
+  imply open; compactness of `G` makes open imply finite index.
+- **[Continuous coset maps](GroupTheory/Topology/Algebra/Group/Quotient.lean).** With continuous **right** translations in `G`
+  and a jointly continuous action on `X`, evaluation at `[1]` identifies
+  continuous equivariant maps `G/H → X` homeomorphically with the `H`-fixed
+  subspace. The map-space topology is induced from compact-open continuous
+  maps, and `H` is arbitrary.
+- **[Dense unit maps](GroupTheory/Topology/Algebra/Group/Units.lean).** A dense monoid homomorphism that reflects units induces
+  a dense map on unit groups when the target's unit coercion is an open
+  embedding. No continuity of the homomorphism or source topology is needed.
+- **[Subgroup bases](GroupTheory/Topology/Algebra/Group/TotalBounded.lean).** In a left-uniform group with an identity-neighborhood
+  basis of subgroups, total boundedness is equivalent to finite index of
+  every predicate-qualified basis member, without completeness or separation.
+  Every locally compact totally disconnected topological group has a basis
+  of [compact open subgroups](GroupTheory/Topology/CompactOpenSubgroup.lean),
+  without a separate Hausdorff premise.
+- **[Component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).** Every topological group's ordinary quotient by
+  its identity component is Hausdorff and totally disconnected, without a
+  separation or local-compactness premise on the original group.
 
-**Equivariant maps from cosets.** For any group `G`, subgroup `H` and `G`-set `X`,
-[`MulActionHom.quotientEquivFixedPoints`](GroupTheory/GroupAction/Quotient.lean)
-constructs `((G ⧸ H) →[G] X) ≃ {x : X // H ≤ MulAction.stabilizer G x}`.
-The group and target universes are independent. The forward map evaluates at
-`QuotientGroup.mk (1 : G)`; the inverse sends the coset of `g` to `g • x`.
-Neither normality of `H` nor transitivity or nonemptiness of `X` is required.
-This is a plain equivalence: the `H`-fixed points need not be stable under `G`.
-Evaluation formulas, extensionality, uniqueness, target naturality and agreement
-with Mathlib's map from stabilizer cosets characterize the construction.
-The [permutation-action clients](GroupTheoryTest/CosetActionHom.lean) recover both
-an orbit map and a constant map, with empty-target and one-point boundaries.
-For any two subgroups `H, K`,
-`MulActionHom.nonempty_quotient_iff_exists_le_map_conj` gives
-`Nonempty ((G ⧸ H) →[G] (G ⧸ K)) ↔ ∃ g : G, H ≤ K.map (MulAut.conj g).toMonoidHom`.
-Thus a map exists exactly when `H ≤ gKg⁻¹` for some `g`; the corresponding map
-sends `[x]` to `[x * g]`. Neither subgroup needs to be normal, and no finiteness
-assumption is imposed. The existing
-[three-point permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
-take `K = ⟨(01)⟩` and `g = (12)`: there is an equivariant map
-`G ⧸ (gKg⁻¹) → G ⧸ K` even though `gKg⁻¹ ≰ K`, whereas there is no
-equivariant map `G ⧸ K → G ⧸ ⊥`.
+[Detailed topology results](docs/Results.md#topological-refinements) also cover
+open kernels, characters, discrete-valued maps, finite-coordinate factorizations
+and compatible sections, with their individual hypotheses.
 
-**Continuous equivariant maps from cosets.**
-[`ContinuousMulActionHom`](GroupTheory/Topology/Algebra/MulActionHom.lean) bundles
-continuous maps compatible with arbitrary scalar operations along any function
-`φ : M → N`. It carries the topology induced from compact-open continuous maps,
-not the pointwise function topology. For a group `G`, arbitrary subgroup `H` and
-a jointly continuous action on `X`,
-[`ContinuousMulActionHom.quotientHomeomorphFixedPoints`](GroupTheory/Topology/Algebra/Group/Quotient.lean)
-expresses the coset-map universal property as a homeomorphism onto the canonical
-`H`-fixed-point subspace. It assumes continuity of right translations of `G`,
-with no continuous inversion, left-translation continuity, normality, closedness,
-local compactness or separation assumption. Its forward map evaluates at `[1]`;
-its inverse sends `[g]` to `g • x` and forgets to the algebraic equivalence above.
-The [circle model](GroupTheoryTest/Topology/Algebra/ContinuousCosetMap.lean) constructs
-two distinct continuous maps using the parameters `1` and `-1`, directly from the
-algebraic equivalence and quotient continuity, without using the homeomorphism.
+### Grothendieck extensions
 
-**Coset-action isomorphisms and conjugacy.** For any group `G : Type u` and
-subgroups `H, K`, `Action.nonempty_quotient_iso_iff_exists_eq_map_conj` states
+Biadditive maps from two additive commutative monoids into an additive
+commutative group extend uniquely to their
+[Grothendieck completions](GroupTheory/MonoidLocalization/GrothendieckGroup.lean). A semiring's
+additive completion carries a [canonical ring](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean),
+commutative for commutative input;
+homomorphisms from the semiring into any ring extend uniquely as ring
+homomorphisms. No cancellation, nontriviality or commutative-target assumption
+is needed. The additive lift equivalence packages Mathlib's existing universal
+property. [Detailed extension results](docs/Results.md#grothendieck-extensions).
 
-```lean
-Nonempty (Action.ofMulAction G (G ⧸ H) ≅ Action.ofMulAction G (G ⧸ K)) ↔
-  ∃ g : G, H = K.map (MulAut.conj g).toMonoidHom
-```
+### Abelian arithmetic
 
-Thus the canonical left-coset `G`-sets are isomorphic exactly when the subgroups
-are conjugate. The group may be infinite and the subgroups need not be normal;
-no topology, freeness or faithfulness is assumed.
-Given `h : H = K.map (MulAut.conj g).toMonoidHom`,
-`Action.quotientIsoOfEqMapConj H K g h` constructs the isomorphism
-`[z] ↦ [z * g]`, with inverse `[z] ↦ [z * g⁻¹]`.
-The lemmas `Action.quotientIsoOfEqMapConj_hom_mk`,
-`Action.quotientIsoOfEqMapConj_inv_mk` and `Action.quotientIsoOfEqMapConj_hom_one`
-give the representative formulas and the identity-coset image `[g]`.
-This image is the coset of `g`, not a unique representative.
-Both maps use `MulActionHom.quotientEquivFixedPoints`; Mathlib's `Action.mkIso`
-supplies the categorical isomorphism.
-Existence of equivariant maps in both directions alone is not the isomorphism
-criterion. See the [coset-action API](GroupTheory/GroupAction/Quotient.lean)
-and [nonnormal permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean).
+- **[Conditional cyclic norm exactness](GroupTheory/CyclicNorm.lean).** For an endomorphism `sigma` of an
+  additive commutative group and `m > 0` with `sigma ^ m = 1`, the norm kernel
+  equals `range (1 - sigma)` if multiplication by that same `m` is injective
+  and fixed classes modulo `mA` have fixed lifts: whenever
+  `sigma a - a ∈ mA`, some fixed `z` satisfies `a - z ∈ mA`.
+- **[Scalar maps](GroupTheory/FGScalarSurjectivity.lean) and indices.** For a finitely generated abelian group `A` and
+  natural `n ≥ 2`, surjectivity of `n • ·` is equivalent to finiteness and
+  coprimality of `n` with the group order. A single integer scalar gives its
+  inverse. The separate [index formula](GroupTheory/IndexNSmul.lean) is
+  `[A : nA] = n ^ Module.finrank ℤ A * Nat.card (ker [n])` for every natural
+  scalar, with index and `Nat.card` zero for infinite quotients and kernels.
+- **[Quotient kernels](GroupTheory/QuotientGroup/Kernel.lean) and torsion.** For normal `N ≤ G`, `M ≤ H` and an ambient
+  equivalence `f : G ≃* H` with `f(N) ≤ M`, the kernel of `G/N → H/M` is
+  identified with `M/f(N)`; these groups need not be commutative. For any
+  natural `n`, if `n • ·` is bijective on an additive commutative `V`, the
+  [`n`-torsion of `V/L`](GroupTheory/QuotientTorsion.lean), for arbitrary additive
+  subgroup `L`, is `L/nL` by the positive-sign map `[x] ↦ [n • x]`.
+  If `L` is finitely generated, that kernel is finite with
+  [natural cardinality](GroupTheory/QuotientTorsion/Cardinality.lean)
+  `n ^ Module.finrank ℤ L`; freeness and ambient finite generation are not
+  needed. All natural scalars are included; at zero the premise forces `V`
+  trivial.
 
-**Product-coset orbits and double cosets.** For any group `G : Type u` and
-arbitrary subgroups `H, K`,
-[`MulAction.orbitQuotientProdQuotientEquivDoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean)
-identifies the orbits of the canonical diagonal left action of a single `G` on
-`(G ⧸ H) × (G ⧸ K)` with `DoubleCoset.Quotient (H : Set G) (K : Set G)`.
-The forward map sends `orbit(xH, yK)` to `H (x⁻¹ * y) K`; its inverse sends
-`H g K` to `orbit(H, gK)`. These are classes, not unique representatives.
-No finiteness, normality or topological assumption is required. Both representative
-formulas are simp lemmas. The criterion
-`MulAction.orbitRel_prod_quotient_mk_eq_mk_iff` says two pairs represented by
-`(x, y)` and `(x', y')` have the same orbit exactly when
-`∃ h ∈ H, ∃ k ∈ K, x'⁻¹ * y' = h * (x⁻¹ * y) * k`.
-The [three-point permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
-use `H = K = ⟨(01)⟩` in `S₃`, with orbit sizes three and six and double-coset
-sizes two and four. They use both directions of the equivalence and include
-an arbitrary-group `H = ⊤` boundary with one orbit class and one double-coset class.
-
-**Restricted coset actions.** For any group `G : Type u` and subgroups `H, K`,
-[`MulAction.orbitQuotientQuotientEquivDoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean)
-identifies the orbits of the canonical restricted `H`-action on `G ⧸ K` with
-`H`–`K` double cosets. It sends `orbit(gK)` to `H g K`, with the inverse formula
-on the same representative. The stabilizer at `gK`, as a subgroup of `H`, is
-`(K.map (MulAut.conj g).toMonoidHom).comap H.subtype`.
-Mathlib's `MulAction.orbitEquivQuotientStabilizer` identifies each orbit with
-`H ⧸ MulAction.stabilizer H (QuotientGroup.mk (s := K) g)`; the characteristic
-smul lemmas in [the coset-action API](GroupTheory/GroupAction/Quotient.lean)
-express equivariance without restricting the independent group and carrier universes.
-`MulAction.quotientEquivSigmaDoubleCoset` reindexes Mathlib's primed orbit partition
-by double cosets and commutes with the stock sigma action, which fixes the index.
-Its fibers are whole orbits: no representative or basepoint section is selected.
-Neither subgroup needs to be normal; no finiteness, topology or extra nonemptiness
-hypothesis is used. The [three-point permutation model](GroupTheoryTest/GroupAction/RestrictedCoset.lean)
-uses a nonnormal point stabilizer, an identity coset fixed by it, and a second orbit
-with two distinct cosets.
-
-**Maps between nested coset spaces.** For subgroups `H ≤ K` of any group `G`,
-[`MulActionHom.quotientMapOfLE`](GroupTheory/GroupAction/QuotientMap.lean)
-bundles the canonical map `(G ⧸ H) →[G] (G ⧸ K)` for the left actions.
-It is surjective, sends each representative to the same representative,
-preserves identity inclusions and composition, and commutes with `toQuotient`.
-No normality or finiteness assumption is required. When both coset spaces
-are finite, the underlying function agrees with Mathlib's finite
-`G`-set morphism. The existing [permutation examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean)
-exhibit distinct source classes that merge, while a third class stays distinct.
-
-**Invariant equivalence relations.** For a group `G` acting pretransitively on `X`
-and a chosen point `a : X`,
-[`MulAction.stabilizerInvariantSetoidOrderIso`](GroupTheory/GroupAction/InvariantSetoid.lean)
-identifies subgroups containing `MulAction.stabilizer G a` with left-`G`-invariant
-`Setoid`s on `X`, ordered by relation refinement. The group and carrier universes
-are independent. For the stock coset action on `G ⧸ H`, the relation at `K ≥ H`
-is exactly `Setoid.ker (MulActionHom.quotientMapOfLE hHK)`; on representatives it
-is `g⁻¹ * h ∈ K`. The inverse recovers the subgroup from the identity class.
-No finiteness, normality or topological assumption is required. The
-[nonnormal three-point model](GroupTheoryTest/GroupAction/InvariantSetoid.lean)
-separates this kernel from the orbit relation of the restricted left `K`-action.
-
-**Action automorphisms as centralizers.** For a group `G` and an action `A`
-on an object of any category `C`, `Action.autEquivCentralizer` constructs
-`Aut A ≃* Subgroup.centralizer (Set.range A.ρAut)`. The group, object and
-morphism universes are independent. The forward map is exactly the forgotten
-isomorphism; its inverse equips a commuting isomorphism with equivariance.
-For `[Group G] [MulAction G X]`, `Action.autEquivPermCentralizer G X`
-specializes this to the centralizer of `MulAction.toPermHom G X` in `Equiv.Perm X`,
-reusing Mathlib's `CategoryTheory.Aut.mulEquivPerm`. Multiplication is ordinary
-composition `α (β x)` on both sides. No finite, transitive, faithful, nonempty
-or topological hypothesis is needed. For a pretransitive `G`-action and `x : X`,
-`MulAction.isPretransitive_centralizer_iff_stabilizer_normal` characterizes
-pretransitivity of this canonical image centralizer by normality of the point
-stabilizer. The general helper
-`MulAction.stabilizer_normal_of_pretransitive_commuting` only needs a commuting
-pretransitive scalar operation `SMul H X`, with no monoid structure on `H` or
-pretransitivity of `G`. These are general group-action facts, not freeness criteria.
-See the [centralizer API](GroupTheory/GroupAction/Centralizer.lean), its
-[noncommuting three-point and empty-set clients](GroupTheoryTest/ActionCentralizer.lean),
-and the [normal-stabilizer clients](GroupTheoryTest/GroupAction/CentralizerTransitivity.lean).
-
-**Automorphisms of transitive actions.** For a group `G` acting transitively
-on `X` and a chosen point `x`, `MulAction.normalizerQuotientEquivAut`
-identifies `N_G(G_x) / G_x` with the canonical
-`CategoryTheory.Aut (Action.ofMulAction G X)`. The group and set universes
-are independent; there is no finiteness, normality, faithfulness or freeness
-assumption. The denominator is the stabilizer as a subgroup of its normalizer.
-`Action.normalizerToAut` constructs inverse right translation on `G / H` for
-any subgroup `H`, with kernel `H` inside `N_G(H)` and same-object agreement
-with Mathlib's finite-normal `Action.FintypeCat.toEndHom` after `Aut.toEnd`
-and `FintypeCat.incl.mapAction`/`mapEnd`.
-Automorphisms multiply by ordinary function composition, so `[n]` sends
-`g • x` to `(g * n⁻¹) • x`. May's displayed `g * n` formula reverses multiplication
-under this convention; the abstract isomorphism remains valid with inverse
-parameter. See the [action API](GroupTheory/GroupAction/Automorphism.lean)
-and its [noncommutative and nonnormal clients](GroupTheoryTest/GroupAction/Automorphism.lean).
-
-**Finite free bases and finite-index subgroups.** The
-[free-group rank module](GroupTheory/FreeGroup/Rank.lean) proves that every free
-basis of a finitely generated group has a finite indexing type of cardinality
-`Group.rank G`. For every finite-index subgroup `H` of a finitely generated free
-group, it proves `Group.rank H + H.index = Group.rank G * H.index + 1`, including
-ambient rank zero and without normality or a separate finite-generation
-hypothesis on `H`. Mathlib supplies subgroup freeness and finite generation.
-The [parity-kernel client](GroupTheoryTest/FreeGroup/Rank.lean) constructs an
-index-two subgroup of `FreeGroup (Fin 2)`, computes its rank as three and uses
-the existing basis-reindexing API to give a basis indexed by `Fin 3`.
-
-**Fixed-action continuity.**
-
-- `Topology.IsCoinducing.continuousConstSMul` transports continuity of fixed
-  scalar actions from `X` to `Y` along an equivariant coinducing map
-  `f : X →[M] Y`, assuming `ContinuousConstSMul M X`, with topologies on
-  `X` and `Y` and primitive actions of `M` on both. Scalar, source and target
-  universes are independent; no scalar topology, action laws or surjectivity
-  is required. `Topology.IsCoinducing.continuousConstVAdd` gives the
-  corresponding transport from `X` to `Y` for fixed vector additions,
-  assuming `ContinuousConstVAdd M X`. See
-  [the transport API](GroupTheory/Topology/Algebra/ConstMulAction.lean).
-- `QuotientGroup.continuousConstSMul` supplies continuous fixed left actions on
-  the canonical coinduced left-coset quotient `G ⧸ H` for every subgroup `H`,
-  assuming only `Group G`, `TopologicalSpace G` and `ContinuousConstSMul G G`.
-  No normality, right continuity, joint multiplication, continuous inversion,
-  separation, compactness or index assumption is required. The additive instance
-  is `QuotientAddGroup.continuousConstVAdd`. See
-  [the coset quotient API](GroupTheory/Topology/Algebra/Group/Quotient.lean).
-
-**Open, closed and clopen subgroups and left-coset quotients.**
-For an arbitrary subgroup `H`, the following results require only `Group G`, a
-supplied `TopologicalSpace G` and continuity of fixed left translations
-(`ContinuousConstSMul G G`), using the canonical left-coset quotient `G ⧸ H`
-with its coinduced topology:
-
-- `Subgroup.isOpen_iff_discreteTopology_quotient`: `H` is open iff the quotient
-  is discrete.
-- `Subgroup.isClosed_iff_t1Space_quotient`: `H` is closed iff the quotient is T1.
-- `Subgroup.isClopen_iff_isOpen`: `H` is clopen iff it is open, without an
-  index assumption.
-- `Subgroup.isOpen_iff_isClosed` and `Subgroup.isClopen_iff_isClosed`: with
-  `H.FiniteIndex`, openness, closedness and clopenness are equivalent.
-
-None of these characterizations requires compactness. The separate
-`Subgroup.finiteIndex_of_isOpen` adds `CompactSpace G` to deduce finite index
-from openness. None assumes normality, right translations, joint multiplication,
-continuous inversion or ambient separation. See
-[the subgroup and quotient API](GroupTheory/Topology/Algebra/Group/Quotient.lean)
-and [the clients](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean). The clients
-supply open and closed singleton fibers, finite coset types and same-object
-agreement with Mathlib's stronger separately continuous API. Every observer
-`G ⧸ H → Y`, for any space `Y`, is continuous when `H` is closed and of finite
-index; no compactness or explicit openness premise is needed.
-See the [left-versus-both-sided boundary examples](docs/Results.md).
-
-**Total boundedness from finite-index subgroup bases.** For `G : Type u`
-with `[Group G] [UniformSpace G] [IsLeftUniformGroup G]`, take any index type
-`ι : Type v`, predicate `p : ι → Prop` and family `H : ι → Subgroup G`.
-The universes `u` and `v` are independent. Given
-`B : (nhds (1 : G)).HasBasis p (fun i => (H i : Set G))`,
-`Filter.HasBasis.totallyBounded_univ_iff_subgroup_finiteIndex` states
-
-```lean
-TotallyBounded (Set.univ : Set G) ↔ ∀ i, p i → (H i).FiniteIndex
-```
-
-The additive form,
-`Filter.HasBasis.totallyBounded_univ_iff_addSubgroup_finiteIndex`, uses
-`[AddGroup A] [UniformSpace A] [IsLeftUniformAddGroup A]`, a basis at `0`
-and additive subgroups, with the same independent index universe and predicate.
-Neither form assumes normality, separation, countability, a nonempty index type,
-completeness or compactness. See the
-[total-boundedness criterion](GroupTheory/Topology/Algebra/Group/TotalBounded.lean)
-and its [applications](GroupTheoryTest/Topology/FiniteIndex.lean): in the 3-adic
-integers, closed norm balls of radius `(1 / 3) ^ n` identify with powers of `(3)`
-and give the neighborhood basis, while reduction to finite `ZMod (3 ^ n)` gives
-finite index without using compactness. Both the additive criterion and the
-multiplicative criterion on `Multiplicative ℤ_[3]` are applied. In the infinite
-discrete group `ℤ`, the zero subgroup is a neighborhood basis but has infinite
-index; applying the additive criterion shows that `ℤ` is not totally bounded.
-
-**Compact open subgroup neighborhoods.** Every identity neighborhood in a
-locally compact totally disconnected topological group contains a compact open
-subgroup; neighborhoods need not be open, and no ambient compactness or separate
-Hausdorff hypothesis is imposed. `OpenSubgroup.nhds_one_hasBasis_compact` expresses
-the neighborhood basis. For any compact open set, `OpenSubgroup.leftStabilizer`
-constructs its open left-translation stabilizer, even if the set misses the identity.
-When the set contains the identity, that subgroup is compact and contained in the set.
-The construction requires neither local compactness nor total disconnectedness.
-See [the subgroup API](GroupTheory/Topology/CompactOpenSubgroup.lean)
-and [the boundary clients](GroupTheoryTest/Topology/CompactOpenSubgroup.lean).
-
-**Identity-component quotients.** For any topological group, the ordinary
-quotient by Mathlib's `Subgroup.connectedComponentOfOne` is Hausdorff and totally
-disconnected, without a separation or local-compactness hypothesis on the
-original group. `QuotientGroup.connectedComponentQuotientMk` is the canonical
-continuous projection. `QuotientGroup.connectedComponentQuotientLift` factors
-continuous homomorphisms into totally disconnected groups, with application,
-composition, uniqueness and hom-equivalence APIs. The target group's
-operations need not be continuous. See
-[the quotient API](GroupTheory/Topology/ConnectedComponentQuotient.lean)
-and [boundary examples](GroupTheoryTest/Topology/ConnectedComponentQuotient.lean).
-
-**Finite cyclic norm exactness.**
-[`AddMonoid.End.cyclicNorm_ker_eq_one_sub_range`](GroupTheory/CyclicNorm.lean)
-identifies `ker (∑ i ∈ Finset.range m, sigma ^ i)` with `range (1 - sigma)`
-for an endomorphism `sigma` of any additive commutative group `A`. It requires
-`m : ℕ` with `0 < m` and `sigma ^ m = 1` (not necessarily *exact* order `m`),
-injectivity of multiplication by that **same** `m`, and an elementwise fixed
-lift: if `sigma a - a ∈ m • A`, some `sigma`-fixed `z` satisfies
-`a - z ∈ m • A`. This is useful when fixed classes modulo `m • A` have
-fixed representatives even though multiplication by `m` is not surjective.
-It does not assume divisibility or a global fixed-lift section, and does not
-assert an unconditional Tate/cohomology theorem or source coverage. See the
-[cyclic norm guide](GroupTheory/CyclicNorm/README.md) and its
-[client examples and counterexamples](GroupTheoryTest/CyclicNorm.lean).
-
-**Surjective natural scalars on FG abelian groups.** For `[AddCommGroup A]`,
-`[AddGroup.FG A]` and `n : ℕ` with `2 ≤ n`, surjectivity of the
-map `fun x : A => n • x` forces `Finite A` and
-`Nat.Coprime n (Nat.card A)`. A *single* integer scalar is a two-sided
-inverse for `n • ·` on every element; the finite-and-coprime condition
-characterizes both surjectivity and bijectivity of that map. The four APIs in
-[`GroupTheory.FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean) are
-`AddCommGroup.exists_zsmul_inverse_of_nsmul_surjective`,
-`AddCommGroup.finite_coprime_of_nsmul_surjective`,
-`AddCommGroup.nsmul_surjective_iff_finite_coprime` and
-`AddCommGroup.nsmul_bijective_iff_finite_coprime`. These statements do not
-apply to arbitrary surjective endomorphisms and do not formalize K-theory.
-See the [FG scalar guide](GroupTheory/FGScalarSurjectivity/README.md) and its
-[client examples](GroupTheoryTest/FGScalarSurjectivity.lean).
-
-**Kernels of induced quotient maps.** For normal subgroups `N ≤ G` and `M ≤ H`
-and a group equivalence `f : G ≃* H` with `f(N) ≤ M`,
-`QuotientGroup.kerMapEquivQuotientOfEquiv` identifies the kernel of the induced
-`G / N → H / M` with `M / f(N)`, using the subgroup of `M` defined by the image.
-The groups may be noncommutative and lie in independent universes; image normality
-is derived from the ambient equivalence. A kernel class `[g]` maps to `[f g]`,
-and the inverse sends `[m]` to `[f.symm m]`. The additive equivalence and both
-representative formulas are generated in `QuotientAddGroup`.
-For a second such quotient map, ambient homomorphisms `a : G →* G'` and
-`b : H →* H'` preserving the respective normal subgroups and satisfying
-`f' ∘ a = b ∘ f` induce a commuting square of these equivalences.
-`QuotientGroup.kerMapEquivQuotientOfEquiv_naturality` states this compatibility;
-its additive counterpart is generated in `QuotientAddGroup`. See the
-[quotient-kernel API](GroupTheory/QuotientGroup/Kernel.lean) and the
-[independent rational-plane diagonal model](GroupTheoryTest/QuotientKernel.lean).
-
-**Torsion in additive quotients.** If multiplication by `n : ℕ` is bijective
-on an additive commutative group `V`, then
-`QuotientAddGroup.nsmulTorsionEquivQuotient` identifies the `n`-torsion subgroup
-of `V / L` with `L / nL` for any additive subgroup `L`. It uses the ordinary
-kernel and range-quotient carriers. A class represented by `x`, with `n • x ∈ L`,
-maps to `[n • x]`; the inverse is given by unique `n`-division in `V`.
-No topology, lattice, finite-rank or divisibility-at-other-scalars assumption is needed.
-This is the scalar specialization of the quotient-kernel comparison, with an
-explicit equality identifying the two constructions after the canonical transports.
-See the [equivalence and representative API](GroupTheory/QuotientTorsion.lean)
-and the [rational half- and quarter-classes and unit-scalar boundaries](GroupTheoryTest/QuotientTorsion.lean).
-The scalar-transition statement identifies multiplication by `d` from
-`(m * d)`-torsion to `m`-torsion with reduction
-`L / (m * d)L → L / mL`, assuming only ambient bijectivity at `m * d`.
-This is a specialization of the quotient-kernel naturality square.
-
-**Scalar indices on FG abelian groups.** For `[AddCommGroup A]` and
-`[AddGroup.FG A]`, the [scalar-index module](GroupTheory/IndexNSmul.lean) states
-`(nsmulAddMonoidHom (α := A) n).range.index =
-n ^ Module.finrank ℤ A * Nat.card ((nsmulAddMonoidHom (α := A) n).ker)`
-for every `n : ℕ`. Injectivity at this scalar removes the kernel factor, without
-a global freeness assumption. For `[Module.Free ℤ A] [Module.Finite ℤ A]`,
-a comparison collapses the right-hand side to Mathlib's existing free index
-formula, including at zero. Index and `Nat.card` vanish for infinite quotients
-and kernels; no all-scalar quotient finiteness is asserted.
-See the [mixed free/torsion examples](GroupTheoryTest/IndexNSmul.lean).
-
-**Finite torsion in additive quotients.** If `L : AddSubgroup V` is finitely
-generated and multiplication by `n : ℕ` is bijective on the additive commutative
-group `V`, then `QuotientAddGroup.finite_ker_nsmul_quotient` makes the `n`-torsion
-kernel of `V / L` finite, and `QuotientAddGroup.natCard_ker_nsmul_quotient`
-computes its natural cardinality as `n ^ Module.finrank ℤ L`. The subgroup need
-not be free, and neither `V` nor `V / L` needs to be finitely generated.
-Only bijectivity at this scalar is assumed. All natural scalars are included;
-at zero the hypothesis forces `V` trivial, giving `0 ^ 0 = 1`.
-See the [cardinality extension](GroupTheory/QuotientTorsion/Cardinality.lean)
-and the [independent rational half-class count and boundary models](GroupTheoryTest/QuotientTorsion.lean).
-
-[All results and their hypotheses](docs/Results.md), including open kernels,
-characters, discrete-target and finite-coordinate factorizations, identity
-components and compatible sections.
+[Detailed arithmetic results](docs/Results.md#abelian-arithmetic) retain the
+representative formulas, scalar-transition naturality and zero-scalar boundaries.
 
 ### Index-two subgroups and explicit generators
 
@@ -526,6 +224,7 @@ claim is implied by this guidance.
 | --- | --- |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Fixed vectors and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) |
+| Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
