@@ -179,6 +179,52 @@ without a second pairing definition. These results reuse Mathlib's product,
 submodule and intertwining APIs and this library's existing fixed-vector
 restrictions; they do not assert coverage of a book passage.
 
+**Arbitrary indexed products of fixed submodules.** For `I : Type uI`, an original
+family `M : I → Type uM` of additive commutative monoids with their given `R`-module
+structures, and `ρ i : Representation R G (M i)`, the
+[indexed-product API](../GroupTheory/RepresentationPi.lean) constructs
+`Representation.pi ρ` using `LinearMap.piMap (fun i => ρ i g)` at `g`. It proves
+
+```lean
+(Representation.pi ρ).fixedSubmodule =
+  Submodule.pi Set.univ (fun i => (ρ i).fixedSubmodule)
+```
+
+Only `[Semiring R]` and `[Monoid G]` are required. The scalar, monoid, index and fiber
+universes are independent, and the product has its original dependent-function module
+structure. No finite or nonempty index, scalar commutativity, nonzero condition,
+additive inverses or invertible actions are assumed. The named criterion
+`mem_fixedSubmodule_pi` exchanges the two universal quantifiers in fixedness; it is
+not a global simplification rule.
+
+`isIntertwiningMap_pi_iff` characterizes compatibility of an arbitrary linear map
+from an independently universe-polymorphic representation by compatibility of its
+composites with the stock `LinearMap.proj`. The theorem
+`existsUnique_isIntertwiningMap_pi` uses `LinearMap.pi`, `proj_pi` and `pi_proj_comp`
+to assemble supplied intertwining coordinates uniquely, without another product engine.
+
+The generic [linear enrichment](../GroupTheory/LinearAlgebra/Pi.lean)
+`Submodule.piEquiv p : (Submodule.pi Set.univ p) ≃ₗ[R] (∀ i, p i)` adds linear fields
+to Mathlib's `Equiv.subtypeEquivRight` followed by `Equiv.subtypePiEquivPi`.
+`fixedSubmodulePiEquiv ρ` composes equality transport with this enrichment. Its forward
+and inverse coordinate formulas and inclusion identity retain the original ambient
+coordinates. `fixedSubmodulePiEquiv_naturality` uses the supplied original family of
+intertwiners into fibers in an independent target universe. Its product map bundles
+`LinearMap.piMap` with derived compatibility via the existing pointwise intertwiner
+constructor. In the separate commutative-ring/group/additive-group context,
+`invariants_pi` follows by the same-data `fixedSubmodule_eq_invariants` bridge, without
+a second invariants-equivalence definition. The independently heterogeneous binary API
+above is unchanged.
+
+For index type `ℕ`, let the free monoid on one generator act by swap on every `ℕ²`
+fiber. The fixed fibers are proper nonzero diagonals. The all-`(1, 1)` sequence has
+infinite support and is fixed, while a sequence with `(1, 0)` at one coordinate is not.
+Coordinatewise doubling is a nonidentity intertwiner. The alternative generator action
+`(a, b) ↦ (a, 0)` is noninvertible and has a proper nonzero fixed horizontal axis.
+For an empty index type, both sides have the unique empty function and the fixed
+submodule is the whole product. These examples explain the full-product and weak
+algebraic hypotheses; they assert no external-source coverage.
+
 **Action automorphisms and centralizers.** For `(G : Type u) [Group G]`,
 `(C : Type v) [Category.{w} C]` and `A : Action C G`,
 `Action.autEquivCentralizer A` identifies `CategoryTheory.Aut A` with

@@ -31,17 +31,18 @@ factors uniquely through this inclusion using `LinearMap.codRestrict`; its point
 formula is the existing `LinearMap.codRestrict_apply`. Bundled intertwining maps induce
 linear maps between fixed submodules, commuting with the inclusions and preserving
 identity and composition. An injective intertwining map reflects fixedness, and its
-restriction to fixed submodules is injective. The range of this restriction is the
-ambient range pulled back along the target fixed-submodule inclusion. Consequently,
-a bijective intertwining map restricts to a bijection on fixed submodules. If `f` is
-injective and `f, g` are exact on the ambient modules, their restrictions are exact as
-well. These statements require only a semiring, a monoid, and additive commutative
-monoids with their given module structures; all carrier universes are independent.
+restriction to fixed submodules is injective. The kernel of any restriction is the
+ambient kernel pulled back along the source fixed-submodule inclusion. For an injective
+intertwining map, the restricted range is the ambient range pulled back along the target
+fixed-submodule inclusion. Consequently, a bijective intertwining map restricts to a
+bijection on fixed submodules. If `f` is injective and `f, g` are exact on the ambient
+modules, their restrictions are exact as well. These statements require only a semiring,
+a monoid, and additive commutative monoids with their given module structures; all carrier
+universes are independent.
 
-The exactness argument lifts a fixed vector in the kernel along the ambient map `f`.
-Equivariance and injectivity of `f` force that lift to be fixed. The reverse inclusion
-follows from the ambient exactness. This is left exactness, not a claim that fixed
-vectors preserve surjections.
+The exactness argument compares the restricted kernel and range through their pullback
+identities and the ambient kernel-range equality. This is left exactness, not a claim
+that fixed vectors preserve surjections.
 
 The fixed submodule of the stock product representation is literally the product of
 the two fixed submodules. `fixedSubmoduleProdEquiv` splits its coordinates by reusing
@@ -88,7 +89,9 @@ The reference revision is `83abb3e776bdefcbc447a1e44d0debe4010039e5`, in
 `Mathlib.RepresentationTheory.Intertwining`, and
 `Mathlib.Algebra.Module.Submodule.LinearMap`. The left-exactness proof uses
 `LinearMap.exact_iff` from `Mathlib.Algebra.Exact.Basic`, formalized by Antoine
-Chambert-Loir, together with Mathlib's kernel and range membership APIs.
+Chambert-Loir. The kernel formula reuses `LinearMap.ker_codRestrict` and
+`LinearMap.ker_comp` from `Mathlib.Algebra.Module.Submodule.Ker`, authored by Johannes
+Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis, and Heather Macbeth.
 The range and bijectivity results also use `LinearMap.range_eq_top` and
 `Submodule.comap_top` from `Mathlib.Algebra.Module.Submodule.Range` and
 `Mathlib.Algebra.Module.Submodule.Map`.
@@ -217,6 +220,19 @@ theorem fixedSubmoduleMap_injective (f : IntertwiningMap ρ σ)
   simpa only [fixedSubmoduleMap_apply] using
     congrArg (fun z : fixedSubmodule σ => (z : W)) h
 
+/-- The kernel of an intertwining map on fixed submodules is the pullback of
+its ambient kernel along the source fixed-submodule inclusion. -/
+theorem ker_fixedSubmoduleMap (f : IntertwiningMap ρ σ) :
+    LinearMap.ker f.fixedSubmoduleMap =
+      (LinearMap.ker f.toLinearMap).comap (fixedSubmodule ρ).subtype := by
+  exact
+    (LinearMap.ker_codRestrict (fixedSubmodule σ)
+      (f.toLinearMap.comp (fixedSubmodule ρ).subtype)
+      (fun v g =>
+        (Representation.IntertwiningMap.isIntertwining ρ σ f g (v : V)).symm.trans
+          (congrArg f (apply_coe_fixedSubmodule ρ g v)))).trans
+      (LinearMap.ker_comp (fixedSubmodule ρ).subtype f.toLinearMap)
+
 /-- The range of an injective intertwining map on fixed submodules is the pullback of
 its ambient range along the target fixed-submodule inclusion. -/
 theorem range_fixedSubmoduleMap (f : IntertwiningMap ρ σ)
@@ -245,37 +261,14 @@ theorem fixedSubmoduleMap_bijective (f : IntertwiningMap ρ σ)
   rw [f.range_fixedSubmoduleMap hf.1, hf_range, Submodule.comap_top]
 
 /-- Fixed vectors preserve exactness at the middle term when the first ambient
-intertwining map is injective. Equivariance and injectivity make every lift of a fixed
-kernel vector fixed; no surjectivity of the restricted second map is asserted. -/
+intertwining map is injective. The kernel and range pullback identities transfer ambient
+exactness; no surjectivity of the restricted second map is asserted. -/
 theorem fixedSubmoduleMap_exact (f : IntertwiningMap ρ σ) (g : IntertwiningMap σ τ)
     (hf : Function.Injective f) (hfg : Function.Exact f g) :
     Function.Exact f.fixedSubmoduleMap g.fixedSubmoduleMap := by
-  have hker : LinearMap.ker g.toLinearMap = LinearMap.range f.toLinearMap :=
-    LinearMap.exact_iff.mp hfg
   apply LinearMap.exact_iff.mpr
-  ext b
-  simp only [LinearMap.mem_ker, LinearMap.mem_range]
-  constructor
-  · intro hb
-    have hgb : g (b : W) = 0 := by
-      simpa only [fixedSubmoduleMap_apply, Submodule.coe_zero] using
-        congrArg (fun z : fixedSubmodule τ => (z : U)) hb
-    have hb_range : (b : W) ∈ LinearMap.range f.toLinearMap := by
-      rw [← hker]
-      exact LinearMap.mem_ker.mpr hgb
-    obtain ⟨a, ha⟩ := LinearMap.mem_range.mp hb_range
-    have ha_fixed : a ∈ fixedSubmodule ρ :=
-      f.mem_fixedSubmodule_of_apply_mem hf (ha.symm ▸ b.property)
-    refine ⟨⟨a, ha_fixed⟩, ?_⟩
-    apply Subtype.ext
-    simpa only [fixedSubmoduleMap_apply, toLinearMap_apply] using ha
-  · rintro ⟨a, rfl⟩
-    apply Subtype.ext
-    have hfa : f (a : V) ∈ LinearMap.ker g.toLinearMap := by
-      rw [hker]
-      exact LinearMap.mem_range.mpr ⟨(a : V), rfl⟩
-    simpa only [fixedSubmoduleMap_apply, Submodule.coe_zero, toLinearMap_apply] using
-      (LinearMap.mem_ker.mp hfa)
+  rw [g.ker_fixedSubmoduleMap, f.range_fixedSubmoduleMap hf,
+    (LinearMap.exact_iff (f := f.toLinearMap) (g := g.toLinearMap)).mp hfg]
 
 end IntertwiningMap
 

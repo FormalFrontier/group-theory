@@ -19,6 +19,14 @@
   are by Simon Hudon, Patrick Massot and Eric Wieser. The semiring/monoid result
   specializes to Mathlib's invariants on the same original module data; no
   external-source correspondence or book coverage is claimed for this API.
+  The indexed-product extension uses Mathlib's `LinearMap.piMap`, `pi`, `proj`
+  and projection/reconstruction laws from `Mathlib.LinearAlgebra.Pi`, by Johannes
+  Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov and Eric Wieser. Its generic
+  `Submodule.piEquiv` adds linear compatibility to Mathlib's `Equiv.subtypeEquivRight`
+  and `Equiv.subtypePiEquivPi`, rather than recreating their equivalence. The
+  dependent-function module instances in `Mathlib.Algebra.Module.Pi` are by Simon
+  Hudon and Patrick Massot. The indexed naturality result reuses the same
+  fixed-submodule restrictions and the pointwise intertwiner constructor.
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion
   of automorphisms of `G`-sets, motivates the centralizer identification for

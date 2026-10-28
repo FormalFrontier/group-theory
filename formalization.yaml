@@ -100,11 +100,12 @@ project:
     and yields a uniform two-sided integer-scalar inverse; the converse
     characterizes surjectivity and bijectivity of that scalar map.
 
-    For two representations of a monoid over a semiring on their given additive
-    commutative monoid modules, the fixed submodule of the stock product is the
-    literal product of the fixed submodules. A canonical linear equivalence
-    splits coordinates and is natural in two supplied intertwining maps. It
-    uses one representation-independent submodule-product splitting equivalence.
+    For representations of a monoid over a semiring on their given additive
+    commutative monoid modules, fixed submodules commute with binary and arbitrary
+    indexed products, including infinite and empty index types. Canonical linear
+    equivalences split coordinates and are natural in supplied intertwining maps.
+    They use representation-independent submodule-product splittings; the indexed
+    splitting linearly enriches Mathlib's subtype-Pi equivalence.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -164,7 +165,10 @@ sources:
     location: >-
       GroupTheory/LinearAlgebra/Prod.lean, Submodule.prodEquiv;
       GroupTheory/RepresentationInvariants.lean,
-      Representation.fixedSubmodule_prod and Representation.fixedSubmoduleProdEquiv
+      Representation.fixedSubmodule_prod and Representation.fixedSubmoduleProdEquiv;
+      GroupTheory/LinearAlgebra/Pi.lean, Submodule.piEquiv;
+      GroupTheory/RepresentationPi.lean, Representation.fixedSubmodule_pi and
+      Representation.fixedSubmodulePiEquiv
     note: >-
       The construction reuses Mathlib's submodule products, induced product
       modules, stock product representation, public intertwining projections,
@@ -174,6 +178,12 @@ sources:
       factor modules and their independent universes are preserved; the two target
       module universes in naturality are independent as well. The stronger-context
       invariants identity uses the existing same-data bridge to Mathlib's invariants.
+      For indexed families, the pointwise action uses LinearMap.piMap and the
+      universal property uses LinearMap.pi, proj_pi and pi_proj_comp. The generic
+      splitting adds linear fields to Equiv.subtypeEquivRight followed by
+      Equiv.subtypePiEquivPi. Forward, inverse and inclusion formulas and naturality
+      preserve the original function-module structures, with independent source
+      and target fiber universes. No finite or nonempty index is required.
       No particular external publication or source-coverage claim is asserted.
   - title: Finite cyclic norm exactness from fixed-class lifting
     authors:
@@ -442,11 +452,43 @@ status:
     intertwining maps characterize it. No product-intertwiner wrapper, alternate
     carrier or compatibility premise is introduced. In the commutative-ring,
     group, additive-group context, invariants_prod follows on the same data.
+
+    For arbitrary indexed families, Representation.pi acts pointwise by the supplied
+    original actions. Coordinate intertwining is equivalent to intertwining into
+    the product, with existence and uniqueness supplied by the stock linear-product
+    API. The equality fixedSubmodule_pi and equivalence fixedSubmodulePiEquiv use
+    one generic Submodule.piEquiv, enriching Mathlib's subtype-Pi equivalence only
+    with linear fields. Coordinate, inverse, inclusion and naturality laws retain
+    all original module data and independent universes. Infinite and empty index
+    types are allowed. The stronger invariants_pi identity follows on the same data
+    in a separate commutative-ring/group/additive-group context.
   axioms:
     - propext
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: Submodule.piEquiv
+      file: GroupTheory/LinearAlgebra/Pi.lean
+    - declaration: Submodule.subtype_piMap_comp_piEquiv
+      file: GroupTheory/LinearAlgebra/Pi.lean
+    - declaration: Representation.pi
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.isIntertwiningMap_pi_iff
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.existsUnique_isIntertwiningMap_pi
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.mem_fixedSubmodule_pi
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.fixedSubmodule_pi
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.fixedSubmodulePiEquiv
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.subtype_piMap_comp_fixedSubmodulePiEquiv
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.fixedSubmodulePiEquiv_naturality
+      file: GroupTheory/RepresentationPi.lean
+    - declaration: Representation.invariants_pi
+      file: GroupTheory/RepresentationPi.lean
     - declaration: Submodule.prodEquiv
       file: GroupTheory/LinearAlgebra/Prod.lean
     - declaration: Submodule.subtype_prodMap_comp_prodEquiv

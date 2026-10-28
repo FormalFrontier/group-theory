@@ -50,13 +50,15 @@ constructions and prior results reused from Mathlib.
   `f, g` with injective `f` and `Function.Exact f g` give injectivity and
   exactness on fixed submodules, not preservation of surjectivity without further
   hypotheses.
-- **[Products of fixed submodules](GroupTheory/RepresentationInvariants.lean).** For two monoid
-  representations over a semiring on their given additive commutative monoid modules,
-  the fixed submodule of the stock product representation is the literal product of
-  the fixed submodules. The canonical linear equivalence preserves ambient coordinates
-  and is natural in two supplied intertwining maps. It reuses the generic
-  [submodule-product splitting](GroupTheory/LinearAlgebra/Prod.lean); no group or
-  additive-inverse assumptions are needed.
+- **Products of fixed submodules.** For monoid representations over a semiring on
+  their given additive commutative monoid modules, fixed vectors commute with both
+  [binary products](GroupTheory/RepresentationInvariants.lean) and
+  [arbitrary indexed products](GroupTheory/RepresentationPi.lean), including infinite
+  and empty index types. The canonical linear equivalences preserve ambient coordinates
+  and are natural in supplied intertwining maps. They reuse generic submodule
+  splittings for [pairs](GroupTheory/LinearAlgebra/Prod.lean) and
+  [indexed families](GroupTheory/LinearAlgebra/Pi.lean); no group or additive-inverse
+  assumptions are needed.
 - **[Norms and fixed-vector surjections](GroupTheory/RepresentationNorm.lean).** For finite-group
   representations over a semiring on additive commutative monoids, a surjective
   intertwining map is surjective on fixed submodules if every fixed target vector
@@ -230,8 +232,8 @@ claim is implied by this guidance.
 | Mathematics | Modules |
 | --- | --- |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
-| Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean) |
-| Fixed vectors, products and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean) |
+| Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
+| Fixed vectors, products and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
 | Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |

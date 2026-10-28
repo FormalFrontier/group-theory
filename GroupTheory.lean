@@ -17,12 +17,14 @@ public import GroupTheory.GroupAction.Quotient
 public import GroupTheory.GroupAction.QuotientMap
 public import GroupTheory.IndexNSmul
 public import GroupTheory.LinearAlgebra.Prod
+public import GroupTheory.LinearAlgebra.Pi
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.RepresentationInvariants
+public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
 public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections
