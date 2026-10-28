@@ -31,10 +31,12 @@ factors uniquely through this inclusion using `LinearMap.codRestrict`; its point
 formula is the existing `LinearMap.codRestrict_apply`. Bundled intertwining maps induce
 linear maps between fixed submodules, commuting with the inclusions and preserving
 identity and composition. An injective intertwining map reflects fixedness, and its
-restriction to fixed submodules is injective. If `f` is injective and `f, g` are exact
-on the ambient modules, their restrictions are exact as well. These statements require
-only a semiring, a monoid, and additive commutative monoids with their given module
-structures; all carrier universes are independent.
+restriction to fixed submodules is injective. The range of this restriction is the
+ambient range pulled back along the target fixed-submodule inclusion. Consequently,
+a bijective intertwining map restricts to a bijection on fixed submodules. If `f` is
+injective and `f, g` are exact on the ambient modules, their restrictions are exact as
+well. These statements require only a semiring, a monoid, and additive commutative
+monoids with their given module structures; all carrier universes are independent.
 
 The exactness argument lifts a fixed vector in the kernel along the ambient map `f`.
 Equivariance and injectivity of `f` force that lift to be fixed. The reverse inclusion
@@ -72,6 +74,9 @@ For contrast, let the cyclic group of order two act by sign on `ℤ`. Multiplica
 two followed by reduction modulo two is exact and equivariant, with trivial action on
 `ℤ / 2ℤ`. The integer fixed submodules are zero, whereas every residue class is fixed.
 Thus the restricted reduction map is not surjective, even though the ambient map is.
+Its restricted range is zero, but the pullback of its ambient range along the target
+fixed-submodule inclusion is the whole nonzero target. This also shows why the range
+formula `IntertwiningMap.range_fixedSubmoduleMap` requires injectivity.
 
 ## References
 
@@ -84,6 +89,9 @@ The reference revision is `83abb3e776bdefcbc447a1e44d0debe4010039e5`, in
 `Mathlib.Algebra.Module.Submodule.LinearMap`. The left-exactness proof uses
 `LinearMap.exact_iff` from `Mathlib.Algebra.Exact.Basic`, formalized by Antoine
 Chambert-Loir, together with Mathlib's kernel and range membership APIs.
+The range and bijectivity results also use `LinearMap.range_eq_top` and
+`Submodule.comap_top` from `Mathlib.Algebra.Module.Submodule.Range` and
+`Mathlib.Algebra.Module.Submodule.Map`.
 The product result reuses the same fixed-submodule restrictions, Mathlib's stock
 product representation and public intertwining projections and pairing, together with
 its product-submodule API and `LinearEquiv.ofEq`. The generic splitting equivalence
@@ -208,6 +216,33 @@ theorem fixedSubmoduleMap_injective (f : IntertwiningMap ρ σ)
   apply hf
   simpa only [fixedSubmoduleMap_apply] using
     congrArg (fun z : fixedSubmodule σ => (z : W)) h
+
+/-- The range of an injective intertwining map on fixed submodules is the pullback of
+its ambient range along the target fixed-submodule inclusion. -/
+theorem range_fixedSubmoduleMap (f : IntertwiningMap ρ σ)
+    (hf : Function.Injective f) :
+    LinearMap.range f.fixedSubmoduleMap =
+      (LinearMap.range f.toLinearMap).comap (fixedSubmodule σ).subtype := by
+  ext b
+  simp only [LinearMap.mem_range, Submodule.mem_comap, Submodule.subtype_apply,
+    toLinearMap_apply]
+  constructor
+  · rintro ⟨a, rfl⟩
+    exact ⟨(a : V), (fixedSubmoduleMap_apply f a).symm⟩
+  · rintro ⟨a, ha⟩
+    have ha_fixed : a ∈ fixedSubmodule ρ :=
+      f.mem_fixedSubmodule_of_apply_mem hf (ha.symm ▸ b.property)
+    refine ⟨⟨a, ha_fixed⟩, ?_⟩
+    apply Subtype.ext
+    simpa only [fixedSubmoduleMap_apply] using ha
+
+/-- A bijective intertwining map restricts to a bijection between fixed submodules. -/
+theorem fixedSubmoduleMap_bijective (f : IntertwiningMap ρ σ)
+    (hf : Function.Bijective f) : Function.Bijective f.fixedSubmoduleMap := by
+  refine ⟨f.fixedSubmoduleMap_injective hf.1, ?_⟩
+  apply LinearMap.range_eq_top.mp
+  have hf_range : LinearMap.range f.toLinearMap = ⊤ := LinearMap.range_eq_top.mpr hf.2
+  rw [f.range_fixedSubmoduleMap hf.1, hf_range, Submodule.comap_top]
 
 /-- Fixed vectors preserve exactness at the middle term when the first ambient
 intertwining map is injective. Equivariance and injectivity make every lift of a fixed

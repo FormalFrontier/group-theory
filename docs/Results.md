@@ -120,8 +120,12 @@ separates this kernel from the orbit relation of the restricted left `K`-action.
 `R`, [`RepresentationInvariants`](../GroupTheory/RepresentationInvariants.lean) provides
 the fixed submodule and the restriction `f.fixedSubmoduleMap` of an intertwining map.
 The modules need only be additive commutative monoids, and all carrier universes are
-independent. `fixedSubmoduleMap_injective` preserves ambient injectivity. If `f` is
-injective and `Function.Exact f g`, then `fixedSubmoduleMap_exact` proves
+independent. `fixedSubmoduleMap_injective` preserves ambient injectivity. For an
+injective `f`, `range_fixedSubmoduleMap` identifies the restricted range with
+`(LinearMap.range f.toLinearMap).comap σ.fixedSubmodule.subtype`, where `σ` is the
+target representation. Hence `fixedSubmoduleMap_bijective` restricts an ambient
+bijection to a bijection of fixed submodules. If `f` is injective and
+`Function.Exact f g`, then `fixedSubmoduleMap_exact` proves
 `Function.Exact f.fixedSubmoduleMap g.fixedSubmoduleMap` on the original module and
 representation data. No finiteness, topology, group structure on `G` or additive
 inverses are required. The identity, composition, inclusion and unique-factorization
