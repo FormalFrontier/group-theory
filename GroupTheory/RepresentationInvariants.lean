@@ -17,6 +17,7 @@ public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.Algebra.Exact.Basic
+public import GroupTheory.LinearAlgebra.Prod
 
 /-!
 # Fixed vectors of a representation over a semiring
@@ -40,9 +41,18 @@ Equivariance and injectivity of `f` force that lift to be fixed. The reverse inc
 follows from the ambient exactness. This is left exactness, not a claim that fixed
 vectors preserve surjections.
 
+The fixed submodule of the stock product representation is literally the product of
+the two fixed submodules. `fixedSubmoduleProdEquiv` splits its coordinates by reusing
+`Submodule.prodEquiv` after transport along this equality. Its projection and inclusion
+identities stay on the original modules, and it is natural in two supplied intertwining
+maps. The product module structure is the usual one induced by the given factors.
+
 For a group representation over a commutative ring on an additive commutative group,
 `Representation.fixedSubmodule_eq_invariants` identifies this submodule with
-`Representation.invariants` on the same representation and module data.
+`Representation.invariants` on the same representation and module data. The theorem
+`Representation.invariants_prod` gives the corresponding product identity. Rewriting
+`fixedSubmoduleProdEquiv` by the three same-data equalities gives the linear equivalence
+between product invariants and the product of invariants, with the same coordinates.
 
 ## Examples and boundary
 
@@ -51,6 +61,12 @@ vectors are the diagonal pairs. The split sequence `ℕ² → ℕ² × ℕ² →
 `a ↦ (a, 0)` and `(a, b) ↦ b` with the product action, has an injective first map
 and is exact both before and after restriction. This uses neither a group as the acting
 monoid nor additive inverses in the modules.
+
+For two different factors, let `Multiplicative ℕ` act on `ℕ²` by powers of the swap
+and on `ℕ³` by powers of the cyclic rotation. Their fixed submodules are respectively
+`{(a, a)}` and `{(b, b, b)}`. The product equivalence splits
+`((a, a), (b, b, b))` into these two independent fixed vectors. Both fixed submodules
+are proper and nonzero; the acting monoid is infinite and is not a group.
 
 For contrast, let the cyclic group of order two act by sign on `ℤ`. Multiplication by
 two followed by reduction modulo two is exact and equivariant, with trivial action on
@@ -68,11 +84,15 @@ The reference revision is `83abb3e776bdefcbc447a1e44d0debe4010039e5`, in
 `Mathlib.Algebra.Module.Submodule.LinearMap`. The left-exactness proof uses
 `LinearMap.exact_iff` from `Mathlib.Algebra.Exact.Basic`, formalized by Antoine
 Chambert-Loir, together with Mathlib's kernel and range membership APIs.
+The product result reuses the same fixed-submodule restrictions, Mathlib's stock
+product representation and public intertwining projections and pairing, together with
+its product-submodule API and `LinearEquiv.ofEq`. The generic splitting equivalence
+is in `GroupTheory.LinearAlgebra.Prod`, separately from the representation results.
 -/
 
 @[expose] public section
 
-universe uR uG uV uW uU
+universe uR uG uV uW uU uV' uW'
 
 namespace Representation
 
@@ -121,6 +141,11 @@ variable [AddCommMonoid W] [Module R W] [AddCommMonoid U] [Module R U]
 variable {ρ : Representation R G V} {σ : Representation R G W} {τ : Representation R G U}
 
 namespace IntertwiningMap
+
+/-- Pairing two intertwining maps with a common domain pairs their values. -/
+@[simp]
+theorem prod_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap ρ τ) (v : V) :
+    f.prod g v = (f v, g v) := rfl
 
 /-- An intertwining map restricts to a linear map between the fixed submodules. -/
 def fixedSubmoduleMap (f : IntertwiningMap ρ σ) :
@@ -221,6 +246,112 @@ end IntertwiningMap
 
 end IntertwiningMap
 
+section Prod
+
+variable [AddCommMonoid W] [Module R W]
+
+/-- A pair is fixed by the product representation exactly when both coordinates are fixed. -/
+theorem mem_fixedSubmodule_prod (ρ : Representation R G V) (τ : Representation R G W)
+    (p : V × W) :
+    p ∈ (ρ.prod τ).fixedSubmodule ↔
+      p.1 ∈ ρ.fixedSubmodule ∧ p.2 ∈ τ.fixedSubmodule := by
+  rcases p with ⟨v, w⟩
+  simp [mem_fixedSubmodule, forall_and]
+
+/-- The fixed submodule of a product is the product of the original fixed submodules. -/
+theorem fixedSubmodule_prod (ρ : Representation R G V) (τ : Representation R G W) :
+    (ρ.prod τ).fixedSubmodule = ρ.fixedSubmodule.prod τ.fixedSubmodule := by
+  ext p
+  exact (mem_fixedSubmodule_prod ρ τ p).trans Submodule.mem_prod.symm
+
+/-- The fixed vectors of a product representation split into the fixed vectors of its factors.
+This is transport along `fixedSubmodule_prod` followed by the generic `Submodule.prodEquiv`. -/
+noncomputable def fixedSubmoduleProdEquiv (ρ : Representation R G V) (τ : Representation R G W) :
+    (ρ.prod τ).fixedSubmodule ≃ₗ[R] ρ.fixedSubmodule × τ.fixedSubmodule :=
+  (LinearEquiv.ofEq _ _ (fixedSubmodule_prod ρ τ)).trans
+    (Submodule.prodEquiv ρ.fixedSubmodule τ.fixedSubmodule)
+
+/-- Splitting a fixed vector preserves its original first coordinate. -/
+@[simp]
+theorem fixedSubmoduleProdEquiv_apply_fst (ρ : Representation R G V)
+    (τ : Representation R G W) (z : (ρ.prod τ).fixedSubmodule) :
+    ((fixedSubmoduleProdEquiv ρ τ z).1 : V) = (z : V × W).1 :=
+  Submodule.prodEquiv_apply_fst _ _ (LinearEquiv.ofEq _ _ (fixedSubmodule_prod ρ τ) z)
+
+/-- Splitting a fixed vector preserves its original second coordinate. -/
+@[simp]
+theorem fixedSubmoduleProdEquiv_apply_snd (ρ : Representation R G V)
+    (τ : Representation R G W) (z : (ρ.prod τ).fixedSubmodule) :
+    ((fixedSubmoduleProdEquiv ρ τ z).2 : W) = (z : V × W).2 :=
+  Submodule.prodEquiv_apply_snd _ _ (LinearEquiv.ofEq _ _ (fixedSubmodule_prod ρ τ) z)
+
+/-- The inverse fixed-product equivalence joins the original ambient coordinates. -/
+@[simp]
+theorem coe_fixedSubmoduleProdEquiv_symm_apply (ρ : Representation R G V)
+    (τ : Representation R G W) (p : ρ.fixedSubmodule × τ.fixedSubmodule) :
+    ((fixedSubmoduleProdEquiv ρ τ).symm p : V × W) = ((p.1 : V), (p.2 : W)) :=
+  Submodule.coe_prodEquiv_symm_apply _ _ p
+
+/-- The fixed-product equivalence is the pairing of the existing restricted projections. -/
+theorem fixedSubmoduleProdEquiv_toLinearMap (ρ : Representation R G V)
+    (τ : Representation R G W) :
+    (fixedSubmoduleProdEquiv ρ τ).toLinearMap =
+      (IntertwiningMap.fst R ρ τ).fixedSubmoduleMap.prod
+        (IntertwiningMap.snd R ρ τ).fixedSubmoduleMap := by
+  apply LinearMap.ext
+  intro z
+  apply Prod.ext
+  · apply Subtype.ext
+    change ((fixedSubmoduleProdEquiv ρ τ z).1 : V) =
+      ((IntertwiningMap.fst R ρ τ).fixedSubmoduleMap z : V)
+    rw [fixedSubmoduleProdEquiv_apply_fst, IntertwiningMap.fixedSubmoduleMap_apply,
+      IntertwiningMap.fst_apply]
+  · apply Subtype.ext
+    change ((fixedSubmoduleProdEquiv ρ τ z).2 : W) =
+      ((IntertwiningMap.snd R ρ τ).fixedSubmoduleMap z : W)
+    rw [fixedSubmoduleProdEquiv_apply_snd, IntertwiningMap.fixedSubmoduleMap_apply,
+      IntertwiningMap.snd_apply]
+
+/-- Splitting fixed vectors commutes with the inclusions into the original product module. -/
+theorem subtype_prodMap_comp_fixedSubmoduleProdEquiv (ρ : Representation R G V)
+    (τ : Representation R G W) :
+    (ρ.fixedSubmodule.subtype.prodMap τ.fixedSubmodule.subtype).comp
+        (fixedSubmoduleProdEquiv ρ τ).toLinearMap = (ρ.prod τ).fixedSubmodule.subtype := by
+  apply LinearMap.ext
+  intro z
+  change (((fixedSubmoduleProdEquiv ρ τ z).1 : V),
+    ((fixedSubmoduleProdEquiv ρ τ z).2 : W)) = (z : V × W)
+  exact Prod.ext (fixedSubmoduleProdEquiv_apply_fst ρ τ z)
+    (fixedSubmoduleProdEquiv_apply_snd ρ τ z)
+
+variable {V' : Type uV'} {W' : Type uW'}
+variable [AddCommMonoid V'] [Module R V'] [AddCommMonoid W'] [Module R W']
+variable {ρ : Representation R G V} {τ : Representation R G W}
+variable {ρ' : Representation R G V'} {τ' : Representation R G W'}
+
+/-- Splitting fixed vectors is natural in a pair of supplied intertwining maps.
+The product intertwiner uses only the stock projections, composition and pairing. -/
+theorem fixedSubmoduleProdEquiv_naturality (f : IntertwiningMap ρ ρ')
+    (k : IntertwiningMap τ τ') :
+    (fixedSubmoduleProdEquiv ρ' τ').toLinearMap.comp
+        ((f.comp (IntertwiningMap.fst R ρ τ)).prod
+          (k.comp (IntertwiningMap.snd R ρ τ))).fixedSubmoduleMap =
+      (f.fixedSubmoduleMap.prodMap k.fixedSubmoduleMap).comp
+        (fixedSubmoduleProdEquiv ρ τ).toLinearMap := by
+  apply LinearMap.ext
+  intro z
+  apply Prod.ext
+  · apply Subtype.ext
+    simp only [LinearMap.comp_apply, LinearMap.prodMap_apply, LinearEquiv.coe_coe,
+      fixedSubmoduleProdEquiv_apply_fst, IntertwiningMap.fixedSubmoduleMap_apply,
+      IntertwiningMap.prod_apply, IntertwiningMap.comp_apply, IntertwiningMap.fst_apply]
+  · apply Subtype.ext
+    simp only [LinearMap.comp_apply, LinearMap.prodMap_apply, LinearEquiv.coe_coe,
+      fixedSubmoduleProdEquiv_apply_snd, IntertwiningMap.fixedSubmoduleMap_apply,
+      IntertwiningMap.prod_apply, IntertwiningMap.comp_apply, IntertwiningMap.snd_apply]
+
+end Prod
+
 end Semiring
 
 section CommRing
@@ -233,6 +364,13 @@ theorem fixedSubmodule_eq_invariants (ρ : Representation R G V) :
     fixedSubmodule ρ = invariants ρ := by
   ext v
   rfl
+
+variable [AddCommGroup W] [Module R W]
+
+/-- On the same group representations and module data, invariants commute with products. -/
+theorem invariants_prod (ρ : Representation R G V) (τ : Representation R G W) :
+    (ρ.prod τ).invariants = ρ.invariants.prod τ.invariants := by
+  simpa only [fixedSubmodule_eq_invariants] using fixedSubmodule_prod ρ τ
 
 end CommRing
 

@@ -9,6 +9,16 @@
   and Edison Xie and its `LinearMap.codRestrict` API in a file by Mario Carneiro.
   Left exactness uses `LinearMap.exact_iff` from Mathlib's exactness API by Antoine
   Chambert-Loir, together with its kernel and range membership APIs.
+  The fixed-product API reuses this library's existing original-data
+  `fixedSubmodule` and `IntertwiningMap.fixedSubmoduleMap`, Mathlib's stock
+  product representation and public intertwining projections, composition and
+  pairing, and `LinearEquiv.ofEq`. Its generic `Submodule.prodEquiv` supplement
+  builds on Mathlib's submodule-product and linear product-map APIs, in files
+  by Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric
+  Dupuis, Heather Macbeth and Eric Wieser. The induced product module instances
+  are by Simon Hudon, Patrick Massot and Eric Wieser. The semiring/monoid result
+  specializes to Mathlib's invariants on the same original module data; no
+  external-source correspondence or book coverage is claimed for this API.
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion
   of automorphisms of `G`-sets, motivates the centralizer identification for

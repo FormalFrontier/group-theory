@@ -16,6 +16,7 @@ public import GroupTheory.GroupAction.InvariantSetoid
 public import GroupTheory.GroupAction.Quotient
 public import GroupTheory.GroupAction.QuotientMap
 public import GroupTheory.IndexNSmul
+public import GroupTheory.LinearAlgebra.Prod
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.QuotientGroup.Kernel

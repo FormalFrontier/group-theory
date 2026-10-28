@@ -99,6 +99,12 @@ project:
     n-scalar map with n ≥ 2 forces finiteness and coprimality with Nat.card A
     and yields a uniform two-sided integer-scalar inverse; the converse
     characterizes surjectivity and bijectivity of that scalar map.
+
+    For two representations of a monoid over a semiring on their given additive
+    commutative monoid modules, the fixed submodule of the stock product is the
+    literal product of the fixed submodules. A canonical linear equivalence
+    splits coordinates and is natural in two supplied intertwining maps. It
+    uses one representation-independent submodule-product splitting equivalence.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -151,6 +157,24 @@ sources:
     note: >-
       Original Lean construction using Mathlib's compatible-sections carrier
       and product/subtype topology; no external source-coverage claim.
+  - title: Products of fixed submodules on the original modules
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: >-
+      GroupTheory/LinearAlgebra/Prod.lean, Submodule.prodEquiv;
+      GroupTheory/RepresentationInvariants.lean,
+      Representation.fixedSubmodule_prod and Representation.fixedSubmoduleProdEquiv
+    note: >-
+      The construction reuses Mathlib's submodule products, induced product
+      modules, stock product representation, public intertwining projections,
+      composition and pairing, and LinearEquiv.ofEq, together with this library's
+      existing fixedSubmodule and fixedSubmoduleMap API. The generic splitting
+      is separate from the representation layer. The original semiring, monoid,
+      factor modules and their independent universes are preserved; the two target
+      module universes in naturality are independent as well. The stronger-context
+      invariants identity uses the existing same-data bridge to Mathlib's invariants.
+      No particular external publication or source-coverage claim is asserted.
   - title: Finite cyclic norm exactness from fixed-class lifting
     authors:
       - Formal Frontier Agents
@@ -409,11 +433,38 @@ status:
     Finiteness and coprimality also characterize scalar surjectivity and
     bijectivity. This is neither a K-theory theorem nor a theorem about
     arbitrary surjective endomorphisms or external-source coverage.
+
+    Fixed submodules commute with the stock product representation over a semiring
+    and a monoid, on the original additive commutative monoid modules. The literal
+    submodule equality yields a linear equivalence by equality transport and the
+    generic Submodule.prodEquiv. Coordinate and inverse formulas, inclusion and
+    restricted-projection identities, and naturality for a pair of supplied
+    intertwining maps characterize it. No product-intertwiner wrapper, alternate
+    carrier or compatibility premise is introduced. In the commutative-ring,
+    group, additive-group context, invariants_prod follows on the same data.
   axioms:
     - propext
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: Submodule.prodEquiv
+      file: GroupTheory/LinearAlgebra/Prod.lean
+    - declaration: Submodule.subtype_prodMap_comp_prodEquiv
+      file: GroupTheory/LinearAlgebra/Prod.lean
+    - declaration: Representation.mem_fixedSubmodule_prod
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.fixedSubmodule_prod
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.fixedSubmoduleProdEquiv
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.fixedSubmoduleProdEquiv_toLinearMap
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.subtype_prodMap_comp_fixedSubmoduleProdEquiv
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.fixedSubmoduleProdEquiv_naturality
+      file: GroupTheory/RepresentationInvariants.lean
+    - declaration: Representation.invariants_prod
+      file: GroupTheory/RepresentationInvariants.lean
     - declaration: ContinuousMonoidHom.piQuotient
       file: GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean
     - declaration: ContinuousMonoidHom.piQuotient_existsUnique_factor

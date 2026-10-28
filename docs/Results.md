@@ -131,6 +131,50 @@ equals Mathlib's existing invariant submodule.
 The module explains a nontrivial split sequence for the coordinate-swap action on `ℕ²`
 and why the sign action on `ℤ`, reduced modulo two, does not preserve surjectivity.
 
+**Products of fixed submodules.** For representations `ρ` on `A` and `τ` on `B`
+of the same monoid `G` over any semiring `R`,
+`Representation.fixedSubmodule_prod` proves the literal submodule equality
+
+```lean
+(ρ.prod τ).fixedSubmodule = ρ.fixedSubmodule.prod τ.fixedSubmodule
+```
+
+Here `A` and `B` are their given additive commutative monoid modules; their
+universes, and those of `R` and `G`, are independent. The ambient product module
+is induced from these original factors, not an independently supplied module
+structure. There are no group, finiteness, additive-inverse or commutative-scalar
+assumptions. `mem_fixedSubmodule_prod` is the coordinatewise membership criterion.
+
+The generic [linear-algebra supplement](../GroupTheory/LinearAlgebra/Prod.lean)
+`Submodule.prodEquiv P Q : (P.prod Q) ≃ₗ[R] P × Q` splits and joins coordinates.
+It has no acting-monoid parameter. In the
+[representation API](../GroupTheory/RepresentationInvariants.lean),
+`fixedSubmoduleProdEquiv ρ τ` composes `LinearEquiv.ofEq` along the displayed equality
+with this generic equivalence. Its forward coordinate and inverse ambient-pair
+simp lemmas, restricted-projection characterization and inclusion identity
+identify the map on the original modules. `fixedSubmoduleProdEquiv_naturality`
+commutes with any supplied pair of intertwiners into two independently
+universe-polymorphic target modules. The product intertwiner in that identity is
+assembled from Mathlib's existing `fst`, `snd`, `comp` and common-domain `prod`;
+there is no replacement product-intertwiner construction.
+
+For example, let the infinite non-group monoid `Multiplicative ℕ` act on `ℕ²`
+by powers of the swap and on `ℕ³` by powers of the cyclic rotation. Fixedness at
+exponent one forces respectively `(a, a)` and `(b, b, b)` and implies fixedness
+at every exponent. Both fixed submodules are proper and nonzero. The equivalence
+splits the product-fixed vector `((a, a), (b, b, b))` into two independent
+parameters over a semiring without additive inverses. Zero modules and trivial
+actions are also allowed.
+
+Under the stronger commutative-ring, group and additive-group hypotheses,
+`Representation.invariants_prod` gives
+`(ρ.prod τ).invariants = ρ.invariants.prod τ.invariants` on the same data.
+Rewriting the three occurrences of `fixedSubmodule` in `fixedSubmoduleProdEquiv`
+using `fixedSubmodule_eq_invariants` gives the corresponding linear equivalence
+without a second pairing definition. These results reuse Mathlib's product,
+submodule and intertwining APIs and this library's existing fixed-vector
+restrictions; they do not assert coverage of a book passage.
+
 **Action automorphisms and centralizers.** For `(G : Type u) [Group G]`,
 `(C : Type v) [Category.{w} C]` and `A : Action C G`,
 `Action.autEquivCentralizer A` identifies `CategoryTheory.Aut A` with
