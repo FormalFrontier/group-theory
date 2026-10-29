@@ -154,6 +154,13 @@ homomorphisms. No cancellation, nontriviality or commutative-target assumption
 is needed. The additive lift equivalence packages Mathlib's existing universal
 property. [Detailed extension results](docs/Results.md#grothendieck-extensions).
 
+For a family `ι : I → B` in an additive commutative monoid with
+`∀ b, ∃ i c, b + c = ι i`, every element of the completion is `of b - of (ι i)`.
+If an additive subgroup contains all `of (ι i)`, the quotient has representatives
+from `B`, without cancellation or injectivity assumptions. Applied to a cofinal
+additive homomorphism, this gives monoid representatives modulo the group range
+of the induced completion map.
+
 ### Abelian arithmetic
 
 - **[Conditional cyclic norm exactness](GroupTheory/CyclicNorm.lean).** For an endomorphism `sigma` of an
@@ -271,7 +278,7 @@ claim is implied by this guidance.
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
-| Additive universal property, biadditive Grothendieck extensions and arbitrary products | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
+| Additive universal property, biadditive Grothendieck extensions, arbitrary products, cofinal denominator forms and quotient representatives | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |

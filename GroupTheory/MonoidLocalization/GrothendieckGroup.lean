@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import GroupTheory.Semigroup.StableEquality
 
 /-!
-# Grothendieck lifts and cofinal kernels
+# Grothendieck lifts and cofinality
 
 `Algebra.GrothendieckAddGroup.piEquiv` identifies the completion of an arbitrary dependent
 product of additive commutative monoids with the product of their completions. Its forward
@@ -37,6 +38,15 @@ of this induced homomorphism when every target element can be completed to an im
 by adding a summand. Its kernel elements are precisely differences of source generators
 whose images are equal in the original target monoid.
 
+For any family cofinal under addition in an additive commutative monoid,
+`Algebra.GrothendieckAddGroup.exists_eq_sub_of_cofinal` expresses every completion element
+as a canonical generator minus a generator from that family.
+`Algebra.GrothendieckAddGroup.quotient_mk'_comp_of_surjective_of_cofinal` states that every
+class modulo any additive subgroup containing the family's generators has a representative
+from the monoid. In particular, this applies to the group range of the homomorphism induced
+by a cofinal additive homomorphism. These representatives require no order structure or
+injectivity of the canonical map.
+
 `Algebra.GrothendieckAddGroup.lift₂` extends a curried biadditive map to the Grothendieck
 additive groups of both source monoids. Its values on pairs of canonical generators
 characterize the extension. The construction uses the pointwise additive groups on
@@ -58,6 +68,8 @@ nontriviality of the target group.
 * Mathlib's pointwise group structures on homomorphism spaces in
   `Mathlib.Algebra.Group.Hom.Instances` and additive-equivalence constructors in
   `Mathlib.Algebra.Group.Equiv.Defs`.
+* Mathlib's additive subgroup ranges in `Mathlib.Algebra.Group.Subgroup.Ker` and
+  quotient projections in `Mathlib.GroupTheory.QuotientGroup.Defs`.
 * Right-stabilization reflection in `GroupTheory.Semigroup.StableEquality`.
 -/
 
@@ -186,6 +198,33 @@ theorem mem_ker_lift_of_comp_iff_of_cofinal (f : A →+ B)
     rw [AddMonoidHom.sub_mem_ker_iff]
     simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of,
       AddMonoidHom.comp_apply, hxy]
+
+/-- If a family is cofinal under addition, every completion element is a canonical
+generator minus a generator from that family. -/
+theorem exists_eq_sub_of_cofinal {I : Type u} (ι : I → B)
+    (hcof : ∀ b : B, ∃ i : I, ∃ c : B, b + c = ι i)
+    (z : GrothendieckAddGroup B) :
+    ∃ i : I, ∃ b : B, z = of b - of (ι i) := by
+  obtain ⟨⟨x, y⟩, hxy⟩ :=
+    (AddLocalization.addMonoidOf (⊤ : AddSubmonoid B)).surj z
+  have hrep : z + of (y : B) = of x := hxy
+  obtain ⟨i, c, hc⟩ := hcof (y : B)
+  refine ⟨i, x + c, eq_sub_iff_add_eq.mpr ?_⟩
+  rw [← hc, map_add, map_add, ← add_assoc, hrep]
+
+/-- If an additive subgroup contains the canonical generators of a cofinal family, every
+class modulo that subgroup has a representative from the monoid. -/
+theorem quotient_mk'_comp_of_surjective_of_cofinal {I : Type u} (ι : I → B)
+    (hcof : ∀ b : B, ∃ i : I, ∃ c : B, b + c = ι i)
+    (H : AddSubgroup (GrothendieckAddGroup B)) (hmem : ∀ i : I, of (ι i) ∈ H) :
+    Function.Surjective ((QuotientAddGroup.mk' H).comp (of (M := B))) := by
+  intro q
+  obtain ⟨z, rfl⟩ := QuotientAddGroup.mk'_surjective H q
+  obtain ⟨i, b, rfl⟩ := exists_eq_sub_of_cofinal ι hcof z
+  refine ⟨b, ?_⟩
+  have hi : QuotientAddGroup.mk' H (of (ι i)) = 0 := by
+    simpa only [QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff] using hmem i
+  simp only [AddMonoidHom.comp_apply, map_sub, hi, sub_zero]
 
 /-- Extend a curried biadditive map to the Grothendieck additive groups of both sources. -/
 noncomputable def lift₂ (f : A →+ B →+ G) :
