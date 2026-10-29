@@ -50,3 +50,61 @@ example (g : {g : (ℝ × ℝ) →ₜ+ ℝ // Function.FactorsThrough g realFirs
     realProjection_isQuotientMap realProjection_compactLift g (r, 0)
 
 end ContinuousAddMonoidHom
+
+namespace ContinuousAddMonoidHom
+
+/-- The horizontal subgroup of the product of the reals and the integers. -/
+private def realIntHorizontal : AddSubgroup (ℝ × ℤ) :=
+  (snd ℝ ℤ).toAddMonoidHom.ker
+
+private theorem realIntHorizontal_isOpen : IsOpen (realIntHorizontal : Set (ℝ × ℤ)) := by
+  have hset : (realIntHorizontal : Set (ℝ × ℤ)) =
+      (Prod.snd : ℝ × ℤ → ℤ) ⁻¹' {0} := by
+    ext x
+    exact AddMonoidHom.mem_ker
+  rw [hset]
+  exact (isOpen_discrete ({0} : Set ℤ)).preimage continuous_snd
+
+private def realIntSecond : (ℝ × ℤ) →ₜ+ ℝ where
+  toFun x := (x.2 : ℝ)
+  map_zero' := Int.cast_zero
+  map_add' x y := Int.cast_add x.2 y.2
+  continuous_toFun := continuous_of_discreteTopology.comp continuous_snd
+
+private def realIntKernelElement :
+    {f : (ℝ × ℤ) →ₜ+ ℝ // realIntHorizontal ≤ f.toAddMonoidHom.ker} :=
+  ⟨realIntSecond, fun x hx ↦ AddMonoidHom.mem_ker.mpr <| by
+    have hx' : x.2 = 0 := AddMonoidHom.mem_ker.mp hx
+    exact show (x.2 : ℝ) = 0 by rw [hx', Int.cast_zero]⟩
+
+private noncomputable def realIntQuotientHom :
+    ((ℝ × ℤ) ⧸ realIntHorizontal) →ₜ+ ℝ :=
+  (quotientAddGroupPullbackHomeomorph realIntHorizontal realIntHorizontal_isOpen).symm
+    realIntKernelElement
+
+-- The descent is on the stock quotient, not on a replacement integer carrier.
+example : realIntQuotientHom ≠ 0 := by
+  have hvalue : realIntQuotientHom (QuotientAddGroup.mk (0, 1)) = 1 :=
+    (quotientAddGroupPullbackHomeomorph_symm_apply_mk realIntHorizontal
+      realIntHorizontal_isOpen realIntKernelElement (0, 1)).trans Int.cast_one
+  intro hzero
+  rw [hzero] at hvalue
+  exact zero_ne_one hvalue
+
+example (g : ((ℝ × ℤ) ⧸ realIntHorizontal) →ₜ+ ℝ)
+    (hg : ∀ x : ℝ × ℤ, g (QuotientAddGroup.mk x) = (x.2 : ℝ)) :
+    realIntQuotientHom = g := by
+  apply (quotientAddGroupPullbackHomeomorph_symm_eq_iff realIntHorizontal
+    realIntHorizontal_isOpen realIntKernelElement g).2
+  ext x
+  exact (hg x).symm
+
+example : Continuous (fun f :
+    {f : (ℝ × ℤ) →ₜ+ ℝ // realIntHorizontal ≤ f.toAddMonoidHom.ker} ↦
+    (quotientAddGroupPullbackHomeomorph realIntHorizontal realIntHorizontal_isOpen).symm f) :=
+  (continuous_quotientAddGroupPullbackHomeomorph_symm_iff realIntHorizontal
+    realIntHorizontal_isOpen
+      (fun f : {f : (ℝ × ℤ) →ₜ+ ℝ // realIntHorizontal ≤ f.toAddMonoidHom.ker} ↦ f)).2
+    continuous_subtype_val
+
+end ContinuousAddMonoidHom

@@ -31,6 +31,14 @@ in more detail.
   [countable-power example](GroupTheoryTest/Topology/Ultrafilter.lean) uses the original
   addition and Mathlib discrete topology on `ZMod 3` to give a surjective finite-image
   noncontinuous homomorphism with dense proper zero fiber.
+  For any infinite index type `ι` and finite group `H` with its given discrete topology,
+  `MonoidHom.exists_surjective_dense_ker_pi` gives a surjective abstract homomorphism
+  `(ι → H) →* H` whose normal kernel is dense and has index `Nat.card H`.
+  The group need not be commutative, and the two types may lie in independent universes.
+  If `H` is nontrivial, the kernel is proper and neither open nor closed; for trivial `H`
+  the basic result instead has whole kernel and index one. There is a direct additive
+  counterpart, and the original `ℕ → ZMod 3` example has kernel index exactly three,
+  neither open nor closed. The homomorphisms are abstract, not assumed continuous.
 
 - **Circle equivalences and codomain transport.** `AddCircle.continuousAddEquivCircle`
   identifies every nonzero-period additive circle with `Additive Circle`, using the

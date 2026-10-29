@@ -5,7 +5,9 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.ContinuousMap.Quotient
+public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Topology.Algebra.Group.CompactOpen
+public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -14,13 +16,16 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 The compact-open homeomorphism for continuous maps restricts to the unit and multiplication
 locus. Both hom spaces retain their stock topology, and the fibreconstant subtype retains
 its inherited topology. No continuity of the monoid operations is required.
+
+For an open normal subgroup, pullback from the stock quotient identifies its continuous
+homomorphisms with the inherited kernel-containing subtype.
 -/
 
 public section
 
 open Set Topology
 
-universe uG uH uK uS
+universe uG uH uK uS uM uZ
 
 namespace ContinuousMonoidHom
 
@@ -161,5 +166,115 @@ theorem continuous_quotientPullbackHomeomorph_symm_iff
   · intro hF
     exact (quotientPullbackHomeomorph q hq hcompact).symm.continuous.comp
       (hF.subtype_mk fun s ↦ (F s).property)
+
+end ContinuousMonoidHom
+
+namespace ContinuousMonoidHom
+
+variable {G : Type uG} {M : Type uM} [Group G] [TopologicalSpace G]
+  [Monoid M] [TopologicalSpace M]
+
+@[to_additive]
+private def quotientGroupMk (N : Subgroup G) [N.Normal] : G →ₜ* G ⧸ N where
+  toMonoidHom := QuotientGroup.mk' N
+  continuous_toFun := QuotientGroup.continuous_mk
+
+@[to_additive]
+private theorem quotientGroup_factorsThrough_iff (N : Subgroup G) [N.Normal]
+    (f : G →ₜ* M) :
+    Function.FactorsThrough f (quotientGroupMk N) ↔ N ≤ f.toMonoidHom.ker := by
+  constructor
+  · intro hf x hx
+    have hxker : x ∈ (QuotientGroup.mk' N).ker :=
+      (QuotientGroup.ker_mk' N).symm ▸ hx
+    have hxq : (QuotientGroup.mk' N) x = (QuotientGroup.mk' N) 1 := by
+      rw [map_one]
+      exact MonoidHom.mem_ker.mp hxker
+    exact MonoidHom.mem_ker.mpr ((hf hxq).trans (map_one f))
+  · intro h x y hxy
+    have hcomp := QuotientGroup.lift_comp_mk' N f.toMonoidHom h
+    calc
+      f x = QuotientGroup.lift N f.toMonoidHom h (quotientGroupMk N x) :=
+        (DFunLike.congr_fun hcomp x).symm
+      _ = QuotientGroup.lift N f.toMonoidHom h (quotientGroupMk N y) := congrArg _ hxy
+      _ = f y := DFunLike.congr_fun hcomp y
+
+variable [SeparatelyContinuousMul G]
+
+/-- Pullback from the quotient by an open normal subgroup identifies continuous monoid
+homomorphisms with the continuous homomorphisms whose kernel contains that subgroup. -/
+@[to_additive
+  /-- Pullback from the quotient by an open normal additive subgroup identifies continuous
+  additive homomorphisms with those whose kernel contains that subgroup. -/]
+noncomputable def quotientGroupPullbackHomeomorph (N : Subgroup G) [N.Normal]
+    (hN : IsOpen (N : Set G)) :
+    ((G ⧸ N) →ₜ* M) ≃ₜ {f : G →ₜ* M // N ≤ f.toMonoidHom.ker} := by
+  letI := QuotientGroup.discreteTopology hN
+  refine (quotientPullbackHomeomorph (quotientGroupMk N)
+    (QuotientGroup.isQuotientMap_mk N) ?_).trans
+      (Homeomorph.setCongr (Set.ext fun f ↦ quotientGroup_factorsThrough_iff N f))
+  intro s hs
+  obtain ⟨l, _, hl, hls⟩ := hs.finite_of_discrete.exists_subset_finite_image_eq
+    (f := quotientGroupMk N) (s := Set.univ) (by
+      intro x _
+      obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N x
+      exact ⟨y, Set.mem_univ _, rfl⟩)
+  exact ⟨l, hl.isCompact, hls⟩
+
+variable (N : Subgroup G) [N.Normal] (hN : IsOpen (N : Set G))
+
+/-- Pullback is composition with the canonical quotient homomorphism. -/
+@[to_additive]
+theorem coe_quotientGroupPullbackHomeomorph_apply (f : (G ⧸ N) →ₜ* M) :
+    (quotientGroupPullbackHomeomorph N hN f).val =
+      f.comp
+        { toMonoidHom := QuotientGroup.mk' N
+          continuous_toFun := QuotientGroup.continuous_mk } := by
+  change (quotientPullbackHomeomorph (quotientGroupMk N) _ _ f).val =
+    f.comp (quotientGroupMk N)
+  exact coe_quotientPullbackHomeomorph_apply _ _ _ f
+
+/-- Evaluation of pullback on a representative. -/
+@[to_additive]
+theorem quotientGroupPullbackHomeomorph_apply_apply (f : (G ⧸ N) →ₜ* M) (x : G) :
+    (quotientGroupPullbackHomeomorph N hN f).val x = f (QuotientGroup.mk x) := by
+  rw [coe_quotientGroupPullbackHomeomorph_apply]
+  rfl
+
+/-- Descent evaluates to the original homomorphism on every representative. -/
+@[to_additive]
+theorem quotientGroupPullbackHomeomorph_symm_apply_mk
+    (f : {f : G →ₜ* M // N ≤ f.toMonoidHom.ker}) (x : G) :
+    (quotientGroupPullbackHomeomorph N hN).symm f (QuotientGroup.mk x) = f.val x := by
+  change (quotientPullbackHomeomorph (quotientGroupMk N) _ _).symm
+    ⟨f.val, (quotientGroup_factorsThrough_iff N f.val).2 f.property⟩
+      (quotientGroupMk N x) = f.val x
+  exact quotientPullbackHomeomorph_symm_apply_apply _ _ _ _ x
+
+/-- A descended homomorphism is determined by composition with the canonical quotient. -/
+@[to_additive]
+theorem quotientGroupPullbackHomeomorph_symm_eq_iff
+    (f : {f : G →ₜ* M // N ≤ f.toMonoidHom.ker}) (g : (G ⧸ N) →ₜ* M) :
+    (quotientGroupPullbackHomeomorph N hN).symm f = g ↔
+      f.val = g.comp
+        { toMonoidHom := QuotientGroup.mk' N
+          continuous_toFun := QuotientGroup.continuous_mk } := by
+  change (quotientPullbackHomeomorph (quotientGroupMk N) _ _).symm
+    ⟨f.val, (quotientGroup_factorsThrough_iff N f.val).2 f.property⟩ = g ↔ _
+  exact quotientPullbackHomeomorph_symm_eq_iff _ _ _ _ g
+
+/-- A family of descended homomorphisms is continuous exactly when its pullbacks form a
+continuous family in the ambient continuous monoid homomorphism space. -/
+@[to_additive
+  /-- A family of descended additive homomorphisms is continuous exactly when its pullbacks
+  form a continuous family in the ambient continuous additive homomorphism space. -/]
+theorem continuous_quotientGroupPullbackHomeomorph_symm_iff
+    {Z : Type uZ} [TopologicalSpace Z]
+    (F : Z → {f : G →ₜ* M // N ≤ f.toMonoidHom.ker}) :
+    Continuous (fun z ↦ (quotientGroupPullbackHomeomorph N hN).symm (F z)) ↔
+      Continuous (fun z ↦ (F z).val) := by
+  change Continuous (fun z ↦ (quotientPullbackHomeomorph (quotientGroupMk N) _ _).symm
+    ⟨(F z).val, (quotientGroup_factorsThrough_iff N (F z).val).2 (F z).property⟩) ↔ _
+  exact continuous_quotientPullbackHomeomorph_symm_iff _ _ _ _
 
 end ContinuousMonoidHom

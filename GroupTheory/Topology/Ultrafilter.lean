@@ -5,7 +5,9 @@ Authors: Formal Frontier Agents
 
 module
 
+public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Hausdorff
@@ -21,9 +23,15 @@ If the ultrafilter contains the cofinite filter, every fiber is dense in the pro
 topology. For a nontrivial target the homomorphism is not continuous, already at the
 constant identity family. In contrast, a principal ultrafilter gives continuous evaluation.
 
+For an infinite index type and a finite group with its given discrete topology, this
+construction gives a surjective abstract homomorphism whose kernel is dense, normal and
+has index equal to the group's cardinality. For a nontrivial group the kernel is proper
+and neither open nor closed. The additive results use the original additive operations.
+
 The construction uses Mathlib's `Ultrafilter.lim`, its compactness and uniqueness theorems,
 and its convergence API for multiplication. The density argument uses Mathlib's
-`exists_finset_piecewise_mem_of_mem_nhds` to modify finitely many coordinates.
+`exists_finset_piecewise_mem_of_mem_nhds` to modify finitely many coordinates. The kernel
+corollaries combine this construction with Mathlib's kernel-index and open-subgroup results.
 -/
 
 @[expose] public section
@@ -172,3 +180,52 @@ theorem exists_surjective_not_continuous_limMonoidHom [Nontrivial H] :
   exact ⟨U.limMonoidHom, U.limMonoidHom_surjective, U.not_continuous_limMonoidHom hU⟩
 
 end Ultrafilter
+
+/-- An infinite power of a finite discrete group admits a surjective abstract homomorphism
+with dense kernel of index equal to the cardinality of the target. The kernel is normal,
+as for every group homomorphism. -/
+@[to_additive /-- An infinite power of a finite discrete additive group admits a surjective
+abstract additive homomorphism with dense kernel of index equal to the cardinality of the
+target. The kernel is normal, as for every additive group homomorphism. -/]
+theorem MonoidHom.exists_surjective_dense_ker_pi
+    (ι : Type u) (H : Type v) [Infinite ι] [Group H] [Finite H]
+    [TopologicalSpace H] [DiscreteTopology H] :
+    ∃ f : (ι → H) →* H, Function.Surjective f ∧
+      Dense (f.ker : Set (ι → H)) ∧ f.ker.index = Nat.card H := by
+  obtain ⟨U, hU⟩ := Ultrafilter.exists_le (cofinite : Filter ι)
+  refine ⟨U.limMonoidHom, U.limMonoidHom_surjective,
+    U.dense_fiber_limMonoidHom hU 1, ?_⟩
+  rw [Subgroup.index_ker, MonoidHom.range_eq_top.mpr U.limMonoidHom_surjective]
+  exact Nat.card_congr (Equiv.Set.univ H)
+
+/-- For a nontrivial finite discrete group, an infinite power admits a surjective abstract
+homomorphism whose dense normal kernel has index equal to the target cardinality and is
+proper, not open and not closed. The homomorphism is not assumed continuous. -/
+@[to_additive /-- For a nontrivial finite discrete additive group, an infinite power admits
+a surjective abstract additive homomorphism whose dense normal kernel has index equal to
+the target cardinality and is proper, not open and not closed. The homomorphism is not
+assumed continuous. -/]
+theorem MonoidHom.exists_surjective_dense_ker_pi_of_nontrivial
+    (ι : Type u) (H : Type v) [Infinite ι] [Group H] [Finite H]
+    [TopologicalSpace H] [DiscreteTopology H] [Nontrivial H] :
+    ∃ f : (ι → H) →* H, Function.Surjective f ∧
+      Dense (f.ker : Set (ι → H)) ∧ f.ker.index = Nat.card H ∧
+      f.ker ≠ ⊤ ∧ ¬ IsOpen (f.ker : Set (ι → H)) ∧
+      ¬ IsClosed (f.ker : Set (ι → H)) := by
+  obtain ⟨f, hf, hd, hi⟩ := MonoidHom.exists_surjective_dense_ker_pi ι H
+  have hproper : f.ker ≠ ⊤ := by
+    intro htop
+    obtain ⟨h, hh⟩ := exists_ne (1 : H)
+    obtain ⟨g, hg⟩ := hf h
+    have hgker : g ∈ f.ker := by rw [htop]; trivial
+    exact hh (hg.symm.trans hgker)
+  have hclosed : ¬ IsClosed (f.ker : Set (ι → H)) := by
+    intro hc
+    apply hproper
+    apply SetLike.coe_injective
+    change (f.ker : Set (ι → H)) = Set.univ
+    rw [← hc.closure_eq, hd.closure_eq]
+  refine ⟨f, hf, hd, hi, hproper, ?_, hclosed⟩
+  intro ho
+  exact hclosed (show IsClosed (f.ker : Set (ι → H)) from
+    (⟨f.ker, ho⟩ : OpenSubgroup (ι → H)).isClosed)
