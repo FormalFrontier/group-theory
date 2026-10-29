@@ -10,6 +10,7 @@ public import GroupTheory.Topology.FiniteIndex
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Data.Setoid.Basic
 
 /-!
 # Open kernels and finite images
@@ -20,10 +21,15 @@ then gives finite image and a finite quotient by the kernel. Neither the source'
 commutativity nor the target's Hausdorffness is required for these statements.
 
 For a compact Hausdorff commutative source with a dense finitely generated subgroup,
-an abstract homomorphism into any monoid has open kernel and is locally constant if
-one positive natural exponent annihilates every image element. This application uses
-the open power-range theorem; no target topology or continuity is assumed. The
-corresponding additive statements hold for homomorphisms into additive monoids.
+an abstract homomorphism with finite range is locally constant even when its target
+only has a multiplication with identity (`MulOneClass`). This uses finite-index
+openness and requires no target topology; local constancy gives continuity for any
+subsequently given target topology. The additive target only needs `AddZeroClass`.
+
+For monoid targets, one fixed positive natural exponent annihilating every image
+element is another sufficient condition for open kernel and local constancy.
+This uses the open power-range theorem, with no target topology or continuity
+assumed. Its additive counterpart has an additive monoid target.
 
 ## References
 
@@ -87,6 +93,36 @@ theorem isLocallyConstant_of_isOpen_ker (f : G →* K)
   exact hker.leftCoset x
 
 end OpenKernel
+
+section FiniteRange
+
+variable {A : Type u} {M : Type v} [CommGroup A] [TopologicalSpace A]
+  [IsTopologicalGroup A] [CompactSpace A] [T2Space A] [MulOneClass M]
+
+/-- An abstract homomorphism with finite range from a compact Hausdorff commutative
+group with a dense finitely generated subgroup is locally constant. The target only
+needs a multiplication with identity and no topology. The proof uses finite-index
+openness for the kernel. -/
+@[to_additive /-- An abstract additive homomorphism with finite range from a compact Hausdorff
+  commutative additive group with a dense finitely generated subgroup is locally constant.
+  The target only needs an addition with zero and no topology. The proof uses finite-index
+  openness for the kernel. -/]
+theorem isLocallyConstant_of_dense_fg_of_finite_range (f : A →* M) (D : Subgroup A)
+    (hfg : D.FG) (hdense : Dense (D : Set A)) (hf : (Set.range f).Finite) :
+    IsLocallyConstant (f : A → M) := by
+  have hrel : ∀ x y, QuotientGroup.leftRel f.ker x y ↔ Setoid.ker (f : A → M) x y := by
+    intro x y
+    rw [QuotientGroup.leftRel_apply, ← f.eq_iff, Setoid.ker_def]
+    exact eq_comm
+  let e : A ⧸ f.ker ≃ Set.range (f : A → M) :=
+    (Quotient.congrRight hrel).trans (Setoid.quotientKerEquivRange (f : A → M))
+  let : Finite (Set.range (f : A → M)) := hf.to_subtype
+  let : Finite (A ⧸ f.ker) := Finite.of_equiv _ e.symm
+  let : f.ker.FiniteIndex := Subgroup.finiteIndex_iff_finite_quotient.mpr inferInstance
+  have hopen := Subgroup.isOpen_of_finiteIndex_of_dense_fg D hfg hdense f.ker
+  exact f.isLocallyConstant_of_isOpen_ker hopen
+
+end FiniteRange
 
 section BoundedExponent
 

@@ -7,12 +7,16 @@ module
 
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheoryTest.Topology.PadicDenseIntegers
+import GroupTheory.Topology.OpenKernel
 import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Ring.Units
 import GroupTheory.Topology.Algebra.Group.TotalBounded
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.NumberTheory.Padics.RingHoms
+import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.Instances.ZMod
 
 /-!
 # Dense finite generation and open finite-index subgroups
@@ -22,6 +26,10 @@ integers. Reduction modulo two gives a proper finite-index subgroup; the open
 subgroup result applies without supplying a closedness hypothesis. This example
 does not assume that the whole additive group of 2-adic integers is abstractly
 finitely generated.
+
+Finite set range makes the kernel of an abstract homomorphism finite-index even
+when the target only has a multiplication with identity. The units inclusion into
+`ZMod 3` gives a nonconstant example with a nongroup target.
 
 The powers of `(3)` in the stock 3-adic integers give an independent example of
 the finite-index neighborhood-basis criterion for total boundedness. Their
@@ -34,6 +42,60 @@ reduction maps, respectively.
 namespace GroupTheoryTest.Topology.FiniteIndex
 
 open GroupTheoryTest.Topology.PadicDenseIntegers
+
+universe u v
+
+section FiniteRange
+
+variable {A : Type u} {M : Type v} [CommGroup A] [TopologicalSpace A]
+  [IsTopologicalGroup A] [CompactSpace A] [T2Space A] [MulOneClass M]
+  (D : Subgroup A) (hfg : D.FG) (hdense : Dense (D : Set A))
+  (f : A →* M) (hf : (Set.range f).Finite)
+
+include hfg hdense hf
+
+example [TopologicalSpace M] : Continuous (f : A → M) :=
+  (f.isLocallyConstant_of_dense_fg_of_finite_range D hfg hdense hf).continuous
+
+end FiniteRange
+
+-- The units topology is discrete; the target multiplication has a nonunit zero.
+example :
+    let f := Units.coeHom (ZMod 3)
+    IsOpen (f ⁻¹' {1}) ∧ IsLocallyConstant f ∧ Continuous f ∧
+      (f ⁻¹' {1}).Nonempty ∧ f ⁻¹' {1} ≠ Set.univ ∧
+      f 1 ≠ f (-1) ∧ ¬ ∃ z : ZMod 3, 0 * z = 1 := by
+  let f := Units.coeHom (ZMod 3)
+  let : Finite (ZMod 3)ˣ :=
+    Finite.of_injective (Units.val : (ZMod 3)ˣ → ZMod 3) Units.val_injective
+  have hfg : (⊤ : Subgroup (ZMod 3)ˣ).FG :=
+    (Group.fg_iff_subgroup_fg _).mp inferInstance
+  have hdense : Dense ((⊤ : Subgroup (ZMod 3)ˣ) : Set (ZMod 3)ˣ) := by simp
+  have hlc := f.isLocallyConstant_of_dense_fg_of_finite_range
+    ⊤ hfg hdense (Set.toFinite _)
+  have hopen : IsOpen (f ⁻¹' {1}) := by
+    simpa only [f.map_one] using
+      (IsLocallyConstant.iff_isOpen_fiber_apply.mp hlc (1 : (ZMod 3)ˣ))
+  have hfiber : f ⁻¹' {1} = ({1} : Set (ZMod 3)ˣ) := by
+    ext x
+    change f x = 1 ↔ x = 1
+    rw [← f.map_one]
+    exact (Units.coeHom_injective (M := ZMod 3)).eq_iff
+  have hneg : f (-1) = 2 := by
+    norm_num [f, Units.coeHom_apply]
+    decide
+  have hne : f 1 ≠ f (-1) := by
+    rw [f.map_one, hneg]
+    decide
+  refine ⟨hopen, hlc, hlc.continuous, ⟨1, f.map_one⟩, ?_, hne, ?_⟩
+  · intro h
+    have hmem : (-1 : (ZMod 3)ˣ) ∈ f ⁻¹' {1} := by
+      rw [h]
+      trivial
+    have heq : (-1 : (ZMod 3)ˣ) = 1 := by
+      simpa only [hfiber, Set.mem_singleton_iff] using hmem
+    exact hne (congrArg f heq.symm)
+  · simp
 
 local instance : Fact (Nat.Prime 2) := ⟨by decide⟩
 

@@ -26,6 +26,7 @@ public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.RepresentationDirectSum
+public import GroupTheory.RepresentationDirectSumMap
 public import GroupTheory.RepresentationInvariants
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm

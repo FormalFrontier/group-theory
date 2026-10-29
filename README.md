@@ -125,9 +125,13 @@ also include right transversals, subgroup towers and nested coset maps.
   separation. Every abstract finite-index subgroup in the compact Hausdorff case is
   open, without assuming it closed.
   An [abstract homomorphism](GroupTheory/Topology/OpenKernel.lean) from such a compact
-  group into any monoid has open kernel and is locally constant if one fixed positive
-  exponent annihilates its whole image. No target topology or continuity is assumed.
-  The additive counterparts use the range of `x ↦ n • x` and additive monoid targets.
+  group with finite range is locally constant for any target with multiplication and
+  identity (`MulOneClass`; additively `AddZeroClass`). No target topology is needed;
+  local constancy gives continuity for any subsequently given target topology.
+  Separately, a homomorphism into any monoid has open kernel and is locally constant
+  if one fixed positive exponent annihilates its whole image, with no target topology
+  or continuity assumed. The additive counterparts use the range of `x ↦ n • x` and,
+  for the fixed-positive-scalar condition, additive monoid targets.
 - **[Component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).** Every topological group's ordinary quotient by
   its identity component is Hausdorff and totally disconnected, without a
   separation or local-compactness premise on the original group.
