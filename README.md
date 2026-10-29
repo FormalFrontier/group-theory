@@ -110,8 +110,14 @@ and compatible sections, with their individual hypotheses.
 
 Biadditive maps from two additive commutative monoids into an additive
 commutative group extend uniquely to their
-[Grothendieck completions](GroupTheory/MonoidLocalization/GrothendieckGroup.lean). A semiring's
-additive completion carries a [canonical ring](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean),
+[Grothendieck completions](GroupTheory/MonoidLocalization/GrothendieckGroup.lean).
+Completion commutes canonically with arbitrary dependent products of additive
+commutative monoids, including infinite and empty index types. The equivalence
+preserves all tuple units, has induced evaluations as its coordinates and is
+natural in families of additive homomorphisms. The completed product map is
+bijective exactly when every completed coordinate map is bijective; no cancellation
+or nontriviality is assumed. A semiring's additive completion carries a
+[canonical ring](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean),
 commutative for commutative input;
 homomorphisms from the semiring into any ring extend uniquely as ring
 homomorphisms. No cancellation, nontriviality or commutative-target assumption
@@ -235,7 +241,7 @@ claim is implied by this guidance.
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
-| Additive universal property and biadditive Grothendieck extensions | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
+| Additive universal property, biadditive Grothendieck extensions and arbitrary products | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |

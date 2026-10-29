@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Separation.Connected
@@ -18,6 +19,7 @@ The left-translation stabilizer of any compact open set is an open subgroup. Whe
 contains the identity, the stabilizer is compact and contained in it. Such subgroups form
 an identity-neighborhood basis in a totally disconnected locally compact topological group.
 No ambient compactness or separation assumption is needed for the stabilizer construction.
+The corresponding additive constructions and nonarchimedean group constructors are included.
 
 ## References
 
@@ -44,6 +46,8 @@ variable {G : Type u} [Group G] [TopologicalSpace G]
 
 /-- The open subgroup fixing a compact open set by left translation.
 Its carrier agrees with Mathlib's action stabilizer of the underlying set. -/
+@[to_additive /-- The open additive subgroup fixing a compact open set by translation.
+Its carrier agrees with the additive-action stabilizer of the underlying set. -/]
 def leftStabilizer [IsTopologicalGroup G] (K : Set G) (hK : IsCompact K)
     (hK_open : IsOpen K) : OpenSubgroup G where
   toSubgroup := MulAction.stabilizer G K
@@ -60,13 +64,15 @@ def leftStabilizer [IsTopologicalGroup G] (K : Set G) (hK : IsCompact K)
     exact Set.subset_smul_set_iff.mpr (hmul g⁻¹ (Set.mem_inv.mp hg.2))
 
 /-- Membership in the left-translation stabilizer means preserving the set exactly. -/
-@[simp]
+@[to_additive (attr := simp) /-- Membership in the additive translation stabilizer means
+preserving the set exactly. -/]
 theorem mem_leftStabilizer_iff [IsTopologicalGroup G] {K : Set G}
     (hK : IsCompact K) (hK_open : IsOpen K) {g : G} :
     g ∈ leftStabilizer K hK hK_open ↔ g • K = K :=
   MulAction.mem_stabilizer_iff
 
 /-- The translation stabilizer of an identity-containing set lies in that set. -/
+@[to_additive /-- The translation stabilizer of a zero-containing set lies in that set. -/]
 theorem leftStabilizer_subset [IsTopologicalGroup G] {K : Set G}
     (hK : IsCompact K) (hK_open : IsOpen K)
     (hone : (1 : G) ∈ K) :
@@ -77,6 +83,8 @@ theorem leftStabilizer_subset [IsTopologicalGroup G] {K : Set G}
   simpa only [hfix, smul_eq_mul, mul_one] using hmem
 
 /-- The translation stabilizer is compact, without assuming the ambient group Hausdorff. -/
+@[to_additive /-- The additive translation stabilizer is compact without an ambient
+Hausdorff assumption. -/]
 theorem isCompact_leftStabilizer [IsTopologicalGroup G] {K : Set G}
     (hK : IsCompact K) (hK_open : IsOpen K)
     (hone : (1 : G) ∈ K) :
@@ -85,6 +93,8 @@ theorem isCompact_leftStabilizer [IsTopologicalGroup G] {K : Set G}
     (leftStabilizer_subset hK hK_open hone)
 
 /-- A compact open set containing the identity contains a compact open subgroup. -/
+@[to_additive /-- A compact open set containing zero contains a compact open additive
+subgroup. -/]
 theorem exists_compact_subset_of_compact_open [IsTopologicalGroup G]
     {K : Set G} (hK : IsCompact K)
     (hK_open : IsOpen K) (hone : (1 : G) ∈ K) :
@@ -95,6 +105,8 @@ theorem exists_compact_subset_of_compact_open [IsTopologicalGroup G]
 /-- In a compact ambient group, the compactness refinement agrees with the existential
 conclusion of Mathlib's `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`.
 This equivalence does not require the containing set itself to be clopen. -/
+@[to_additive /-- In a compact ambient additive group, requiring the open subgroup to be
+compact does not change the existence of one contained in a given set. -/]
 theorem exists_compact_subset_iff_exists_subset [CompactSpace G]
     [SeparatelyContinuousMul G] {W : Set G} :
     (∃ H : OpenSubgroup G, IsCompact (H : Set G) ∧ (H : Set G) ⊆ W) ↔
@@ -109,6 +121,9 @@ theorem exists_compact_subset_iff_exists_subset [CompactSpace G]
 *Cohomology of Number Fields*, Chapter I, §1: every identity neighborhood contains a compact
 open subgroup, even when the neighborhood is not open. Total disconnectedness supplies
 Hausdorffness for topological groups; it is not an extra hypothesis. -/
+@[to_additive /-- Van Dantzig's compact-open subgroup theorem: every zero neighborhood in a
+locally compact totally disconnected additive topological group contains a compact open
+additive subgroup. No extra Hausdorff hypothesis is needed. -/]
 theorem exists_compact_subset_nhds_one [IsTopologicalGroup G] [LocallyCompactSpace G]
     [TotallyDisconnectedSpace G] {W : Set G} (hW : W ∈ 𝓝 (1 : G)) :
     ∃ H : OpenSubgroup G, IsCompact (H : Set G) ∧ (H : Set G) ⊆ W := by
@@ -129,6 +144,9 @@ theorem exists_compact_subset_nhds_one [IsTopologicalGroup G] [LocallyCompactSpa
 /-- The neighborhood-basis form of van Dantzig's theorem, used in Neukirch, Schmidt, and
 Wingberg, *Cohomology of Number Fields*, Chapter I, §1: compact open subgroups form a basis
 of identity neighborhoods. -/
+@[to_additive /-- Van Dantzig's neighborhood-basis theorem: compact open additive subgroups
+form a basis of zero neighborhoods in a locally compact totally disconnected additive
+topological group. -/]
 theorem nhds_one_hasBasis_compact [IsTopologicalGroup G] [LocallyCompactSpace G]
     [TotallyDisconnectedSpace G] :
     (𝓝 (1 : G)).HasBasis (fun H : OpenSubgroup G => IsCompact (H : Set G))
@@ -141,5 +159,18 @@ theorem nhds_one_hasBasis_compact [IsTopologicalGroup G] [LocallyCompactSpace G]
     exact mem_of_superset H.mem_nhds_one hHW
 
 end OpenSubgroup
+
+/-- A locally compact totally disconnected topological group is nonarchimedean,
+by van Dantzig's compact-open subgroup theorem. The group need not be commutative
+or compact, and no extra separation hypothesis is required. -/
+@[to_additive /-- A locally compact totally disconnected additive topological group is
+nonarchimedean, by van Dantzig's compact-open subgroup theorem. Neither commutativity,
+compactness nor an extra separation hypothesis is required. -/]
+theorem NonarchimedeanGroup.of_locallyCompactSpace {G : Type u} [Group G]
+    [TopologicalSpace G] [IsTopologicalGroup G] [LocallyCompactSpace G]
+    [TotallyDisconnectedSpace G] : NonarchimedeanGroup G where
+  is_nonarchimedean U hU := by
+    obtain ⟨H, -, hHU⟩ := OpenSubgroup.exists_compact_subset_nhds_one hU
+    exact ⟨H, hHU⟩
 
 end

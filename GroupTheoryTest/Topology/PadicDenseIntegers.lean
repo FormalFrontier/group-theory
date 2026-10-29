@@ -6,6 +6,9 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.NumberTheory.Padics.ProperSpace
+import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+import GroupTheory.Topology.CompactOpenSubgroup
+import GroupTheory.Topology.FiniteGeneration
 
 /-!
 # Dense embedded integers in the 2-adic integers
@@ -33,6 +36,15 @@ theorem padicIntegers_fg : padicIntegers.FG :=
 theorem padicIntegers_dense : Dense (padicIntegers : Set ℤ_[2]) := by
   simpa only [DenseRange, padicIntegers, AddMonoidHom.coe_range, Int.coe_castAddHom] using
     (PadicInt.denseRange_intCast (p := 2))
+
+-- The infinite compact group of 2-adic integers has the nonarchimedean and finite
+-- topological-generation properties without an ambient abstract finite-generation hypothesis.
+example : NonarchimedeanAddGroup ℤ_[2] ∧
+    ∃ S : Finset ℤ_[2], (AddSubgroup.closure (S : Set ℤ_[2])).topologicalClosure = ⊤ := by
+  refine ⟨NonarchimedeanAddGroup.of_locallyCompactSpace, ?_⟩
+  obtain ⟨S, hS⟩ := AddSubgroup.exists_fg_dense_iff.mp
+    ⟨padicIntegers, padicIntegers_fg, padicIntegers_dense⟩
+  exact ⟨S, (AddSubgroup.dense_iff_topologicalClosure_eq_top _).mp hS⟩
 
 end GroupTheoryTest.Topology.PadicDenseIntegers
 

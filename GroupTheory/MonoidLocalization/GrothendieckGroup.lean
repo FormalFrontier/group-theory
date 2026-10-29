@@ -8,9 +8,16 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
 
 /-!
 # Additive and bilinear Grothendieck lifts
+
+`Algebra.GrothendieckAddGroup.piEquiv` identifies the completion of an arbitrary dependent
+product of additive commutative monoids with the product of their completions. Its forward
+coordinates are the induced evaluation maps, and it is natural in families of additive
+homomorphisms. An induced product map is bijective exactly when every induced coordinate
+map is bijective. No finiteness, cancellation or nonempty-index hypothesis is required.
 
 The universal property of the Grothendieck additive group is additive in the supplied
 homomorphism. `Algebra.GrothendieckAddGroup.liftAddEquiv` equips Mathlib's equivalence
@@ -37,6 +44,9 @@ nontriviality of the target group.
   `Mathlib.GroupTheory.MonoidLocalization.Maps` and equality criterion
   `AddSubmonoid.LocalizationMap.eq_iff_exists` in
   `Mathlib.GroupTheory.MonoidLocalization.Basic`.
+* Mathlib's product-localization formalization by Junyan Xu in
+  `Mathlib.GroupTheory.MonoidLocalization.Lemmas` and the equivalence
+  `AddLocalization.addEquivOfQuotient` in `Mathlib.GroupTheory.MonoidLocalization.Maps`.
 * Mathlib's pointwise group structures on homomorphism spaces in
   `Mathlib.Algebra.Group.Hom.Instances` and additive-equivalence constructors in
   `Mathlib.Algebra.Group.Equiv.Defs`.
@@ -253,5 +263,131 @@ theorem lift_of_comp_bijective_iff (f : A →+ B) :
       (∀ x y : A, (∃ t : B, f x + t = f y + t) → ∃ a : A, x + a = y + a) ∧
       (∀ b : B, ∃ a₁ a₂ : A, ∃ t : B, b + f a₂ + t = f a₁ + t) := by
   rw [Function.Bijective, lift_of_comp_injective_iff, lift_of_comp_surjective_iff]
+
+/-!
+## Completion of arbitrary products
+
+The product of the canonical unit maps is a localization at the top additive submonoid:
+its denominators are tuples, with no common-denominator or finite-support restriction.
+The equivalence below specializes Mathlib's product-localization theorem and quotient
+localization equivalence. Its unit law applies to every tuple in the full product.
+-/
+
+section Pi
+
+variable {I : Type u} (M : I → Type v) [∀ i, AddCommMonoid (M i)]
+
+/-- The canonical additive equivalence between the completion of a dependent product and
+its coordinate completions, induced by the product of the canonical unit maps. -/
+noncomputable def piEquiv :
+    GrothendieckAddGroup (∀ i, M i) ≃+ ∀ i, GrothendieckAddGroup (M i) :=
+  let l : AddSubmonoid.LocalizationMap (⊤ : AddSubmonoid (∀ i, M i))
+      (∀ i, GrothendieckAddGroup (M i)) :=
+    { toFun := AddMonoidHom.piMap (fun i ↦ of (M := M i))
+      map_add' := (AddMonoidHom.piMap (fun i ↦ of (M := M i))).map_add
+      isLocalizationMap := by
+        have hfun : ⇑(AddMonoidHom.piMap (fun i ↦ of (M := M i))) =
+            Pi.map (fun i ↦ of (M := M i)) := by
+          funext a i
+          exact AddMonoidHom.piMap_apply _ a i
+        simpa only [AddSubmonoid.pi_top, ← hfun] using
+          (AddSubmonoid.IsLocalizationMap.pi (N := fun i ↦ GrothendieckAddGroup (M i))
+            (fun i ↦ (⊤ : AddSubmonoid (M i))) (f := fun i ↦ of (M := M i))
+            (fun i ↦ (AddLocalization.addMonoidOf (⊤ : AddSubmonoid (M i))).isLocalizationMap)) }
+  AddLocalization.addEquivOfQuotient l
+
+/-- The product equivalence sends every tuple's canonical unit to its coordinate units. -/
+@[simp]
+theorem piEquiv_of (a : ∀ i, M i) :
+    piEquiv M (AddLocalization.addMonoidOf ⊤ a) = fun i ↦ of (a i) := by
+  simp only [piEquiv, AddLocalization.addEquivOfQuotient_addMonoidOf]
+  funext i
+  exact AddMonoidHom.piMap_apply (fun i ↦ of (M := M i)) a i
+
+/-- Each coordinate of the product equivalence is the induced evaluation homomorphism. -/
+@[simp]
+theorem piEquiv_apply (x : GrothendieckAddGroup (∀ i, M i)) (i : I) :
+    piEquiv M x i = lift ((of (M := M i)).comp (Pi.evalAddMonoidHom M i)) x := by
+  have h : (Pi.evalAddMonoidHom (fun i ↦ GrothendieckAddGroup (M i)) i).comp
+      (piEquiv M).toAddMonoidHom =
+        lift ((of (M := M i)).comp (Pi.evalAddMonoidHom M i)) := by
+    apply hom_ext
+    intro a
+    change piEquiv M (of a) i = _
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, piEquiv_of, lift_of,
+      AddMonoidHom.comp_apply, Pi.evalAddMonoidHom_apply]
+  exact DFunLike.congr_fun h x
+
+/-- Induced evaluation recovers each coordinate of the inverse product equivalence. -/
+@[simp]
+theorem lift_eval_piEquiv_symm (z : ∀ i, GrothendieckAddGroup (M i)) (i : I) :
+    lift ((of (M := M i)).comp (Pi.evalAddMonoidHom M i)) ((piEquiv M).symm z) = z i := by
+  rw [← piEquiv_apply]
+  exact congrFun ((piEquiv M).apply_symm_apply z) i
+
+variable {M} {N : I → Type w} [∀ i, AddCommMonoid (N i)]
+
+/-- The product equivalence is natural in a family of additive monoid homomorphisms. -/
+theorem piEquiv_natural (f : ∀ i, M i →+ N i) :
+    (piEquiv N).toAddMonoidHom.comp
+        (lift ((of (M := ∀ i, N i)).comp (AddMonoidHom.piMap f))) =
+      (AddMonoidHom.piMap (fun i ↦ lift ((of (M := N i)).comp (f i)))).comp
+        (piEquiv M).toAddMonoidHom := by
+  apply hom_ext
+  intro a
+  ext i
+  simp only [AddMonoidHom.comp_apply, AddMonoidHom.piMap_apply]
+  change piEquiv N (lift ((of (M := ∀ i, N i)).comp (AddMonoidHom.piMap f)) (of a)) i =
+    lift ((of (M := N i)).comp (f i)) (piEquiv M (of a) i)
+  simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of, piEquiv_of,
+    AddMonoidHom.comp_apply, AddMonoidHom.piMap_apply]
+
+/-- The induced homomorphism on a product's completion is bijective exactly when every
+induced homomorphism on a coordinate completion is bijective. -/
+theorem lift_of_comp_piMap_bijective_iff (f : ∀ i, M i →+ N i) :
+    Function.Bijective (lift ((of (M := ∀ i, N i)).comp (AddMonoidHom.piMap f))) ↔
+      ∀ i, Function.Bijective (lift ((of (M := N i)).comp (f i))) := by
+  let F : GrothendieckAddGroup (∀ i, M i) → GrothendieckAddGroup (∀ i, N i) :=
+    lift ((of (M := ∀ i, N i)).comp (AddMonoidHom.piMap f))
+  let g : ∀ i, GrothendieckAddGroup (M i) → GrothendieckAddGroup (N i) :=
+    fun i ↦ lift ((of (M := N i)).comp (f i))
+  let eM := (piEquiv M).toEquiv
+  let eN := (piEquiv N).toEquiv
+  have hnat : eN ∘ F = Pi.map g ∘ eM := by
+    funext x i
+    change piEquiv N (F x) i = g i (piEquiv M x i)
+    have h := congrFun (DFunLike.congr_fun (piEquiv_natural f) x) i
+    simp only [AddMonoidHom.comp_apply, AddMonoidHom.piMap_apply] at h
+    change piEquiv N (F x) i = g i (piEquiv M x i) at h
+    exact h
+  have hconj : Pi.map g = eN ∘ F ∘ eM.symm := by
+    funext z
+    have h := congrFun hnat (eM.symm z)
+    simpa only [Function.comp_apply, Equiv.apply_symm_apply] using h.symm
+  have hconj' : F = eN.symm ∘ Pi.map g ∘ eM := by
+    funext x
+    have h := congrArg eN.symm (congrFun hnat x)
+    simpa only [Function.comp_apply, Equiv.symm_apply_apply] using h
+  have hprod : Function.Bijective F ↔ Function.Bijective (Pi.map g) := by
+    constructor
+    · intro hF
+      rw [hconj]
+      exact eN.bijective.comp (hF.comp eM.symm.bijective)
+    · intro hg
+      rw [hconj']
+      exact eN.symm.bijective.comp (hg.comp eM.bijective)
+  refine hprod.trans ?_
+  constructor
+  · intro hg i
+    refine ⟨(Pi.map_injective.mp hg.1) i, ?_⟩
+    have hsurj : Function.Surjective ((g i) ∘
+        (Function.eval i : (∀ j, GrothendieckAddGroup (M j)) →
+          GrothendieckAddGroup (M i))) :=
+      (Function.surjective_eval (β := fun j ↦ GrothendieckAddGroup (N j)) i).comp hg.2
+    exact hsurj.of_comp
+  · intro hg
+    exact Function.Bijective.piMap hg
+
+end Pi
 
 end Algebra.GrothendieckAddGroup
