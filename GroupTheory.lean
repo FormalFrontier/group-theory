@@ -5,7 +5,10 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Topology.ContinuousMap.Quotient
+public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Semigroup.StableEquality
+public import GroupTheory.Topology.Ultrafilter
 
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
@@ -47,6 +50,7 @@ public import GroupTheory.Topology.OpenKernel
 public import GroupTheory.Topology.CircleCharacter
 public import GroupTheory.Topology.AddCircle
 public import GroupTheory.Topology.FiniteIndex
+public import GroupTheory.Topology.AutomaticContinuity
 public import GroupTheory.Topology.FiniteGeneration
 public import GroupTheory.Topology.CharacterSubgroups
 public import GroupTheory.Topology.RationalCircle

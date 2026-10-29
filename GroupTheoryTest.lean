@@ -5,7 +5,10 @@ Authors: Formal Frontier Agents
 
 module
 
+import GroupTheoryTest.Topology.ContinuousMap.Quotient
+import GroupTheoryTest.Topology.ContinuousMonoidHom.Quotient
 import GroupTheoryTest.Topology.Algebra.Group.Units
+import GroupTheoryTest.Topology.Ultrafilter
 public import GroupTheoryTest.ActionCentralizer
 public import GroupTheoryTest.CosetActionHom
 public import GroupTheoryTest.CyclicNorm
@@ -35,7 +38,9 @@ public import GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheoryTest.Topology.OpenKernel
 public import GroupTheoryTest.Topology.FiniteIndex
 public import GroupTheoryTest.Topology.PadicDenseIntegers
+public import GroupTheoryTest.Topology.AutomaticContinuity
 public import GroupTheoryTest.Topology.CharacterSubgroups
+public import GroupTheoryTest.Topology.TypeTags
 public import GroupTheoryTest.Topology.RationalCircleCharacter
 public import GroupTheoryTest.Subgroup.IndexTwo
 public import GroupTheoryTest.FreeGroup.IndexTwo

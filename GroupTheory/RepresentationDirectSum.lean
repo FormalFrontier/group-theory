@@ -75,6 +75,14 @@ private theorem directSum_fixedSubmodule_eq
     ext i
     simpa only [directSum_apply, DirectSum.lmap_apply] using hx i g
 
+/-- An element of a direct sum is fixed if and only if each coefficient is fixed. -/
+theorem mem_directSum_fixedSubmodule_iff
+    (ρ : ∀ i, Representation R G (M i)) (x : ⨁ i, M i) :
+    x ∈ (directSum ρ).fixedSubmodule ↔ ∀ i, x i ∈ (ρ i).fixedSubmodule := by
+  rw [directSum_fixedSubmodule_eq ρ]
+  simp only [Submodule.mem_comap, Submodule.mem_pi, Set.mem_univ, forall_const,
+    DirectSum.coeFnLinearMap_apply]
+
 /-- Fixed vectors in a direct sum are the direct sum of the fixed-vector submodules.
 
 No finiteness assumption on the index type or invertibility assumption on the acting

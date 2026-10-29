@@ -22,6 +22,16 @@ in more detail.
 
 ## Headline results
 
+- **[Ultrafilter-limit homomorphisms](GroupTheory/Topology/Ultrafilter.lean).** For any
+  compact Hausdorff monoid with continuous multiplication, taking the limit along a
+  fixed ultrafilter defines a surjective abstract homomorphism from its power. When
+  the ultrafilter contains all cofinite sets, every fiber is dense; for a nontrivial
+  target the map is not continuous at the constant identity family. The direct
+  additive API uses an additive monoid with continuous addition. A
+  [countable-power example](GroupTheoryTest/Topology/Ultrafilter.lean) uses the original
+  addition and Mathlib discrete topology on `ZMod 3` to give a surjective finite-image
+  noncontinuous homomorphism with dense proper zero fiber.
+
 - **Circle equivalences and codomain transport.** `AddCircle.continuousAddEquivCircle`
   identifies every nonzero-period additive circle with `Additive Circle`, using the
   exponential `x ↦ exp (2 * π / T * x)`. Codomain transport gives homeomorphisms of
@@ -89,6 +99,12 @@ also include right transversals, subgroup towers and nested coset maps.
 
 ### Topological refinements
 
+- **[Type-tag transport](GroupTheory/Topology/TypeTags.lean).** Continuous monoid
+  homomorphisms `Multiplicative A →ₜ* B` and continuous additive homomorphisms
+  `A →ₜ+ Additive B` are identified by a compact-open homeomorphism, for any additive
+  monoid `A` and monoid `B` with arbitrary topologies. For a commutative `B` with continuous
+  multiplication this is also an additive equivalence on the pointwise hom spaces.
+
 - **[Locally closed subgroups](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean).**
   In a group with separately continuous multiplication and continuous inversion,
   a subgroup is closed exactly when it is a neighborhood of the identity within
@@ -132,6 +148,15 @@ also include right transversals, subgroup towers and nested coset maps.
   if one fixed positive exponent annihilates its whole image, with no target topology
   or continuity assumed. The additive counterparts use the range of `x ↦ n • x` and,
   for the fixed-positive-scalar condition, additive monoid targets.
+- **[Automatic continuity](GroupTheory/Topology/AutomaticContinuity.lean).** Every abstract
+  homomorphism from a compact Hausdorff commutative topological group with a specified
+  dense abstractly finitely generated subgroup into a compact nonarchimedean group is
+  continuous. The target need not be commutative or Hausdorff, and the image may be
+  infinite. The additive homomorphism counterpart has the same scope; this result does
+  not assert local constancy. Every abstract action of the same source on an arbitrary
+  discrete space with finite individual orbits is jointly continuous, without requiring
+  a finite total action image. Its additive action counterpart also uses an arbitrary
+  carrier, with no additive structure required on it.
 - **[Component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).** Every topological group's ordinary quotient by
   its identity component is Hausdorff and totally disconnected, without a
   separation or local-compactness premise on the original group.

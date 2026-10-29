@@ -5,15 +5,17 @@ Authors: Formal Frontier Agents
 
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import GroupTheory.Topology.AddCircle
 public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # The rational circle inside the real and complex circles
 
 The canonical rational-circle inclusion is injective, and every torsion point
-of either circle has a rational-circle preimage. These maps and their proofs
-follow the formalization in Supernatural Numbers, using Mathlib's quotient
+of either circle has a rational-circle preimage. The unit-circle inclusion agrees
+with the real-circle inclusion followed by the period-one continuous additive
+equivalence, both pointwise and as an additive homomorphism. These maps and their
+proofs follow the formalization in Supernatural Numbers, using Mathlib's quotient
 additive groups and circle homeomorphism.
 -/
 
@@ -70,12 +72,31 @@ real-circle evaluation. -/
     Additive.toMul (rationalToCircle (q : AddCircle (1 : ℚ))) =
       AddCircle.toCircle ((q : ℝ) : AddCircle (1 : ℝ)) := rfl
 
+/-- The period-one circle equivalence sends the real image of a rational-circle point
+to its unit-circle image. -/
+theorem continuousAddEquivCircle_rationalToReal (q : AddCircle (1 : ℚ)) :
+    continuousAddEquivCircle one_ne_zero (rationalToReal q) = rationalToCircle q :=
+  continuousAddEquivCircle_apply one_ne_zero (rationalToReal q)
+
+/-- The rational-circle inclusions commute with the period-one circle equivalence. -/
+theorem continuousAddEquivCircle_comp_rationalToReal :
+    (continuousAddEquivCircle one_ne_zero).toAddEquiv.toAddMonoidHom.comp rationalToReal =
+      rationalToCircle :=
+  AddMonoidHom.ext fun q ↦ continuousAddEquivCircle_rationalToReal q
+
+/-- The inverse period-one circle equivalence recovers the real image of a
+rational-circle point from its unit-circle image. -/
+theorem continuousAddEquivCircle_symm_rationalToCircle (q : AddCircle (1 : ℚ)) :
+    (continuousAddEquivCircle one_ne_zero).symm (rationalToCircle q) = rationalToReal q := by
+  simpa only [continuousAddEquivCircle_rationalToReal] using
+    (continuousAddEquivCircle one_ne_zero).symm_apply_apply (rationalToReal q)
+
 /-- The rational-circle inclusion into the unit circle is injective. -/
 theorem rationalToCircle_injective : Function.Injective rationalToCircle := by
   intro x y h
   apply rationalToReal_injective
-  apply AddCircle.injective_toCircle (by norm_num : (1 : ℝ) ≠ 0)
-  exact congrArg Additive.toMul h
+  apply (continuousAddEquivCircle one_ne_zero).injective
+  simpa only [continuousAddEquivCircle_rationalToReal] using h
 
 /-- Every finite-order point of the real additive circle is rational. -/
 theorem exists_rational_preimage_of_isOfFinAddOrder
