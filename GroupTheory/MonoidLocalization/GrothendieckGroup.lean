@@ -17,6 +17,11 @@ homomorphism. `Algebra.GrothendieckAddGroup.liftAddEquiv` equips Mathlib's equiv
 `Algebra.GrothendieckAddGroup.lift` with this structure, retaining both its forward map and
 its inverse, restriction along `Algebra.GrothendieckAddGroup.of`.
 
+`Algebra.GrothendieckAddGroup.lift_injective_iff` characterizes injectivity of a lift by
+reflection of stable equality in the source monoid.
+`Algebra.GrothendieckAddGroup.lift_of_comp_injective_iff` specializes this criterion to the
+homomorphism induced by an additive homomorphism between commutative monoids.
+
 `Algebra.GrothendieckAddGroup.lift₂` extends a curried biadditive map to the Grothendieck
 additive groups of both source monoids. Its values on pairs of canonical generators
 characterize the extension. The construction uses the pointwise additive groups on
@@ -27,6 +32,11 @@ nontriviality of the target group.
 
 * Mathlib's completion and universal-property formalization by Alex J. Best and Yaël Dillies
   in `Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup`.
+* Mathlib's localization injectivity criterion
+  `AddSubmonoid.LocalizationMap.lift_injective_iff` in
+  `Mathlib.GroupTheory.MonoidLocalization.Maps` and equality criterion
+  `AddSubmonoid.LocalizationMap.eq_iff_exists` in
+  `Mathlib.GroupTheory.MonoidLocalization.Basic`.
 * Mathlib's pointwise group structures on homomorphism spaces in
   `Mathlib.Algebra.Group.Hom.Instances` and additive-equivalence constructors in
   `Mathlib.Algebra.Group.Equiv.Defs`.
@@ -37,6 +47,19 @@ nontriviality of the target group.
 universe u v w u' v' w'
 
 namespace Algebra.GrothendieckAddGroup
+
+/-- Two elements have the same image in the Grothendieck additive group exactly when they
+become equal after adding a common summand. -/
+theorem of_eq_iff_exists {A : Type u} [AddCommMonoid A] {x y : A} :
+    of x = of y ↔ ∃ a : A, x + a = y + a := by
+  change (AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)) x =
+    (AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)) y ↔ _
+  rw [AddSubmonoid.LocalizationMap.eq_iff_exists]
+  constructor
+  · rintro ⟨a, ha⟩
+    exact ⟨(a : A), by simpa only [add_comm] using ha⟩
+  · rintro ⟨a, ha⟩
+    exact ⟨⟨a, AddSubmonoid.mem_top a⟩, by simpa only [add_comm] using ha⟩
 
 variable {A : Type u} {G : Type w} [AddCommMonoid A] [AddCommGroup G]
 
@@ -52,6 +75,25 @@ theorem hom_ext {f g : GrothendieckAddGroup A →+ G}
     (h : ∀ a : A, f (of a) = g (of a)) : f = g := by
   apply (lift (M := A) (G := G)).symm.injective
   exact AddMonoidHom.ext h
+
+/-- A homomorphism's lift to the Grothendieck additive group is injective exactly when
+equality of its values implies stable equality in the source monoid. -/
+theorem lift_injective_iff (g : A →+ G) :
+    Function.Injective (lift g) ↔
+      ∀ x y : A, g x = g y → ∃ a : A, x + a = y + a := by
+  change Function.Injective
+    ((AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)).lift
+      (g := g) (fun _ ↦ AddGroup.isAddUnit _)) ↔ _
+  rw [AddSubmonoid.LocalizationMap.lift_injective_iff]
+  constructor
+  · intro h x y hxy
+    exact of_eq_iff_exists.mp ((h x y).mpr hxy)
+  · intro h x y
+    constructor
+    · exact (AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)).eq_of_eq
+        (fun _ ↦ AddGroup.isAddUnit _)
+    · intro hxy
+      exact of_eq_iff_exists.mpr (h x y hxy)
 
 /-- Grothendieck lifting preserves the pointwise sum of homomorphisms. -/
 theorem lift_add (f g : A →+ G) : lift (f + g) = lift f + lift g := by
@@ -81,6 +123,14 @@ theorem liftAddEquiv_symm_apply (f : GrothendieckAddGroup A →+ G) :
     (liftAddEquiv (A := A) (G := G)).symm f = f.comp of := rfl
 
 variable {B : Type v} [AddCommMonoid B]
+
+/-- The induced homomorphism between Grothendieck additive groups is injective exactly when
+stable equality of images implies stable equality in the source monoid. -/
+theorem lift_of_comp_injective_iff (f : A →+ B) :
+    Function.Injective (lift ((of (M := B)).comp f)) ↔
+      ∀ x y : A, (∃ t : B, f x + t = f y + t) → ∃ a : A, x + a = y + a := by
+  rw [lift_injective_iff]
+  simp only [AddMonoidHom.comp_apply, of_eq_iff_exists]
 
 /-- Extend a curried biadditive map to the Grothendieck additive groups of both sources. -/
 noncomputable def lift₂ (f : A →+ B →+ G) :
