@@ -30,6 +30,8 @@ its inverse, restriction along `Algebra.GrothendieckAddGroup.of`.
 reflection of stable equality in the source monoid.
 `Algebra.GrothendieckAddGroup.lift_of_comp_injective_iff` specializes this criterion to the
 homomorphism induced by an additive homomorphism between commutative monoids.
+`Algebra.GrothendieckAddGroup.lift_of_comp_injective_of_cofinal` gives injectivity of this
+induced homomorphism when the original homomorphism is injective and cofinal under addition.
 `Algebra.GrothendieckAddGroup.mem_ker_lift_of_comp_iff_of_cofinal` describes the kernel
 of this induced homomorphism when every target element can be completed to an image element
 by adding a summand. Its kernel elements are precisely differences of source generators
@@ -56,6 +58,7 @@ nontriviality of the target group.
 * Mathlib's pointwise group structures on homomorphism spaces in
   `Mathlib.Algebra.Group.Hom.Instances` and additive-equivalence constructors in
   `Mathlib.Algebra.Group.Equiv.Defs`.
+* Right-stabilization reflection in `GroupTheory.Semigroup.StableEquality`.
 -/
 
 @[expose] public section
@@ -147,6 +150,15 @@ theorem lift_of_comp_injective_iff (f : A →+ B) :
       ∀ x y : A, (∃ t : B, f x + t = f y + t) → ∃ a : A, x + a = y + a := by
   rw [lift_injective_iff]
   simp only [AddMonoidHom.comp_apply, of_eq_iff_exists]
+
+/-- An injective homomorphism whose image is cofinal under addition induces an injective
+homomorphism between the Grothendieck additive groups. -/
+theorem lift_of_comp_injective_of_cofinal (f : A →+ B) (hf : Function.Injective f)
+    (hcof : ∀ b : B, ∃ a : A, ∃ c : B, b + c = f a) :
+    Function.Injective (lift ((of (M := B)).comp f)) := by
+  apply (lift_of_comp_injective_iff f).2
+  intro x y hxy
+  exact (AddHomClass.exists_add_right_eq_iff f hf hcof x y).mp hxy
 
 /-- If every target element can be completed to an image element by adding a summand, the
 kernel of the induced homomorphism consists exactly of differences of source generators

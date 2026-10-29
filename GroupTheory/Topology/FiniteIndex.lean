@@ -10,12 +10,13 @@ public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-# Finite-index subgroups of compact commutative groups
+# Finite-index subgroups and closed power ranges
 
-A dense finitely generated subgroup of a compact Hausdorff commutative group makes
-every positive-power image have finite index. The image is then open, and every
-abstract finite-index subgroup is open without a closedness assumption.
-The additive statements use natural-number scalar multiplication instead of powers.
+A dense finitely generated subgroup of a commutative topological group makes every
+closed positive-power range have finite index and be open. In a compact Hausdorff
+group, the power range is automatically closed, and every abstract finite-index
+subgroup is open without a closedness assumption. The additive statements concern
+the ranges of natural-number scalar homomorphisms, not repeated sums of subgroups.
 
 Unlike abstract finite generation of the ambient group, dense finite generation
 does not imply that its underlying group is finitely generated.
@@ -35,24 +36,21 @@ universe u
 namespace Subgroup
 
 variable {G : Type u} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
-  [CompactSpace G] [T2Space G]
 
-/-- In a compact Hausdorff commutative group with a dense finitely generated subgroup,
-the image of every positive power map has finite index. This extends Mathlib's
-`Subgroup.finiteIndex_range_powMonoidHom_of_fg`, which instead assumes abstract finite
-generation of the entire ambient group. The dense subgroup has finite image in the
+/-- A closed positive-power range has finite index in a commutative topological group
+with a dense finitely generated subgroup. The dense subgroup has finite image in the
 quotient by the closed power range; that image is closed as well as dense, so it is
-the whole quotient. -/
-@[to_additive /-- In a compact Hausdorff commutative additive group with a dense finitely
-generated subgroup, the image of every positive natural-number scalar map has finite
-index. -/]
-theorem finiteIndex_range_powMonoidHom_of_dense_fg (D : Subgroup G) (hfg : D.FG)
-    (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n) :
+the whole quotient. Neither compactness nor separation of the ambient group is needed.
+The compact case extends the profinite abelian finite-index argument in Neukirch,
+Schmidt, and Wingberg, *Cohomology of Number Fields*, Chapter I, §1. -/
+@[to_additive /-- A closed positive-scalar range has finite index in a commutative
+topological additive group with a dense finitely generated subgroup. Neither compactness
+nor separation of the ambient group is needed. -/]
+theorem finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed (D : Subgroup G)
+    (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
+    (hclosed : IsClosed ((powMonoidHom (α := G) n).range : Set G)) :
     (powMonoidHom (α := G) n).range.FiniteIndex := by
   let P : Subgroup G := (powMonoidHom (α := G) n).range
-  have hclosed : IsClosed (P : Set G) := by
-    change IsClosed (Set.range fun g : G => g ^ n)
-    exact (isCompact_range (continuous_pow n)).isClosed
   let quotientMap : D →* G ⧸ P := (QuotientGroup.mk' P).comp D.subtype
   have hrel : (D.map (powMonoidHom (α := G) n)).IsFiniteRelIndex D :=
     isFiniteRelIndex_map_powMonoidHom_of_fg hfg (Nat.ne_of_gt hn)
@@ -90,18 +88,40 @@ theorem finiteIndex_range_powMonoidHom_of_dense_fg (D : Subgroup G) (hfg : D.FG)
     Set.finite_univ_iff.mp (by simpa only [hsurj.range_eq] using hfiniteRange)
   exact finiteIndex_iff_finite_quotient.mpr hfiniteQuotient
 
+/-- A closed positive-power range is open in a commutative topological group with a
+dense finitely generated subgroup. -/
+@[to_additive /-- A closed positive-scalar range is open in a commutative topological
+additive group with a dense finitely generated subgroup. -/]
+theorem isOpen_range_powMonoidHom_of_dense_fg_of_isClosed (D : Subgroup G)
+    (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
+    (hclosed : IsClosed ((powMonoidHom (α := G) n).range : Set G)) :
+    IsOpen ((powMonoidHom (α := G) n).range : Set G) := by
+  have := finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed D hfg hdense hn hclosed
+  exact Subgroup.isOpen_of_isClosed_of_finiteIndex _ hclosed
+
+variable [CompactSpace G] [T2Space G]
+
+/-- In a compact Hausdorff commutative group with a dense finitely generated subgroup,
+the range of every positive power map has finite index. This extends Mathlib's
+`Subgroup.finiteIndex_range_powMonoidHom_of_fg`, which instead assumes abstract finite
+generation of the entire ambient group. -/
+@[to_additive /-- In a compact Hausdorff commutative additive group with a dense finitely
+generated subgroup, the range of every positive natural-number scalar map has finite
+index. -/]
+theorem finiteIndex_range_powMonoidHom_of_dense_fg (D : Subgroup G) (hfg : D.FG)
+    (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n) :
+    (powMonoidHom (α := G) n).range.FiniteIndex := by
+  apply finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed D hfg hdense hn
+  exact (isCompact_range (continuous_pow n)).isClosed
+
 /-- The range of a positive power map is open when a finitely generated subgroup is dense. -/
 @[to_additive /-- The range of a positive scalar map is open when a finitely generated
 additive subgroup is dense. -/]
 theorem isOpen_range_powMonoidHom_of_dense_fg (D : Subgroup G) (hfg : D.FG)
     (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n) :
     IsOpen ((powMonoidHom (α := G) n).range : Set G) := by
-  have hclosed : IsClosed ((powMonoidHom (α := G) n).range : Set G) := by
-    change IsClosed (Set.range fun g : G => g ^ n)
-    exact (isCompact_range (continuous_pow n)).isClosed
-  exact @Subgroup.isOpen_of_isClosed_of_finiteIndex G _ _ _
-    (powMonoidHom (α := G) n).range
-    (finiteIndex_range_powMonoidHom_of_dense_fg D hfg hdense hn) hclosed
+  apply isOpen_range_powMonoidHom_of_dense_fg_of_isClosed D hfg hdense hn
+  exact (isCompact_range (continuous_pow n)).isClosed
 
 /-- Every abstract finite-index subgroup of a compact Hausdorff commutative group
 with a dense finitely generated subgroup is open; no closedness is assumed of it.

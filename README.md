@@ -105,6 +105,16 @@ also include right transversals, subgroup towers and nested coset maps.
   Every locally compact totally disconnected topological group has a basis
   of [compact open subgroups](GroupTheory/Topology/CompactOpenSubgroup.lean),
   without a separate Hausdorff premise.
+- **[Power ranges](GroupTheory/Topology/FiniteIndex.lean) and abstract homomorphisms.** In a compact Hausdorff commutative
+  topological group with a dense algebraically finitely generated subgroup, the range
+  of `x ↦ x ^ n` has finite index and is open for every positive natural `n`.
+  More generally, closedness of that range suffices without compactness or ambient
+  separation. Every abstract finite-index subgroup in the compact Hausdorff case is
+  open, without assuming it closed.
+  An [abstract homomorphism](GroupTheory/Topology/OpenKernel.lean) from such a compact
+  group into any monoid has open kernel and is locally constant if one fixed positive
+  exponent annihilates its whole image. No target topology or continuity is assumed.
+  The additive counterparts use the range of `x ↦ n • x` and additive monoid targets.
 - **[Component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).** Every topological group's ordinary quotient by
   its identity component is Hausdorff and totally disconnected, without a
   separation or local-compactness premise on the original group.

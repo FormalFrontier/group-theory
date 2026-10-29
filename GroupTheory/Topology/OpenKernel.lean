@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.CompactOpenSubgroup
+public import GroupTheory.Topology.FiniteIndex
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Basic
@@ -17,6 +18,12 @@ A continuous homomorphism out of a nonarchimedean group has open kernel when an 
 neighborhood in the target contains no nontrivial subgroup. Compactness of the source
 then gives finite image and a finite quotient by the kernel. Neither the source's
 commutativity nor the target's Hausdorffness is required for these statements.
+
+For a compact Hausdorff commutative source with a dense finitely generated subgroup,
+an abstract homomorphism into any monoid has open kernel and is locally constant if
+one positive natural exponent annihilates every image element. This application uses
+the open power-range theorem; no target topology or continuity is assumed. The
+corresponding additive statements hold for homomorphisms into additive monoids.
 
 ## References
 
@@ -56,12 +63,17 @@ end NonarchimedeanGroup
 
 namespace MonoidHom
 
-variable {G : Type u} {K : Type v} [Group G] [TopologicalSpace G]
-  [SeparatelyContinuousMul G] [Group K]
+section OpenKernel
 
-/-- An open kernel makes all fibers of a group homomorphism open. Neither
-continuity nor a topology on the target is needed for this implication. -/
-@[to_additive]
+variable {G : Type u} {K : Type v} [Group G] [TopologicalSpace G]
+  [SeparatelyContinuousMul G] [MulOneClass K]
+
+/-- An open kernel makes a homomorphism out of a group locally constant. The target
+only needs a multiplication with identity: neither target inverses, associativity,
+continuity nor a topology on the target is needed. -/
+@[to_additive /-- An open kernel makes a homomorphism out of an additive group locally
+constant. The target only needs an addition with zero: neither target negation,
+associativity, continuity nor a topology on the target is needed. -/]
 theorem isLocallyConstant_of_isOpen_ker (f : G →* K)
     (hker : IsOpen (f.ker : Set G)) : IsLocallyConstant (f : G → K) := by
   apply IsLocallyConstant.iff_isOpen_fiber_apply.mpr
@@ -73,6 +85,41 @@ theorem isLocallyConstant_of_isOpen_ker (f : G →* K)
     exact f.eq_iff
   rw [hfiber]
   exact hker.leftCoset x
+
+end OpenKernel
+
+section BoundedExponent
+
+variable {G : Type u} {M : Type v} [CommGroup G] [TopologicalSpace G]
+  [IsTopologicalGroup G] [CompactSpace G] [T2Space G] [Monoid M]
+
+/-- An abstract homomorphism from a compact Hausdorff commutative group with a dense
+finitely generated subgroup has open kernel if one positive exponent annihilates its
+whole image. No topology on the target or continuity of the homomorphism is assumed. -/
+@[to_additive /-- An abstract additive homomorphism from a compact Hausdorff commutative additive
+  group with a dense finitely generated subgroup has open kernel if one positive natural
+  scalar annihilates its whole image. No topology on the target or continuity is assumed. -/]
+theorem isOpen_ker_of_dense_fg_of_pow_eq_one (f : G →* M) (D : Subgroup G)
+    (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
+    (hpow : ∀ x, (f x) ^ n = 1) : IsOpen (f.ker : Set G) := by
+  apply Subgroup.isOpen_mono (H₁ := (powMonoidHom (α := G) n).range)
+    (H₂ := f.ker) ?_ (Subgroup.isOpen_range_powMonoidHom_of_dense_fg D hfg hdense hn)
+  rintro _ ⟨x, rfl⟩
+  exact (map_pow f x n).trans (hpow x)
+
+/-- An abstract homomorphism from a compact Hausdorff commutative group with a dense
+finitely generated subgroup is locally constant if one positive exponent annihilates
+its whole image. The target is an arbitrary monoid with no topology specified. -/
+@[to_additive /-- An abstract additive homomorphism from a compact Hausdorff commutative additive
+  group with a dense finitely generated subgroup is locally constant if one positive
+  natural scalar annihilates its whole image. No topology on the target is specified. -/]
+theorem isLocallyConstant_of_dense_fg_of_pow_eq_one (f : G →* M) (D : Subgroup G)
+    (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
+    (hpow : ∀ x, (f x) ^ n = 1) : IsLocallyConstant (f : G → M) :=
+  f.isLocallyConstant_of_isOpen_ker
+    (f.isOpen_ker_of_dense_fg_of_pow_eq_one D hfg hdense hn hpow)
+
+end BoundedExponent
 
 end MonoidHom
 
