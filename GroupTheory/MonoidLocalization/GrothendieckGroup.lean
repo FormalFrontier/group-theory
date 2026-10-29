@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
+public import GroupTheory.Semigroup.StableEquality
 
 /-!
-# Additive and bilinear Grothendieck lifts
+# Grothendieck lifts and cofinal kernels
 
 `Algebra.GrothendieckAddGroup.piEquiv` identifies the completion of an arbitrary dependent
 product of additive commutative monoids with the product of their completions. Its forward
@@ -28,6 +30,10 @@ its inverse, restriction along `Algebra.GrothendieckAddGroup.of`.
 reflection of stable equality in the source monoid.
 `Algebra.GrothendieckAddGroup.lift_of_comp_injective_iff` specializes this criterion to the
 homomorphism induced by an additive homomorphism between commutative monoids.
+`Algebra.GrothendieckAddGroup.mem_ker_lift_of_comp_iff_of_cofinal` describes the kernel
+of this induced homomorphism when every target element can be completed to an image element
+by adding a summand. Its kernel elements are precisely differences of source generators
+whose images are equal in the original target monoid.
 
 `Algebra.GrothendieckAddGroup.lift₂` extends a curried biadditive map to the Grothendieck
 additive groups of both source monoids. Its values on pairs of canonical generators
@@ -141,6 +147,33 @@ theorem lift_of_comp_injective_iff (f : A →+ B) :
       ∀ x y : A, (∃ t : B, f x + t = f y + t) → ∃ a : A, x + a = y + a := by
   rw [lift_injective_iff]
   simp only [AddMonoidHom.comp_apply, of_eq_iff_exists]
+
+/-- If every target element can be completed to an image element by adding a summand, the
+kernel of the induced homomorphism consists exactly of differences of source generators
+with equal images in the target monoid. -/
+theorem mem_ker_lift_of_comp_iff_of_cofinal (f : A →+ B)
+    (hcof : ∀ b : B, ∃ a : A, ∃ c : B, b + c = f a)
+    (z : GrothendieckAddGroup A) :
+    z ∈ (lift ((of (M := B)).comp f)).ker ↔
+      ∃ x y : A, f x = f y ∧ z = of x - of y := by
+  constructor
+  · intro hz
+    obtain ⟨⟨x, y⟩, hxy⟩ :=
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)).surj z
+    have hzxy : z = of x - of (y : A) := eq_sub_iff_add_eq.mpr hxy
+    have himage : of (f x) = of (f (y : A)) := by
+      rw [hzxy, AddMonoidHom.sub_mem_ker_iff] at hz
+      simpa only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of,
+        AddMonoidHom.comp_apply] using hz
+    obtain ⟨a, ha⟩ :=
+      (AddHomClass.exists_add_right_eq_iff_exists_map_eq f hcof x (y : A)).mp
+        (of_eq_iff_exists.mp himage)
+    refine ⟨x + a, (y : A) + a, ha, ?_⟩
+    simpa only [map_add, add_sub_add_right_eq_sub] using hzxy
+  · rintro ⟨x, y, hxy, rfl⟩
+    rw [AddMonoidHom.sub_mem_ker_iff]
+    simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of,
+      AddMonoidHom.comp_apply, hxy]
 
 /-- Extend a curried biadditive map to the Grothendieck additive groups of both sources. -/
 noncomputable def lift₂ (f : A →+ B →+ G) :

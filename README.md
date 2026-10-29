@@ -22,6 +22,13 @@ in more detail.
 
 ## Headline results
 
+- **Circle equivalences and codomain transport.** `AddCircle.continuousAddEquivCircle`
+  identifies every nonzero-period additive circle with `Additive Circle`, using the
+  exponential `x ↦ exp (2 * π / T * x)`. Codomain transport gives homeomorphisms of
+  continuous homomorphism spaces for monoids with arbitrary topologies, and continuous
+  multiplicative equivalences for commutative codomains with continuous multiplication.
+  The period-one specialization transports continuous additive characters pointwise.
+
 These results are available in the library. The [result guide](docs/Results.md)
 gives detailed statements, examples and API qualifications, including the
 constructions and prior results reused from Mathlib.
