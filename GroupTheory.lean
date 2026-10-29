@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Semigroup.StableEquality
+
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
 public import GroupTheory.FGScalarSurjectivity
