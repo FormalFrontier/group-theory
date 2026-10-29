@@ -4,6 +4,14 @@
 
 ## References
 
+- The locally closed subgroup criterion follows Mathlib's
+  `Subgroup.isClosed_of_isLocallyClosed` closure-subgroup argument and its
+  single-member translation argument. It reuses Mathlib's submonoid closure
+  under separate continuity, continuity of inversion on closures, open-subgroup
+  closedness and local-closedness characterizations. The extension keeps the
+  same group operations and topology while dropping joint multiplication
+  continuity; the module includes compatibility with Mathlib's theorem.
+
 - The fixed-vector construction generalizes Mathlib's `Representation.invariants`,
   formalized by Antoine Labelle, and reuses its intertwining-map API by Stepan Nesterov
   and Edison Xie and its `LinearMap.codRestrict` API in a file by Mario Carneiro.

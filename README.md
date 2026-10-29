@@ -66,6 +66,12 @@ constructions and prior results reused from Mathlib.
   splittings for [pairs](GroupTheory/LinearAlgebra/Prod.lean) and
   [indexed families](GroupTheory/LinearAlgebra/Pi.lean); no group or additive-inverse
   assumptions are needed.
+- **[Direct sums of fixed submodules](GroupTheory/RepresentationDirectSum.lean).** For arbitrary
+  families of monoid representations over a semiring on additive commutative monoids,
+  the fixed submodule of the algebraic direct sum is canonically linearly equivalent
+  to the direct sum of the fixed submodules, preserving every ambient coefficient.
+  Arbitrary linear maps from these fixed fibers extend uniquely to the fixed submodule
+  of the direct sum, without ambient extensions or an action on the target.
 - **[Norms and fixed-vector surjections](GroupTheory/RepresentationNorm.lean).** For finite-group
   representations over a semiring on additive commutative monoids, a surjective
   intertwining map is surjective on fixed submodules if every fixed target vector
@@ -83,6 +89,13 @@ also include right transversals, subgroup towers and nested coset maps.
 
 ### Topological refinements
 
+- **[Locally closed subgroups](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean).**
+  In a group with separately continuous multiplication and continuous inversion,
+  a subgroup is closed exactly when it is a neighborhood of the identity within
+  its closure, equivalently locally closed at the identity, at any specified
+  member, or globally locally closed. The additive API assumes separately
+  continuous addition and continuous negation. No joint continuity, separation,
+  normality or commutativity is required.
 - **[Discrete actions](GroupTheory/Topology/Algebra/MulAction.lean) and subgroup quotients.** Assume continuous fixed
   **left** translations in a group with a topology. For an action on a
   discrete space, orbit-map continuity is equivalent to an open stabilizer;
@@ -256,7 +269,7 @@ claim is implied by this guidance.
 | --- | --- |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
-| Fixed vectors, products and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean) |
+| Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
 | Additive universal property, biadditive Grothendieck extensions and arbitrary products | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
@@ -269,6 +282,7 @@ claim is implied by this guidance.
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
 | Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
+| Locally closed subgroups under separate continuity | [`Group.LocallyClosed`](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean), [additive intersection client](GroupTheoryTest/Topology/Algebra/Group/LocallyClosed.lean) |
 | Fixed-action continuity and subgroup quotients | [`ConstMulAction`](GroupTheory/Topology/Algebra/ConstMulAction.lean), [`Quotient`](GroupTheory/Topology/Algebra/Group/Quotient.lean) |
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |

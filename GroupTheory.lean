@@ -25,6 +25,7 @@ public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
+public import GroupTheory.RepresentationDirectSum
 public import GroupTheory.RepresentationInvariants
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
@@ -36,6 +37,7 @@ public import GroupTheory.Topology.ContinuousMap.CompactDiscrete
 public import GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.PiDiscreteFactor
+public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
 public import GroupTheory.Topology.Algebra.Group.TotalBounded
