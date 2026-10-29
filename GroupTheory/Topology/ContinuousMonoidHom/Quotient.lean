@@ -8,6 +8,7 @@ public import GroupTheory.Topology.ContinuousMap.Quotient
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -19,6 +20,10 @@ its inherited topology. No continuity of the monoid operations is required.
 
 For an open normal subgroup, pullback from the stock quotient identifies its continuous
 homomorphisms with the inherited kernel-containing subtype.
+For a compact Hausdorff topological monoid target, the homomorphisms killing any open
+subgroup form a compact set; normality of that subgroup is unnecessary.
+For any subgroup, the kernel-containing set is closed whenever the target identity
+singleton is closed, without any continuity assumptions on the operations.
 -/
 
 public section
@@ -199,6 +204,36 @@ private theorem quotientGroup_factorsThrough_iff (N : Subgroup G) [N.Normal]
       _ = QuotientGroup.lift N f.toMonoidHom h (quotientGroupMk N y) := congrArg _ hxy
       _ = f y := DFunLike.congr_fun hcomp y
 
+/-- If the target identity singleton is closed, continuous homomorphisms whose kernel
+contains a subgroup form a closed set. No openness or continuity of operations is needed. -/
+@[to_additive /-- If the target zero singleton is closed, continuous additive homomorphisms
+whose kernel contains an additive subgroup form a closed set. No openness or continuity of
+operations is needed. -/]
+theorem isClosed_setOf_le_ker (N : Subgroup G) (h1 : IsClosed ({1} : Set M)) :
+    IsClosed {f : G →ₜ* M | N ≤ f.toMonoidHom.ker} := by
+  have hset : {f : G →ₜ* M | N ≤ f.toMonoidHom.ker} =
+      (toContinuousMap : (G →ₜ* M) → C(G, M)) ⁻¹'
+        {f : C(G, M) | Set.MapsTo f (N : Set G) ({1} : Set M)} := by
+    ext f
+    constructor
+    · intro hf x hx
+      apply Set.mem_singleton_iff.mpr
+      calc
+        f.toContinuousMap x = f x := DFunLike.congr_fun (coe_toContinuousMap f) x
+        _ = f.toMonoidHom x := (show f.toMonoidHom x = f x from
+          DFunLike.congr_fun (coe_toMonoidHom f) x).symm
+        _ = 1 := MonoidHom.mem_ker.mp (hf hx)
+    · intro hf x hx
+      apply MonoidHom.mem_ker.mpr
+      calc
+        f.toMonoidHom x = f x := DFunLike.congr_fun (coe_toMonoidHom f) x
+        _ = f.toContinuousMap x := (show f.toContinuousMap x = f x from
+          DFunLike.congr_fun (coe_toContinuousMap f) x).symm
+        _ = 1 := Set.mem_singleton_iff.mp (hf hx)
+  rw [hset]
+  exact (ContinuousMap.isClosed_setOfPred_mapsTo h1 (N : Set G)).preimage
+    (isInducing_toContinuousMap G M).continuous
+
 variable [SeparatelyContinuousMul G]
 
 /-- Pullback from the quotient by an open normal subgroup identifies continuous monoid
@@ -220,6 +255,28 @@ noncomputable def quotientGroupPullbackHomeomorph (N : Subgroup G) [N.Normal]
       obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N x
       exact ⟨y, Set.mem_univ _, rfl⟩)
   exact ⟨l, hl.isCompact, hls⟩
+
+/-- Continuous homomorphisms into a compact Hausdorff topological monoid whose kernel
+contains an open subgroup form a compact set in the compact-open topology. The subgroup
+need not be normal. -/
+@[to_additive /-- Continuous additive homomorphisms into a compact Hausdorff topological
+additive monoid whose kernel contains an open additive subgroup form a compact set in the
+compact-open topology. -/]
+theorem isCompact_setOf_le_ker [CompactSpace M] [T2Space M] [ContinuousMul M]
+    (N : Subgroup G) (hN : IsOpen (N : Set G)) :
+    IsCompact {f : G →ₜ* M | N ≤ f.toMonoidHom.ker} := by
+  let K := Subgroup.normalClosure (N : Set G)
+  have hK : IsOpen (K : Set G) :=
+    Subgroup.isOpen_mono Subgroup.le_normalClosure hN
+  let := QuotientGroup.discreteTopology hK
+  have hset : {f : G →ₜ* M | K ≤ f.toMonoidHom.ker} =
+      {f : G →ₜ* M | N ≤ f.toMonoidHom.ker} := by
+    ext f
+    exact (Subgroup.normalClosure_subset_iff
+      (s := (N : Set G)) (N := f.toMonoidHom.ker)).symm
+  rw [← hset]
+  exact isCompact_iff_compactSpace.mpr
+    (quotientGroupPullbackHomeomorph K hK).compactSpace
 
 variable (N : Subgroup G) [N.Normal] (hN : IsOpen (N : Set G))
 

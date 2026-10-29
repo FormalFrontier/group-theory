@@ -41,6 +41,7 @@ public import GroupTheoryTest.Topology.OpenKernel
 public import GroupTheoryTest.Topology.FiniteIndex
 public import GroupTheoryTest.Topology.PadicDenseIntegers
 public import GroupTheoryTest.Topology.AutomaticContinuity
+public import GroupTheoryTest.Topology.FiniteIndex.Descent
 public import GroupTheoryTest.Topology.CharacterSubgroups
 public import GroupTheoryTest.Topology.TypeTags
 public import GroupTheoryTest.Topology.RationalCircleCharacter

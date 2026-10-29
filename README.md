@@ -22,6 +22,17 @@ in more detail.
 
 ## Headline results
 
+- **[Finite-index openness under quotients and sections](GroupTheory/Topology/FiniteIndex/Descent.lean).**
+  For groups with arbitrary given topologies, openness of every finite-index subgroup
+  descends along homomorphisms that reflect open preimages of all subsets. In particular,
+  this applies to a homomorphism with a continuous right-inverse function (not necessarily
+  a homomorphism), a quotient-map homomorphism, a surjective open homomorphism, and the
+  canonical quotient by any normal subgroup. No topological-group or separation
+  hypothesis is needed. Multiplicative homeomorphisms preserve the condition in both
+  directions, and the same results hold additively. A
+  [nonlinear section of the integer projection](GroupTheoryTest/Topology/FiniteIndex/Descent.lean)
+  illustrates the function-level section theorem.
+
 - **[Coefficient-sum relations](GroupTheory/Finsupp/CoefficientSum.lean).**
   Over any semiring `R`, for an additive commutative group `M` with an `R`-module
   structure and any specified `i₀ : ι`, the kernel of the coefficient sum on

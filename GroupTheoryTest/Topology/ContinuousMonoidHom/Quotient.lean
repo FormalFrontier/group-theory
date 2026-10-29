@@ -6,10 +6,14 @@ module
 
 import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Tactic.NormNum
 
 /-! The real first projection has a continuous zero section. Its compact lifts are section
 images, so compactness of the source or quotient is unnecessary. The inverse below descends
-arbitrary fibreconstant original continuous additive homomorphisms. -/
+arbitrary fibreconstant original continuous additive homomorphisms. The horizontal subgroup
+of the reals times the integers also gives a nonzero proper compact kernel-constrained
+space with additive circle target, without compactness of the source or subgroup. -/
 
 @[expose] public section
 
@@ -106,5 +110,51 @@ example : Continuous (fun f :
     realIntHorizontal_isOpen
       (fun f : {f : (ℝ × ℤ) →ₜ+ ℝ // realIntHorizontal ≤ f.toAddMonoidHom.ker} ↦ f)).2
     continuous_subtype_val
+
+-- A nonzero integer character survives, while a real-coordinate character is excluded.
+private noncomputable def realIntCircleSecond : (ℝ × ℤ) →ₜ+ AddCircle (1 : ℝ) where
+  toFun x := x.2 • ((1 / 2 : ℝ) : AddCircle (1 : ℝ))
+  map_zero' := zero_zsmul _
+  map_add' x y := add_zsmul _ x.2 y.2
+  continuous_toFun := (continuous_of_discreteTopology :
+    Continuous (fun n : ℤ => n • ((1 / 2 : ℝ) : AddCircle (1 : ℝ)))).comp continuous_snd
+
+private theorem realIntCircleSecond_apply (x : ℝ × ℤ) :
+    realIntCircleSecond x = x.2 • ((1 / 2 : ℝ) : AddCircle (1 : ℝ)) := rfl
+
+private noncomputable def realIntCircleFirst : (ℝ × ℤ) →ₜ+ AddCircle (1 : ℝ) where
+  toAddMonoidHom := (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))).comp
+    (fst ℝ ℤ).toAddMonoidHom
+  continuous_toFun := (AddCircle.continuous_mk' (1 : ℝ)).comp continuous_fst
+
+private theorem circleHalf_ne_zero : ((1 / 2 : ℝ) : AddCircle (1 : ℝ)) ≠ 0 := by
+  let : Fact (0 < (1 : ℝ)) := ⟨zero_lt_one⟩
+  intro h
+  have hz : (1 / 2 : ℝ) = 0 :=
+    (AddCircle.coe_eq_zero_iff_of_mem_Ico
+      (p := (1 : ℝ)) (a := (1 / 2 : ℝ)) (by norm_num)).mp h
+  norm_num at hz
+
+example :
+    IsCompact {f : (ℝ × ℤ) →ₜ+ AddCircle (1 : ℝ) |
+      realIntHorizontal ≤ f.toAddMonoidHom.ker} ∧
+    realIntHorizontal ≤ realIntCircleSecond.toAddMonoidHom.ker ∧
+    realIntCircleSecond ≠ 0 ∧
+    ¬ realIntHorizontal ≤ realIntCircleFirst.toAddMonoidHom.ker := by
+  let : Fact (0 < (1 : ℝ)) := ⟨zero_lt_one⟩
+  refine ⟨isCompact_setOf_le_ker realIntHorizontal realIntHorizontal_isOpen, ?_, ?_, ?_⟩
+  · intro x hx
+    apply AddMonoidHom.mem_ker.mpr
+    have hx' : x.2 = 0 := AddMonoidHom.mem_ker.mp hx
+    have heval : realIntCircleSecond.toAddMonoidHom x =
+        x.2 • ((1 / 2 : ℝ) : AddCircle (1 : ℝ)) := rfl
+    rw [heval, hx', zero_zsmul]
+  · intro hzero
+    have h := DFunLike.congr_fun hzero (0, 1)
+    exact circleHalf_ne_zero (by simpa [realIntCircleSecond_apply] using h)
+  · intro h
+    have hx : ((1 / 2 : ℝ), (0 : ℤ)) ∈ realIntHorizontal :=
+      AddMonoidHom.mem_ker.mpr rfl
+    exact circleHalf_ne_zero (AddMonoidHom.mem_ker.mp (h hx))
 
 end ContinuousAddMonoidHom

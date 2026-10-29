@@ -37,6 +37,7 @@ public import GroupTheory.RepresentationDirectSumMap
 public import GroupTheory.RepresentationInvariants
 public import GroupTheory.RepresentationFixedGenerators
 public import GroupTheory.RepresentationFixedUniversalProperty
+public import GroupTheory.RepresentationFixedKernels
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
 public import GroupTheory.Topology.CompactOpenSubgroup
@@ -57,6 +58,7 @@ public import GroupTheory.Topology.CircleCharacter
 public import GroupTheory.Topology.AddCircle
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheory.Topology.AutomaticContinuity
+public import GroupTheory.Topology.FiniteIndex.Descent
 public import GroupTheory.Topology.FiniteGeneration
 public import GroupTheory.Topology.CharacterSubgroups
 public import GroupTheory.Topology.RationalCircle
