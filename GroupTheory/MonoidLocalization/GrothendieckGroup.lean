@@ -198,4 +198,60 @@ theorem lift₂_compr₂ {H : Type w'} [AddCommGroup H]
   simp only [AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift₂_of,
     AddMonoidHom.compr₂_apply]
 
+/-!
+## Range and surjectivity of induced homomorphisms
+
+Membership of a canonical generator in the range of an induced homomorphism is equivalent
+to expressing it as a difference of image elements after adding a common summand.
+Surjectivity is characterized by this condition on all elements of the original target
+monoid. Together with reflection of stable equality, it also characterizes bijectivity.
+-/
+
+/-- A canonical generator belongs to the range of the induced homomorphism exactly when it
+is a difference of image elements after adding a common summand in the target monoid. -/
+theorem of_mem_range_lift_of_comp_iff (f : A →+ B) (b : B) :
+    of b ∈ Set.range (lift ((of (M := B)).comp f)) ↔
+      ∃ a₁ a₂ : A, ∃ t : B, b + f a₂ + t = f a₁ + t := by
+  constructor
+  · rintro ⟨q, hq⟩
+    obtain ⟨⟨a₁, a₂⟩, ha⟩ :=
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid A)).surj q
+    have h : of b + of (f a₂) = of (f a₁) := by
+      simpa only [map_add, lift_of, AddMonoidHom.comp_apply, hq] using
+        congrArg (lift ((of (M := B)).comp f)) ha
+    refine ⟨a₁, a₂, of_eq_iff_exists.mp ?_⟩
+    simpa only [map_add] using h
+  · rintro ⟨a₁, a₂, t, ht⟩
+    have h : of (b + f a₂) = of (f a₁) := of_eq_iff_exists.mpr ⟨t, ht⟩
+    refine ⟨of a₁ - of a₂, ?_⟩
+    simp only [map_sub, AddSubmonoid.LocalizationMap.toAddMonoidHom_apply, lift_of,
+      AddMonoidHom.comp_apply]
+    apply sub_eq_iff_eq_add.mpr
+    simpa only [map_add, AddSubmonoid.LocalizationMap.toAddMonoidHom_apply] using h.symm
+
+/-- The induced homomorphism is surjective exactly when every element of the original
+target monoid is a difference of image elements after adding a common summand. -/
+theorem lift_of_comp_surjective_iff (f : A →+ B) :
+    Function.Surjective (lift ((of (M := B)).comp f)) ↔
+      ∀ b : B, ∃ a₁ a₂ : A, ∃ t : B, b + f a₂ + t = f a₁ + t := by
+  constructor
+  · intro h b
+    exact (of_mem_range_lift_of_comp_iff f b).mp (h (of b))
+  · intro h q
+    obtain ⟨⟨b₁, b₂⟩, hb⟩ :=
+      (AddLocalization.addMonoidOf (⊤ : AddSubmonoid B)).surj q
+    obtain ⟨q₁, hq₁⟩ := (of_mem_range_lift_of_comp_iff f b₁).mpr (h b₁)
+    obtain ⟨q₂, hq₂⟩ := (of_mem_range_lift_of_comp_iff f b₂).mpr (h b₂)
+    refine ⟨q₁ - q₂, ?_⟩
+    rw [map_sub, hq₁, hq₂]
+    exact sub_eq_iff_eq_add.mpr hb.symm
+
+/-- The induced homomorphism is bijective exactly when it reflects stable equality and
+every element of the original target monoid is a stabilized difference of image elements. -/
+theorem lift_of_comp_bijective_iff (f : A →+ B) :
+    Function.Bijective (lift ((of (M := B)).comp f)) ↔
+      (∀ x y : A, (∃ t : B, f x + t = f y + t) → ∃ a : A, x + a = y + a) ∧
+      (∀ b : B, ∃ a₁ a₂ : A, ∃ t : B, b + f a₂ + t = f a₁ + t) := by
+  rw [Function.Bijective, lift_of_comp_injective_iff, lift_of_comp_surjective_iff]
+
 end Algebra.GrothendieckAddGroup
