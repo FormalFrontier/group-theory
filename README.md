@@ -22,6 +22,15 @@ in more detail.
 
 ## Headline results
 
+- **[Group pushouts over a trivial vertex](GroupTheory/Category/Grp/Pushout.lean).**
+  For a group homomorphism `f : A →* B` and any trivial group `T`, the canonical
+  quotient `B / normalClosure (range f)` with its quotient leg from `B` and
+  trivial leg from `T` is the pushout. In every group pushout of this span,
+  the leg from `B` is surjective with kernel exactly `normalClosure (range f)`.
+  The unbundled universal property allows independent source, vertex and target
+  universes and monoid targets; the categorical square uses `GrpCat`'s ambient
+  universe. No commutativity, injectivity or exactness hypothesis is required.
+
 - **[Ultrafilter-limit homomorphisms](GroupTheory/Topology/Ultrafilter.lean).** For any
   compact Hausdorff monoid with continuous multiplication, taking the limit along a
   fixed ultrafilter defines a surjective abstract homomorphism from its power. When
@@ -39,6 +48,14 @@ in more detail.
   the basic result instead has whole kernel and index one. There is a direct additive
   counterpart, and the original `ℕ → ZMod 3` example has kernel index exactly three,
   neither open nor closed. The homomorphisms are abstract, not assumed continuous.
+
+- **[Dense subgroups and quotient topologies](GroupTheory/Topology/QuotientGroup.lean).**
+  In a group with separately continuous multiplication, the usual left-coset space
+  `G/H` has the indiscrete topology exactly when `H` is dense. No normality or
+  separation hypothesis is needed. The additive counterpart gives an
+  [indiscrete, nondiscrete quotient of index three](GroupTheoryTest/Topology/QuotientGroup.lean)
+  of the original product `ℕ → ZMod 3`. More generally, an open continuous surjection
+  has an indiscrete target exactly when all its fibers are dense.
 
 - **Circle equivalences and codomain transport.** `AddCircle.continuousAddEquivCircle`
   identifies every nonzero-period additive circle with `Additive Circle`, using the
@@ -156,8 +173,17 @@ also include right transversals, subgroup towers and nested coset maps.
   if one fixed positive exponent annihilates its whole image, with no target topology
   or continuity assumed. The additive counterparts use the range of `x ↦ n • x` and,
   for the fixed-positive-scalar condition, additive monoid targets.
-- **[Automatic continuity](GroupTheory/Topology/AutomaticContinuity.lean).** Every abstract
-  homomorphism from a compact Hausdorff commutative topological group with a specified
+- **[Finite-index openness and automatic continuity](GroupTheory/Topology/AutomaticContinuity.lean).**
+  For a group with a topology and continuous fixed left translations, the following are
+  equivalent: every finite-index subgroup is open; every abstract homomorphism to a finite
+  discrete group is continuous; and every action on an arbitrary discrete space with finite
+  individual orbits is jointly continuous. The source, finite-target and action-carrier
+  universes are independent. Each converse to subgroup openness holds even for an arbitrary
+  source topology, without continuity of translations or group operations. Subgroups need
+  not be normal. The additive counterparts apply to possibly noncommutative additive groups
+  and require no additive structure on action carriers.
+
+  Every abstract homomorphism from a compact Hausdorff commutative topological group with a specified
   dense abstractly finitely generated subgroup into a compact nonarchimedean group is
   continuous. The target need not be commutative or Hausdorff, and the image may be
   infinite. The additive homomorphism counterpart has the same scope; this result does
@@ -174,6 +200,22 @@ open kernels, characters, discrete-valued maps, finite-coordinate factorizations
 and compatible sections, with their individual hypotheses.
 
 ### Grothendieck extensions
+
+**[Nilpotence reflection on additive units](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean).**
+For any semiring `A` and `a : A` with `IsAddUnit a`, the image
+`Algebra.GrothendieckAddGroup.ofRingHom A a` is nilpotent if and only if `a` is
+nilpotent. If the image has vanishing `n`th power, then `a ^ (n + 1) = 0`,
+including `n = 0`. The supporting
+[absorption API](GroupTheory/Algebra/IsAddUnit.lean) proves that an additive unit
+annihilates any element `b` satisfying `b + c = c`; it already works in a
+nonunital, nonassociative semiring. These results require neither additive
+cancellation nor commutative multiplication.
+
+For polynomial-unit arguments over a commutative semiring, this supplies the
+scalar step from nilpotence of a coefficient's image in the completion to
+nilpotence of the coefficient itself, once its additive invertibility is known.
+The polynomial coefficient criterion and its converse are separate results, not
+asserted by this scalar theorem.
 
 Biadditive maps from two additive commutative monoids into an additive
 commutative group extend uniquely to their
@@ -311,12 +353,14 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Group pushouts and normal-closure quotients | [`Category.Grp.Pushout`](GroupTheory/Category/Grp/Pushout.lean) |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
 | Additive universal property, biadditive Grothendieck extensions, arbitrary products, cofinal denominator forms and quotient representatives | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
+| Additive-unit absorption and nilpotence reflection in Grothendieck rings | [`Algebra.IsAddUnit`](GroupTheory/Algebra/IsAddUnit.lean), [`MonoidLocalization.GrothendieckGroup.Nilpotent`](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Product-coset orbits and double cosets | [`GroupAction.DoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean), [permutation and boundary examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |

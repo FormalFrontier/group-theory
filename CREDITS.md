@@ -4,6 +4,15 @@
 
 ## References
 
+- The group-pushout normal-closure result assembles Mathlib's normal-closure
+  API by Kexing Ying, its quotient-group construction and universal property
+  by Kevin Buzzard and Patrick Massot (based in part on Johannes Hölzl's
+  quotient-module formalization), Johan Commelin's bundled group interface,
+  Jujian Zhang's characterization of group epimorphisms, and the categorical pushout comparison API by Kim Morrison, Joël Riou and
+  Calle Sönne. Chris Hughes's indexed monoid/group pushout
+  formalization supplies the existing general amalgamated-product interface;
+  the trivial-vertex result instead uses the ordinary quotient carrier.
+
 - The locally closed subgroup criterion follows Mathlib's
   `Subgroup.isClosed_of_isLocallyClosed` closure-subgroup argument and its
   single-member translation argument. It reuses Mathlib's submonoid closure

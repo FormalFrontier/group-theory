@@ -9,6 +9,7 @@ import GroupTheoryTest.Topology.ContinuousMap.Quotient
 import GroupTheoryTest.Topology.ContinuousMonoidHom.Quotient
 import GroupTheoryTest.Topology.Algebra.Group.Units
 import GroupTheoryTest.Topology.Ultrafilter
+import GroupTheoryTest.Topology.QuotientGroup
 public import GroupTheoryTest.ActionCentralizer
 public import GroupTheoryTest.CosetActionHom
 public import GroupTheoryTest.CyclicNorm

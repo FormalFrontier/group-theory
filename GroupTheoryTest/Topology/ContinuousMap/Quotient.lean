@@ -19,7 +19,8 @@ Neither the source nor the quotient is compact.
 
 open Topology
 
-local instance : TopologicalSpace Bool := ⊥
+/-- The discrete topology on `Bool` used for the real projection. -/
+local instance realProjectionBoolTopology : TopologicalSpace Bool := ⊥
 
 namespace ContinuousMap
 

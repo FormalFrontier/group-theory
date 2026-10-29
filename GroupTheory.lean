@@ -9,9 +9,11 @@ public import GroupTheory.Topology.ContinuousMap.Quotient
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Semigroup.StableEquality
 public import GroupTheory.Topology.Ultrafilter
+public import GroupTheory.Topology.QuotientGroup
 
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
+public import GroupTheory.Category.Grp.Pushout
 public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
@@ -25,12 +27,15 @@ public import GroupTheory.LinearAlgebra.Prod
 public import GroupTheory.LinearAlgebra.Pi
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
+public import GroupTheory.MonoidLocalization.GrothendieckGroup.Nilpotent
 public import GroupTheory.QuotientGroup.Kernel
 public import GroupTheory.QuotientTorsion
 public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.RepresentationDirectSum
 public import GroupTheory.RepresentationDirectSumMap
 public import GroupTheory.RepresentationInvariants
+public import GroupTheory.RepresentationFixedGenerators
+public import GroupTheory.RepresentationFixedUniversalProperty
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
 public import GroupTheory.Topology.CompactOpenSubgroup
