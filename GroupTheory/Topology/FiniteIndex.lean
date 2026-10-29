@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
@@ -139,5 +140,47 @@ theorem isOpen_of_finiteIndex_of_dense_fg (D : Subgroup G) (hfg : D.FG)
   exact H.pow_index_mem g
 
 end Subgroup
+
+end
+
+/-! ## Subgroup neighborhoods under continuous left translations -/
+
+@[expose] public section
+
+open Topology
+open scoped Pointwise
+
+universe u
+
+/-- A subgroup is open exactly when it is a neighborhood of the identity, assuming only
+continuity of fixed left translations. This gives a left-translation version of Mathlib's
+subgroup neighborhood criterion. -/
+@[to_additive /-- An additive subgroup is open exactly when it is a neighborhood of zero,
+assuming only continuity of fixed left additions. This gives a left-translation version of
+Mathlib's additive subgroup neighborhood criterion. -/]
+theorem Subgroup.isOpen_iff_mem_nhds_one
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) : IsOpen (H : Set G) ↔ (H : Set G) ∈ 𝓝 (1 : G) := by
+  constructor
+  · exact fun hH => hH.mem_nhds H.one_mem
+  · intro hH
+    obtain ⟨U, hUH, hU, h1U⟩ := mem_nhds_iff.mp hH
+    refine isOpen_iff_mem_nhds.mpr ?_
+    intro x hx
+    refine mem_nhds_iff.mpr ⟨x • U, ?_, hU.smul x, ?_⟩
+    · rintro _ ⟨y, hy, rfl⟩
+      exact H.mul_mem hx (hUH hy)
+    · exact ⟨1, h1U, mul_one x⟩
+
+/-- A subgroup is open exactly when its interior contains the identity, assuming only
+continuity of fixed left translations. With separately continuous multiplication, the reverse
+implication recovers Mathlib's `Subgroup.isOpen_of_one_mem_interior`. -/
+@[to_additive /-- An additive subgroup is open exactly when its interior contains zero,
+assuming only continuity of fixed left additions. With separately continuous addition, the
+reverse implication recovers Mathlib's `AddSubgroup.isOpen_of_zero_mem_interior`. -/]
+theorem Subgroup.isOpen_iff_one_mem_interior
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) : IsOpen (H : Set G) ↔ (1 : G) ∈ interior (H : Set G) := by
+  rw [H.isOpen_iff_mem_nhds_one, mem_interior_iff_mem_nhds]
 
 end

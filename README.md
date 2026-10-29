@@ -22,6 +22,15 @@ in more detail.
 
 ## Headline results
 
+- **[Coefficient-sum relations](GroupTheory/Finsupp/CoefficientSum.lean).**
+  Over any semiring `R`, for an additive commutative group `M` with an `R`-module
+  structure and any specified `i₀ : ι`, the kernel of the coefficient sum on
+  `ι →₀ M` is the `R`-span of `single i m - single i₀ m`. An `R`-linear map into
+  an additive commutative monoid with an `R`-module structure factors uniquely
+  through this sum exactly when its singleton components agree, equivalently when
+  it vanishes on the kernel. The factor is composition with `single i₀`. The index type
+  may be infinite; the target need not be cancellative or an additive group.
+
 - **[Group pushouts over a trivial vertex](GroupTheory/Category/Grp/Pushout.lean).**
   For a group homomorphism `f : A →* B` and any trivial group `T`, the canonical
   quotient `B / normalClosure (range f)` with its quotient leg from `B` and
@@ -199,6 +208,22 @@ also include right transversals, subgroup towers and nested coset maps.
 open kernels, characters, discrete-valued maps, finite-coordinate factorizations
 and compatible sections, with their individual hypotheses.
 
+### Finite-index openness
+
+The property that every finite-index subgroup is open descends to finite-index subgroups
+with their induced topology, and from arbitrary dependent products to each factor, without
+continuity assumptions on group operations. With continuous fixed left translations, the
+property ascends from any open subgroup and is preserved by binary and finite dependent
+products. Under the same assumption, for any given finite-index subgroup the ambient
+property is equivalent to that subgroup being open and all of its finite-index subgroups
+being open in the induced topology.
+
+The subgroup identity-neighborhood and identity-interior criteria also require only
+continuous fixed left translations. All these results have additive versions without a
+commutativity assumption. See
+[`AutomaticContinuity`](GroupTheory/Topology/AutomaticContinuity.lean) and
+[`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean).
+
 ### Grothendieck extensions
 
 **[Nilpotence reflection on additive units](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean).**
@@ -353,6 +378,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Coefficient-sum kernels and factorization over semirings | [`Finsupp.CoefficientSum`](GroupTheory/Finsupp/CoefficientSum.lean), [noncancellative-target client](GroupTheoryTest/Finsupp/CoefficientSum.lean) |
 | Group pushouts and normal-closure quotients | [`Category.Grp.Pushout`](GroupTheory/Category/Grp/Pushout.lean) |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |

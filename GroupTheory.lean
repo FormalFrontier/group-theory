@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Finsupp.CoefficientSum
 public import GroupTheory.Topology.ContinuousMap.Quotient
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Semigroup.StableEquality

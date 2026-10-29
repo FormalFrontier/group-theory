@@ -7,6 +7,7 @@ module
 
 public import GroupTheory.Topology.Algebra.MulAction
 public import GroupTheory.Topology.FiniteIndex
+public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
@@ -34,6 +35,12 @@ image. Every action of the same source on an arbitrary discrete space is jointly
 each orbit is finite. The characterizations and their reverse implications also have additive
 counterparts for possibly noncommutative additive groups. An additive action requires no additive
 structure on its carrier. The compact-source corollaries likewise have additive counterparts.
+
+Openness of all finite-index subgroups descends to finite-index subgroups with their induced
+topology and to the factors of binary or arbitrary dependent products. If fixed left
+translations are continuous, it ascends from any open subgroup and is stable under binary
+and finite dependent products. These stability results also hold for noncommutative additive
+groups. Product necessity requires no continuity of group operations.
 
 The proofs use finite-index openness in the source. Orbit–stabilizer makes the original
 stabilizers finite-index subgroups. For compact targets, open subgroups have finite index, as do
@@ -340,3 +347,234 @@ theorem isOpen_finiteIndex_iff_continuousVAdd_finite_orbits
   · intro h_action N hN
     let : N.FiniteIndex := hN
     exact N.isOpen_of_continuousVAdd_finite_orbits h_action
+
+/-! ## Finite-index openness and open subgroups -/
+
+/-- Openness of every finite-index subgroup descends to a finite-index subgroup with its
+induced topology. No continuity of group operations or translations is required. -/
+@[to_additive /-- Openness of every finite-index additive subgroup descends to a finite-index
+additive subgroup with its induced topology. No continuity of addition, negation or translations
+is required. -/]
+theorem Subgroup.isOpen_finiteIndex_of_finiteIndex
+    {G : Type u} [Group G] [TopologicalSpace G]
+    (H : Subgroup G) [H.FiniteIndex]
+    (hG : ∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G)) :
+    ∀ (K : Subgroup H), K.FiniteIndex → IsOpen (K : Set H) := by
+  intro K hK
+  let : K.FiniteIndex := hK
+  let : (K.map H.subtype).FiniteIndex := Subgroup.finiteIndex_iff.mpr (by
+    rw [Subgroup.index_map_subtype]
+    exact mul_ne_zero (Subgroup.finiteIndex_iff.mp hK)
+      (Subgroup.finiteIndex_iff.mp (inferInstance : H.FiniteIndex)))
+  have hpre : H.subtype ⁻¹' (K.map H.subtype : Set G) = (K : Set H) := by
+    rw [Subgroup.coe_map]
+    exact Set.preimage_image_eq _ H.subtype_injective
+  rw [← hpre]
+  exact (hG (K.map H.subtype) inferInstance).preimage continuous_subtype_val
+
+/-- If every finite-index subgroup of an open subgroup is open in its induced topology,
+then every finite-index subgroup of the ambient group is open. Only continuity of fixed left
+translations is required, and the open subgroup need not have finite index. -/
+@[to_additive /-- If every finite-index additive subgroup of an open additive subgroup is open
+in its induced topology, then every finite-index additive subgroup of the ambient additive
+group is open. Only continuity of fixed left additions is required, and the open additive
+subgroup need not have finite index. -/]
+theorem Subgroup.isOpen_finiteIndex_of_isOpen
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) (hH : IsOpen (H : Set G))
+    (hH_open : ∀ (K : Subgroup H), K.FiniteIndex → IsOpen (K : Set H)) :
+    ∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G) := by
+  intro N hN
+  let : N.FiniteIndex := hN
+  have hNH : IsOpen ((N ⊓ H : Subgroup G) : Set G) := by
+    rw [← Subgroup.subgroupOf_map_subtype N H, Subgroup.coe_map]
+    exact hH.isOpenMap_subtype_val _ (hH_open _ inferInstance)
+  exact N.isOpen_iff_mem_nhds_one.mpr
+    (Filter.mem_of_superset (hNH.mem_nhds (N ⊓ H).one_mem) (fun _ hx => hx.1))
+
+/-- For a finite-index subgroup, openness of every ambient finite-index subgroup is equivalent
+to openness of the subgroup together with openness of all its finite-index subgroups in the
+induced topology. Only continuity of fixed left translations is required. -/
+@[to_additive /-- For a finite-index additive subgroup, openness of every ambient finite-index
+additive subgroup is equivalent to openness of the additive subgroup together with openness of
+all its finite-index additive subgroups in the induced topology. Only continuity of fixed left
+additions is required. -/]
+theorem Subgroup.isOpen_finiteIndex_iff_of_finiteIndex
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) [H.FiniteIndex] :
+    (∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G)) ↔
+      IsOpen (H : Set G) ∧
+        (∀ (K : Subgroup H), K.FiniteIndex → IsOpen (K : Set H)) := by
+  constructor
+  · intro hG
+    exact ⟨hG H inferInstance, H.isOpen_finiteIndex_of_finiteIndex hG⟩
+  · rintro ⟨hH, hH_open⟩
+    exact H.isOpen_finiteIndex_of_isOpen hH hH_open
+
+section FiniteIndexProducts
+
+attribute [to_additive existing AddSubgroup.isOpen_of_continuous_finite_addHom]
+  Subgroup.isOpen_of_continuous_finite_hom
+attribute [to_additive existing isOpen_finiteIndex_iff_continuous_finite_addHom]
+  isOpen_finiteIndex_iff_continuous_finite_hom
+
+/-- If every finite-index subgroup of a product is open, the same holds in each factor.
+No continuity of multiplication or translations is required. -/
+@[to_additive AddSubgroup.isOpen_finiteIndex_factors_of_prod
+  /-- If every finite-index additive subgroup of a product is open, the same holds in each
+  factor. No continuity of addition or translations is required. -/]
+theorem Subgroup.isOpen_finiteIndex_factors_of_prod
+    {G : Type u} {H : Type v}
+    [Group G] [TopologicalSpace G] [Group H] [TopologicalSpace H]
+    (hGH : ∀ (N : Subgroup (G × H)),
+      N.FiniteIndex → IsOpen (N : Set (G × H))) :
+    (∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G)) ∧
+      (∀ (N : Subgroup H), N.FiniteIndex → IsOpen (N : Set H)) := by
+  constructor
+  · intro N hN
+    let : N.FiniteIndex := hN
+    have hrel : (N.comap (MonoidHom.fst G H)).IsFiniteRelIndex ⊤ := by
+      simpa using Subgroup.IsFiniteRelIndex.comap (MonoidHom.fst G H)
+        (show N.IsFiniteRelIndex ⊤ from Subgroup.isFiniteRelIndex_of_finiteIndex)
+    have hfinite : (N.comap (MonoidHom.fst G H)).FiniteIndex :=
+      Subgroup.isFiniteRelIndex_top_iff.mp hrel
+    exact (hGH _ hfinite).preimage
+      (show Continuous (fun g : G => (g, (1 : H))) from
+        continuous_id.prodMk continuous_const)
+  · intro N hN
+    let : N.FiniteIndex := hN
+    have hrel : (N.comap (MonoidHom.snd G H)).IsFiniteRelIndex ⊤ := by
+      simpa using Subgroup.IsFiniteRelIndex.comap (MonoidHom.snd G H)
+        (show N.IsFiniteRelIndex ⊤ from Subgroup.isFiniteRelIndex_of_finiteIndex)
+    have hfinite : (N.comap (MonoidHom.snd G H)).FiniteIndex :=
+      Subgroup.isFiniteRelIndex_top_iff.mp hrel
+    exact (hGH _ hfinite).preimage
+      (show Continuous (fun h : H => ((1 : G), h)) from
+        continuous_const.prodMk continuous_id)
+
+/-- If every finite-index subgroup of each factor is open, the same holds in the product,
+provided fixed left translations are continuous in each factor. -/
+@[to_additive AddSubgroup.isOpen_finiteIndex_prod
+  /-- If every finite-index additive subgroup of each factor is open, the same holds in the
+  product, provided fixed left translations are continuous in each factor. -/]
+theorem Subgroup.isOpen_finiteIndex_prod
+    {G : Type u} {H : Type v}
+    [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    [Group H] [TopologicalSpace H] [ContinuousConstSMul H H]
+    (hG : ∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G))
+    (hH : ∀ (N : Subgroup H), N.FiniteIndex → IsOpen (N : Set H)) :
+    ∀ (N : Subgroup (G × H)), N.FiniteIndex → IsOpen (N : Set (G × H)) := by
+  intro N hN
+  let : N.FiniteIndex := hN
+  refine Subgroup.isOpen_of_continuous_finite_hom.{max u v, 0} ?_ N
+  intro F _ _ _ _ f
+  have hleft : Continuous (f.comp (MonoidHom.inl G H)) :=
+    (isOpen_finiteIndex_iff_continuous_finite_hom G).mp hG F
+      (f.comp (MonoidHom.inl G H))
+  have hright : Continuous (f.comp (MonoidHom.inr G H)) :=
+    (isOpen_finiteIndex_iff_continuous_finite_hom H).mp hH F
+      (f.comp (MonoidHom.inr G H))
+  -- The order of the factors is preserved even when the target is noncommutative.
+  have hmul : Continuous (fun p : G × H => f (p.1, 1) * f (1, p.2)) :=
+    (hleft.comp continuous_fst).mul (hright.comp continuous_snd)
+  simpa only [← map_mul, Prod.fst_mul_snd] using hmul
+
+/-- With continuous fixed left translations in each factor, every finite-index subgroup of a
+product is open if and only if the same holds in both factors. -/
+@[to_additive AddSubgroup.isOpen_finiteIndex_prod_iff
+  /-- With continuous fixed left translations in each factor, every finite-index additive
+  subgroup of a product is open if and only if the same holds in both factors. -/]
+theorem Subgroup.isOpen_finiteIndex_prod_iff
+    {G : Type u} {H : Type v}
+    [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    [Group H] [TopologicalSpace H] [ContinuousConstSMul H H] :
+    (∀ (N : Subgroup (G × H)), N.FiniteIndex → IsOpen (N : Set (G × H))) ↔
+      (∀ (N : Subgroup G), N.FiniteIndex → IsOpen (N : Set G)) ∧
+        (∀ (N : Subgroup H), N.FiniteIndex → IsOpen (N : Set H)) :=
+  ⟨Subgroup.isOpen_finiteIndex_factors_of_prod,
+    fun h => Subgroup.isOpen_finiteIndex_prod h.1 h.2⟩
+
+end FiniteIndexProducts
+
+/-!
+## Dependent products
+
+Finite-index openness descends from an arbitrary dependent product to every factor. For a
+finite index type it also ascends from the factors when their fixed left translations are
+continuous. The finite-product argument uses Mathlib's `Subgroup.pi_le_iff` for the subgroup
+rectangle inclusion, and `Subgroup.coe_pi` and `isOpen_set_pi` for its openness.
+-/
+
+/-- If all finite-index subgroups of a dependent product are open, then all finite-index
+subgroups of each factor are open. The index type and the factor topologies are arbitrary. -/
+@[to_additive /-- If all finite-index additive
+subgroups of a dependent product are open, then all finite-index additive subgroups of each
+factor are open. The index type and the factor topologies are arbitrary. -/]
+theorem Subgroup.isOpen_finiteIndex_factors_of_pi
+    {ι : Type u} {G : ι → Type v}
+    [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
+    (hPi : ∀ (N : Subgroup (∀ i, G i)),
+      N.FiniteIndex → IsOpen (N : Set (∀ i, G i))) :
+    ∀ i, ∀ (N : Subgroup (G i)), N.FiniteIndex → IsOpen (N : Set (G i)) := by
+  classical
+  intro i N hN
+  let : N.FiniteIndex := hN
+  have hN_rel : N.IsFiniteRelIndex (⊤ : Subgroup (G i)) :=
+    Subgroup.isFiniteRelIndex_of_finiteIndex
+  have hcomap_rel : (N.comap (Pi.evalMonoidHom G i)).IsFiniteRelIndex
+      (⊤ : Subgroup (∀ i, G i)) := by
+    simpa using Subgroup.IsFiniteRelIndex.comap (Pi.evalMonoidHom G i) hN_rel
+  have hopen : IsOpen (N.comap (Pi.evalMonoidHom G i) : Set (∀ i, G i)) :=
+    hPi _ (Subgroup.isFiniteRelIndex_top_iff.mp hcomap_rel)
+  simpa [Subgroup.coe_comap, Set.preimage, Pi.mulSingle_eq_same] using
+    hopen.preimage (continuous_mulSingle (A := G) i)
+
+/-- All finite-index subgroups of a finite dependent product are open if all finite-index
+subgroups of each factor are open and each fixed left translation in a factor is continuous. -/
+@[to_additive /-- All finite-index additive subgroups of a
+finite dependent product are open if all finite-index additive subgroups of each factor are
+open and each fixed left addition in a factor is continuous. -/]
+theorem Subgroup.isOpen_finiteIndex_pi
+    {ι : Type u} {G : ι → Type v} [Finite ι]
+    [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
+    [∀ i, ContinuousConstSMul (G i) (G i)]
+    (hG : ∀ i, ∀ (N : Subgroup (G i)),
+      N.FiniteIndex → IsOpen (N : Set (G i))) :
+    ∀ (N : Subgroup (∀ i, G i)), N.FiniteIndex → IsOpen (N : Set (∀ i, G i)) := by
+  classical
+  intro N hN
+  let : N.FiniteIndex := hN
+  let K : ∀ i, Subgroup (G i) := fun i => N.comap (MonoidHom.mulSingle G i)
+  have hK (i : ι) : (K i).FiniteIndex := by
+    refine Subgroup.isFiniteRelIndex_top_iff.mp ?_
+    have hN_rel : N.IsFiniteRelIndex (⊤ : Subgroup (∀ i, G i)) :=
+      Subgroup.isFiniteRelIndex_of_finiteIndex
+    simpa [K] using Subgroup.IsFiniteRelIndex.comap (MonoidHom.mulSingle G i) hN_rel
+  have hrect_open : IsOpen (Subgroup.pi Set.univ K : Set (∀ i, G i)) := by
+    rw [Subgroup.coe_pi]
+    exact isOpen_set_pi (Set.toFinite Set.univ) (fun i _ => hG i (K i) (hK i))
+  have hrect_le : Subgroup.pi Set.univ K ≤ N := by
+    refine Subgroup.pi_le_iff.mpr ?_
+    intro i
+    exact Subgroup.map_comap_le (MonoidHom.mulSingle G i) N
+  -- Use the canonical self-action, with continuity proved coordinatewise.
+  let : ContinuousConstSMul (∀ i, G i) (∀ i, G i) := ⟨fun g => by
+    change Continuous (fun x : ∀ i, G i => fun i => g i * x i)
+    exact continuous_pi fun i =>
+      (continuous_const_smul (g i)).comp (continuous_apply i)⟩
+  refine (N.isOpen_iff_mem_nhds_one).mpr ?_
+  exact Filter.mem_of_superset
+    (hrect_open.mem_nhds (Subgroup.pi Set.univ K).one_mem) hrect_le
+
+/-- For a finite dependent product whose factors have continuous fixed left translations,
+all finite-index subgroups are open if and only if this holds in every factor. -/
+@[to_additive /-- For a finite dependent product whose
+factors have continuous fixed left additions, all finite-index additive subgroups are open
+if and only if this holds in every factor. -/]
+theorem Subgroup.isOpen_finiteIndex_pi_iff
+    {ι : Type u} {G : ι → Type v} [Finite ι]
+    [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
+    [∀ i, ContinuousConstSMul (G i) (G i)] :
+    (∀ (N : Subgroup (∀ i, G i)), N.FiniteIndex → IsOpen (N : Set (∀ i, G i))) ↔
+      (∀ i, ∀ (N : Subgroup (G i)), N.FiniteIndex → IsOpen (N : Set (G i))) :=
+  ⟨Subgroup.isOpen_finiteIndex_factors_of_pi, Subgroup.isOpen_finiteIndex_pi⟩

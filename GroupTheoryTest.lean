@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+import GroupTheoryTest.Finsupp.CoefficientSum
 import GroupTheoryTest.Topology.ContinuousMap.Quotient
 import GroupTheoryTest.Topology.ContinuousMonoidHom.Quotient
 import GroupTheoryTest.Topology.Algebra.Group.Units
