@@ -35,7 +35,8 @@ example {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 section InfiniteDiscrete
 
-local instance : TopologicalSpace (Multiplicative ℤ) := ⊥
+/-- The discrete topology used for the infinite integer-group examples. -/
+local instance integerTopology : TopologicalSpace (Multiplicative ℤ) := ⊥
 local instance : DiscreteTopology (Multiplicative ℤ) := ⟨rfl⟩
 local instance : LocallyCompactSpace (Multiplicative ℤ) :=
   isCompact_singleton.locallyCompactSpace_of_mem_nhds_of_group
@@ -120,7 +121,8 @@ theorem product_compact_ambient_bridge :
 
 section NonHausdorff
 
-local instance : TopologicalSpace (Multiplicative (ZMod 2)) := ⊤
+/-- The indiscrete topology used for the non-Hausdorff stabilizer example. -/
+local instance binaryIndiscreteTopology : TopologicalSpace (Multiplicative (ZMod 2)) := ⊤
 local instance : IndiscreteTopology (Multiplicative (ZMod 2)) := ⟨rfl⟩
 
 /-- The set-stabilizer API applies without a Hausdorff hypothesis, even for an

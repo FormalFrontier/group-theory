@@ -34,7 +34,9 @@ namespace GroupTheoryTest.Topology.ConnectedComponentOpenSubgroup
 
 open GroupTheoryTest.Topology.ConnectedComponentQuotient (IndiscreteGroup)
 
+/-- The additive real group written multiplicatively, with its usual topology. -/
 public abbrev RealGroup := Multiplicative ℝ
+/-- The additive integer group written multiplicatively for the discrete examples. -/
 public abbrev IntegerGroup := Multiplicative ℤ
 
 private instance : PreconnectedSpace RealGroup :=
@@ -84,6 +86,7 @@ theorem integer_exists_proper_openSubgroup :
   rw [htop]
   exact OpenSubgroup.mem_top _
 
+/-- The indiscrete topology used for the finite non-Hausdorff test group. -/
 local instance : TopologicalSpace IndiscreteGroup := ⊤
 
 local instance : LocallyCompactSpace IndiscreteGroup :=

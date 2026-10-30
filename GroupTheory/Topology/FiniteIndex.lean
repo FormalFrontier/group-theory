@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Topology.Algebra.Group.Quotient
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
@@ -182,5 +183,25 @@ theorem Subgroup.isOpen_iff_one_mem_interior
     {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
     (H : Subgroup G) : IsOpen (H : Set G) ↔ (1 : G) ∈ interior (H : Set G) := by
   rw [H.isOpen_iff_mem_nhds_one, mem_interior_iff_mem_nhds]
+
+/-- An additive subgroup is clopen exactly when it is open, assuming only continuity
+of fixed left additions. -/
+theorem AddSubgroup.isClopen_iff_isOpen
+    {A : Type u} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    (K : AddSubgroup A) : IsClopen (K : Set A) ↔ IsOpen (K : Set A) := by
+  have : ContinuousConstSMul (Multiplicative A) (Multiplicative A) :=
+    ⟨fun a => (continuous_const_vadd a.toAdd : Continuous (fun b : A => a.toAdd + b))⟩
+  exact K.toSubgroup.isClopen_iff_isOpen
+
+/-- A finite-index additive subgroup is open exactly when it is closed, assuming only
+continuity of fixed left additions. -/
+theorem AddSubgroup.isOpen_iff_isClosed
+    {A : Type u} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    (K : AddSubgroup A) [K.FiniteIndex] : IsOpen (K : Set A) ↔ IsClosed (K : Set A) := by
+  have : K.toSubgroup.FiniteIndex :=
+    (AddSubgroup.finiteIndex_toSubgroup_iff K).mpr inferInstance
+  have : ContinuousConstSMul (Multiplicative A) (Multiplicative A) :=
+    ⟨fun a => (continuous_const_vadd a.toAdd : Continuous (fun b : A => a.toAdd + b))⟩
+  exact K.toSubgroup.isOpen_iff_isClosed
 
 end

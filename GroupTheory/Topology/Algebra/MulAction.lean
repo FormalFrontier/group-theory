@@ -8,20 +8,26 @@ module
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Instances.ZMod
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
-# Discrete actions and open stabilizers
+# Locally constant orbit maps and open stabilizers
 
-Continuity of an orbit map into a discrete space is characterized by openness of its
-stabilizer when fixed left translations of the acting group are continuous. Applying
-this pointwise gives a characterization of joint continuity of the action. Neither
-joint multiplication nor inversion continuity is required.
+An orbit map is locally constant exactly when its stabilizer is open, assuming
+continuity of fixed left translations of the acting group. This needs no topology on
+the acted-on set. If every finite-index subgroup is open, each finite orbit gives a
+locally constant orbit map.
+
+For a discrete target, this characterizes continuity of the orbit map. Applying the
+criterion pointwise gives a characterization of joint continuity of the action.
+Neither joint multiplication nor inversion continuity is required.
 
 ## References
 
 The joint-continuity criterion generalizes `continuousSMul_iff_stabilizer_isOpen` in
-`Mathlib.Topology.Algebra.MulAction`. The pointwise proof uses the canonical stabilizer
-quotient and `Subgroup.isOpen_iff_discreteTopology_quotient`.
+`Mathlib.Topology.Algebra.MulAction`. The pointwise proof uses the open-fiber criterion
+from `Mathlib.Topology.LocallyConstant.Basic`: every nonempty fiber is a left translate
+of the stabilizer.
 -/
 
 @[expose] public section
@@ -31,6 +37,55 @@ open Topology
 universe u v
 
 namespace MulAction
+
+section LocallyConstant
+
+variable {G : Type u} {X : Type v} [Group G] [TopologicalSpace G] [MulAction G X]
+
+/-- An orbit map is locally constant exactly when its stabilizer is open, assuming
+continuity of fixed left translations. No topology on the acted-on set is needed. -/
+@[to_additive
+/-- An orbit map is locally constant exactly when its stabilizer is open, assuming
+continuity of fixed left additions. No topology on the acted-on set is needed. -/]
+theorem isLocallyConstant_smul_const_iff_stabilizer_isOpen
+    (h_left : ∀ a : G, Continuous (fun g : G => a * g)) (x : X) :
+    IsLocallyConstant (fun g : G => g • x) ↔ IsOpen (stabilizer G x : Set G) := by
+  rw [IsLocallyConstant.iff_isOpen_fiber_apply]
+  constructor
+  · intro h
+    change IsOpen ((fun g : G => g • x) ⁻¹' {x})
+    simpa only [one_smul] using h 1
+  · intro h g₀
+    have hfiber : (fun g : G => g • x) ⁻¹' {g₀ • x} =
+        (fun g : G => g₀⁻¹ * g) ⁻¹' (stabilizer G x : Set G) := by
+      ext g
+      change (g • x = g₀ • x) ↔ (g₀⁻¹ * g) • x = x
+      rw [mul_smul]
+      constructor
+      · intro hg
+        rw [hg, ← mul_smul g₀⁻¹ g₀, inv_mul_cancel, one_smul]
+      · intro hg
+        have hgg := congrArg (fun y : X => g₀ • y) hg
+        rw [← mul_smul g₀ g₀⁻¹, mul_inv_cancel, one_smul] at hgg
+        exact hgg
+    rw [hfiber]
+    exact h.preimage (h_left g₀⁻¹)
+
+/-- If every finite-index subgroup is open, a finite orbit has a locally constant
+orbit map, assuming continuity of fixed left translations. -/
+@[to_additive
+/-- If every finite-index additive subgroup is open, a finite orbit has a locally
+constant orbit map, assuming continuity of fixed left additions. -/]
+theorem isLocallyConstant_smul_const_of_finite_orbit
+    (h_left : ∀ a : G, Continuous (fun g : G => a * g))
+    (h_open : ∀ H : Subgroup G, H.FiniteIndex → IsOpen (H : Set G))
+    (x : X) [Finite (orbit G x)] : IsLocallyConstant (fun g : G => g • x) := by
+  have : Finite (G ⧸ stabilizer G x) :=
+    Finite.of_equiv _ (orbitEquivQuotientStabilizer G x)
+  exact (isLocallyConstant_smul_const_iff_stabilizer_isOpen h_left x).mpr
+    (h_open (stabilizer G x) ⟨Nat.card_pos.ne'⟩)
+
+end LocallyConstant
 
 variable {G : Type u} {X : Type v} [Group G] [TopologicalSpace G]
   [TopologicalSpace X] [MulAction G X] [DiscreteTopology X]
@@ -42,17 +97,9 @@ stabilizer is open, assuming continuity of fixed left translations on the acting
 stabilizer is open, assuming continuity of fixed left additions on the acting group. -/]
 theorem continuous_smul_const_iff_stabilizer_isOpen [ContinuousConstSMul G G] (x : X) :
     Continuous (fun g : G => g • x) ↔ IsOpen (stabilizer G x : Set G) := by
-  constructor
-  · intro hx
-    change IsOpen ((fun g : G => g • x) ⁻¹' {x})
-    exact (isOpen_discrete {x}).preimage hx
-  · intro hx
-    let : DiscreteTopology (G ⧸ stabilizer G x) :=
-      (Subgroup.isOpen_iff_discreteTopology_quotient (stabilizer G x)).mp hx
-    have h : Continuous (ofQuotientStabilizer G x ∘
-        (QuotientGroup.mk : G → G ⧸ stabilizer G x)) :=
-      continuous_of_discreteTopology.comp QuotientGroup.continuous_mk
-    simpa only [Function.comp_def, ofQuotientStabilizer_mk] using h
+  rw [← IsLocallyConstant.iff_continuous]
+  exact isLocallyConstant_smul_const_iff_stabilizer_isOpen
+    (fun a => continuous_const_smul a) x
 
 /-- An action on a discrete space is jointly continuous exactly when all its stabilizers
 are open, assuming continuity of fixed left translations on the acting group. -/

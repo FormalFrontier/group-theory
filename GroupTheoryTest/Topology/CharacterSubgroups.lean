@@ -156,7 +156,8 @@ theorem padicCharacter_compact_comparison :
 
 section NonHausdorff
 
-local instance : TopologicalSpace (ZMod 2) := ⊤
+/-- The indiscrete topology used for the non-Hausdorff two-element example. -/
+local instance indiscreteZModTopology : TopologicalSpace (ZMod 2) := ⊤
 local instance : IndiscreteTopology (ZMod 2) := ⟨rfl⟩
 
 /-- A finite-image character of the compact indiscrete two-element group can have

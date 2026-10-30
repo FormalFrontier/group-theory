@@ -6,11 +6,13 @@ Authors: Formal Frontier Agents
 module
 
 import GroupTheoryTest.Finsupp.CoefficientSum
+import GroupTheoryTest.Topology.Cofinite
 import GroupTheoryTest.Topology.ContinuousMap.Quotient
 import GroupTheoryTest.Topology.ContinuousMonoidHom.Quotient
 import GroupTheoryTest.Topology.Algebra.Group.Units
 import GroupTheoryTest.Topology.Ultrafilter
 import GroupTheoryTest.Topology.QuotientGroup
+import GroupTheoryTest.Topology.GroupAction.Orbit
 public import GroupTheoryTest.ActionCentralizer
 public import GroupTheoryTest.CosetActionHom
 public import GroupTheoryTest.CyclicNorm
@@ -33,6 +35,7 @@ public import GroupTheoryTest.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheoryTest.Topology.Algebra.ConstMulAction
+public import GroupTheoryTest.Topology.Algebra.MulAction
 public import GroupTheoryTest.Topology.Algebra.ContinuousCosetMap
 import GroupTheoryTest.Topology.Algebra.Group.LocallyClosed
 public import GroupTheoryTest.Topology.Algebra.Group.Quotient
@@ -42,6 +45,7 @@ public import GroupTheoryTest.Topology.FiniteIndex
 public import GroupTheoryTest.Topology.PadicDenseIntegers
 public import GroupTheoryTest.Topology.AutomaticContinuity
 public import GroupTheoryTest.Topology.FiniteIndex.Descent
+public import GroupTheoryTest.Topology.FiniteIndex.Ascent
 public import GroupTheoryTest.Topology.CharacterSubgroups
 public import GroupTheoryTest.Topology.TypeTags
 public import GroupTheoryTest.Topology.RationalCircleCharacter

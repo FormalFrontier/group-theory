@@ -22,6 +22,37 @@ in more detail.
 
 ## Headline results
 
+- **[Cofinite group topologies](GroupTheory/Topology/Algebra/Group/Cofinite.lean).**
+  On any group with the cofinite topology, inversion and every fixed left or right
+  translation are continuous. Joint multiplication is continuous exactly when the
+  group is finite, including the trivial group and finite noncommutative groups.
+  Its domain has the product of two copies of the cofinite topology, not the
+  cofinite topology on the set of pairs. No commutativity or topological-group
+  assumption is needed. A homomorphism from a group to a type with multiplication
+  and identity (`MulOneClass`), both carrying their cofinite topologies, is continuous
+  exactly when it is trivial or its kernel is finite. More generally, finite kernel
+  gives continuity from any group with a T1 topology to a cofinite target. A nontrivial
+  continuous homomorphism from a cofinite group to any T0 target has finite kernel;
+  consequently, a continuous finite-range homomorphism from an infinite cofinite group
+  to a T0 target is trivial. The ambient target need not be finite. The additive
+  statements use possibly noncommutative additive groups and `AddZeroClass` targets.
+  The underlying [finite-kernel/fiber bridge](GroupTheory/MonoidHom/Finite.lean) needs
+  no topology or target associativity or inverses.
+  For any subgroup `H`, the usual left-coset quotient of a cofinite group has the
+  cofinite topology when `H` is finite and the indiscrete topology when `H` is infinite.
+  It is cofinite exactly when `H` is finite **or the quotient is subsingleton**; in
+  particular, the whole subgroup of an infinite group is an essential exception to
+  the finite-subgroup converse. No normality, separation or continuity of group
+  operations is required. The same results hold for arbitrary additive groups.
+  More generally, a [surjection with finite fibers](GroupTheory/Topology/Cofinite.lean)
+  coinduces the cofinite topology from a cofinite source, while a map with every fiber
+  infinite coinduces the indiscrete topology. A surjective homomorphism with finite
+  kernel gives the first case with only `MulOneClass` on the target, or `AddZeroClass`
+  additively, without a target topology hypothesis. A
+  [paired integer-projection example](GroupTheoryTest/Topology/Cofinite.lean) compares
+  finite and infinite kernels, using cofinite topology on each whole product carrier,
+  not product topology.
+
 - **[Finite-index openness under quotients and sections](GroupTheory/Topology/FiniteIndex/Descent.lean).**
   For groups with arbitrary given topologies, openness of every finite-index subgroup
   descends along homomorphisms that reflect open preimages of all subsets. In particular,
@@ -112,6 +143,16 @@ constructions and prior results reused from Mathlib.
   `f, g` with injective `f` and `Function.Exact f g` give injectivity and
   exactness on fixed submodules, not preservation of surjectivity without further
   hypotheses.
+  For an injective intertwiner, a fixed target vector is in the image of the
+  fixed-submodule map exactly when it is in the ambient image. In particular,
+  an ambient bijection restricts to a bijection between fixed submodules.
+- **[Functoriality of fixed submodules](GroupTheory/RepresentationFixedFunctoriality.lean).**
+  An equivariant semilinear map over an arbitrary semiring homomorphism carries fixed
+  vectors to fixed vectors. The source fixed submodule lies in the comap of the target
+  fixed submodule, with equality when the given map is injective. Both original scalar
+  and module structures are retained; no scalar-surjectivity assumption is needed.
+  Precomposing a representation with a monoid homomorphism enlarges its fixed submodule,
+  with equality for a surjective homomorphism and, in particular, a multiplicative equivalence.
 - **Products of fixed submodules.** For monoid representations over a semiring on
   their given additive commutative monoid modules, fixed vectors commute with both
   [binary products](GroupTheory/RepresentationInvariants.lean) and
@@ -223,10 +264,13 @@ and compatible sections, with their individual hypotheses.
 
 The property that every finite-index subgroup is open descends to finite-index subgroups
 with their induced topology, and from arbitrary dependent products to each factor, without
-continuity assumptions on group operations. With continuous fixed left translations, the
-property ascends from any open subgroup and is preserved by binary and finite dependent
-products. Under the same assumption, for any given finite-index subgroup the ambient
-property is equivalent to that subgroup being open and all of its finite-index subgroups
+continuity assumptions on group operations. This property also pulls back along a continuous
+injective group homomorphism with finite-index range, without requiring a topological
+embedding; see [`Injective`](GroupTheory/Topology/FiniteIndex/Injective.lean).
+With continuous fixed left translations, the property ascends from any open subgroup and is
+preserved by binary and finite dependent products. Under the same assumption, for any given
+finite-index subgroup the ambient property is equivalent to that subgroup being open and all
+of its finite-index subgroups
 being open in the induced topology.
 
 The subgroup identity-neighborhood and identity-interior criteria also require only
@@ -389,11 +433,15 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
+| Coinduced cofinite topologies and finite-versus-infinite fibers | [`Topology.Cofinite`](GroupTheory/Topology/Cofinite.lean), [paired integer projections](GroupTheoryTest/Topology/Cofinite.lean) |
+| Cofinite group operations, coset quotients and homomorphisms | [`Group.Cofinite`](GroupTheory/Topology/Algebra/Group/Cofinite.lean) |
 | Coefficient-sum kernels and factorization over semirings | [`Finsupp.CoefficientSum`](GroupTheory/Finsupp/CoefficientSum.lean), [noncancellative-target client](GroupTheoryTest/Finsupp/CoefficientSum.lean) |
 | Group pushouts and normal-closure quotients | [`Category.Grp.Pushout`](GroupTheory/Category/Grp/Pushout.lean) |
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
+| Fixed-submodule transport across coefficient and acting-monoid maps | [`RepresentationFixedFunctoriality`](GroupTheory/RepresentationFixedFunctoriality.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
 | Additive universal property, biadditive Grothendieck extensions, arbitrary products, cofinal denominator forms and quotient representatives | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
@@ -427,5 +475,22 @@ prior formalizations and detailed attribution.
 
 ## Credits and license
 
+The cofinite quotient results use Mathlib's coset, quotient-topology, finite-set and
+cofinite-topology APIs, together with the dense-fiber formalization in
+[`Topology.DenseFibers`](GroupTheory/Topology/DenseFibers.lean).
+
 Authors: Formal Frontier Agents. The Lean proofs and clients were developed by
 Formal Frontier AI agents. Licensed under [Apache-2.0](LICENSE).
+
+## Clopen subgroups and finite index
+
+If every fixed left translation is continuous, an arbitrary subgroup is clopen exactly when
+it is open. For a finite-index subgroup, closedness is also equivalent to openness. These
+criteria keep the original subgroup and topology and require neither normality nor
+separation, right continuity or joint continuity.
+
+- `Subgroup.isClopen_iff_isOpen` and `Subgroup.isOpen_iff_isClosed` give the two criteria.
+- `AddSubgroup.isClopen_iff_isOpen` and `AddSubgroup.isOpen_iff_isClosed` give their
+  noncommutative additive counterparts under continuity of fixed left additions.
+- The criteria compose with the identity-neighborhood and interior APIs: a closed
+  finite-index subgroup is a neighborhood of the identity, or of zero additively.

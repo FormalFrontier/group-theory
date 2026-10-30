@@ -11,17 +11,33 @@ public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Hausdorff
+public import GroupTheory.Topology.Algebra.Group.DenseFibers
+public import GroupTheory.Topology.DenseFibers
 
 /-!
-# Ultrafilter limits as homomorphisms
+# Ultrafilter limits and dense fibers
+
+For a compact T1 space, the selected limit along an ultrafilter has dense fibers
+in the product topology whenever the ultrafilter contains every cofinite set. An eventually
+constant family has its constant value as selected limit. In particular, the selected-limit
+map is surjective without the cofinite hypothesis. Finite-coordinate changes produce a
+member of any prescribed fiber in every product neighborhood.
+
+When the ultrafilter contains every cofinite set, a nontrivial target makes the
+selected-limit map continuous at no family. A subset has open preimage exactly when it is
+empty or the whole target, and the topology coinduced from the product topology is
+indiscrete. For a nonempty target, a subset has dense preimage exactly when it is nonempty.
 
 For a compact Hausdorff monoid with continuous multiplication, taking the limit along a
 fixed ultrafilter is a surjective monoid homomorphism on the space of families. There is
 also an additive construction using the given additive monoid and continuous addition.
+The dense-fiber result specializes to these homomorphisms. For a nontrivial target the
+homomorphism is not continuous, already at the constant identity family. In contrast, a
+principal ultrafilter gives continuous evaluation.
 
-If the ultrafilter contains the cofinite filter, every fiber is dense in the product
-topology. For a nontrivial target the homomorphism is not continuous, already at the
-constant identity family. In contrast, a principal ultrafilter gives continuous evaluation.
+For groups, a subgroup has open comap under this homomorphism exactly when it is the whole
+target. In particular, the comap of a proper finite-index subgroup has finite index and is
+not open. The same criterion holds for additive groups.
 
 For an infinite index type and a finite group with its given discrete topology, this
 construction gives a surjective abstract homomorphism whose kernel is dense, normal and
@@ -32,6 +48,9 @@ The construction uses Mathlib's `Ultrafilter.lim`, its compactness and uniquenes
 and its convergence API for multiplication. The density argument uses Mathlib's
 `exists_finset_piecewise_mem_of_mem_nhds` to modify finitely many coordinates. The kernel
 corollaries combine this construction with Mathlib's kernel-index and open-subgroup results.
+The subgroup-comap criterion uses the algebraic adapter in
+`GroupTheory.Topology.Algebra.Group.DenseFibers` over the canonical set-level dense-fiber
+principle in `GroupTheory.Topology.DenseFibers`.
 -/
 
 @[expose] public section
@@ -41,6 +60,88 @@ open Filter Set Topology
 universe u v
 
 namespace Ultrafilter
+
+section Topology
+
+variable {ι : Type u} {X : Type v}
+variable [TopologicalSpace X] [CompactSpace X] [T1Space X]
+
+/-- An eventually constant family has its constant value as selected ultrafilter limit.
+Compactness gives convergence of the selected limit, and the T1 axiom rules out any
+other value. -/
+theorem lim_map_eq_of_eventually_eq_const (U : Ultrafilter ι) (f : ι → X) (x : X)
+    (hfx : ∀ᶠ i in (U : Filter ι), f i = x) :
+    Ultrafilter.lim (Ultrafilter.map f U) = x := by
+  classical
+  by_contra hne
+  have hn : ({x}ᶜ : Set X) ∈ 𝓝 (Ultrafilter.lim (Ultrafilter.map f U)) :=
+    isClosed_singleton.isOpen_compl.mem_nhds hne
+  have hbad : ∀ᶠ i in (U : Filter ι), f i ≠ x :=
+    (Ultrafilter.le_nhds_lim (Ultrafilter.map f U)) hn
+  obtain ⟨i, hi, hni⟩ := (hfx.and hbad).exists
+  exact hni hi
+
+/-- The selected ultrafilter-limit map is surjective because constant families retain
+their values. -/
+theorem lim_map_surjective (U : Ultrafilter ι) :
+    Function.Surjective (fun f : ι → X => Ultrafilter.lim (Ultrafilter.map f U)) := by
+  intro x
+  refine ⟨fun _ => x, ?_⟩
+  apply Ultrafilter.lim_map_eq_of_eventually_eq_const
+  exact Filter.Eventually.of_forall (fun _ => rfl)
+
+/-- Every fiber of the selected ultrafilter limit is dense in the product topology
+when the ultrafilter contains every cofinite set. -/
+theorem dense_fiber_lim (U : Ultrafilter ι) (hU : (U : Filter ι) ≤ cofinite)
+    (x : X) : Dense {f : ι → X | Ultrafilter.lim (Ultrafilter.map f U) = x} := by
+  classical
+  intro g
+  rw [mem_closure_iff_nhds]
+  intro W hW
+  obtain ⟨F, hF⟩ := exists_finset_piecewise_mem_of_mem_nhds hW (fun _ => x)
+  refine ⟨F.piecewise g (fun _ => x), hF, ?_⟩
+  apply Ultrafilter.lim_map_eq_of_eventually_eq_const
+  filter_upwards [hU F.finite_toSet.compl_mem_cofinite] with i hi
+  simp only [Finset.piecewise, Set.mem_compl_iff, Finset.mem_coe] at hi ⊢
+  simp [hi]
+
+/-- For a nontrivial compact T1 target, the selected ultrafilter limit is continuous
+at no family when the ultrafilter contains every cofinite set. -/
+theorem not_continuousAt_lim [Nontrivial X] (U : Ultrafilter ι)
+    (hU : (U : Filter ι) ≤ cofinite) (g : ι → X) :
+    ¬ ContinuousAt (fun f : ι → X => Ultrafilter.lim (Ultrafilter.map f U)) g := by
+  apply _root_.not_continuousAt_of_dense_fibers
+  exact Ultrafilter.dense_fiber_lim U hU
+
+/-- A subset of a nonempty compact T1 target has dense preimage under the selected
+ultrafilter limit exactly when it is nonempty. -/
+theorem dense_preimage_lim_iff [Nonempty X] (U : Ultrafilter ι)
+    (hU : (U : Filter ι) ≤ cofinite) (s : Set X) :
+    Dense {f : ι → X | Ultrafilter.lim (Ultrafilter.map f U) ∈ s} ↔ s.Nonempty := by
+  apply _root_.dense_preimage_iff_of_dense_fibers
+  exact Ultrafilter.dense_fiber_lim U hU
+
+/-- A subset of a compact T1 target has open preimage under the selected ultrafilter
+limit exactly when it is empty or the whole target. -/
+theorem isOpen_preimage_lim_iff (U : Ultrafilter ι)
+    (hU : (U : Filter ι) ≤ cofinite) (s : Set X) :
+    IsOpen {f : ι → X | Ultrafilter.lim (Ultrafilter.map f U) ∈ s} ↔
+      s = ∅ ∨ s = Set.univ := by
+  apply _root_.Function.Surjective.isOpen_preimage_iff_of_dense_fibers
+  · exact Ultrafilter.lim_map_surjective U
+  · exact Ultrafilter.dense_fiber_lim U hU
+
+/-- The topology coinduced by the selected ultrafilter limit from the product topology
+is indiscrete for a compact T1 target. -/
+theorem coinduced_lim_eq_top (U : Ultrafilter ι)
+    (hU : (U : Filter ι) ≤ cofinite) :
+    TopologicalSpace.coinduced (fun f : ι → X => Ultrafilter.lim (Ultrafilter.map f U))
+      (inferInstance : TopologicalSpace (ι → X)) = ⊤ := by
+  apply _root_.Function.Surjective.coinduced_eq_top_of_dense_fibers
+  · exact Ultrafilter.lim_map_surjective U
+  · exact Ultrafilter.dense_fiber_lim U hU
+
+end Topology
 
 variable {ι : Type u} {H : Type v}
 variable [Monoid H] [TopologicalSpace H] [CompactSpace H] [T2Space H] [ContinuousMul H]
@@ -96,26 +197,18 @@ theorem limMonoidHom_const (U : Ultrafilter ι) (h : H) :
 @[to_additive /-- The additive limit homomorphism is surjective, since it preserves
 constant families. -/]
 theorem limMonoidHom_surjective (U : Ultrafilter ι) :
-    Function.Surjective (U.limMonoidHom : (ι → H) →* H) :=
-  fun h => ⟨fun _ => h, U.limMonoidHom_const h⟩
+    Function.Surjective (U.limMonoidHom : (ι → H) →* H) := by
+  intro h
+  obtain ⟨f, hf⟩ := Ultrafilter.lim_map_surjective U h
+  refine ⟨f, ?_⟩
+  simpa only [Ultrafilter.limMonoidHom_apply] using hf
 
 /-- Every fiber is dense when the ultrafilter contains every cofinite set. -/
 @[to_additive /-- Every fiber of the additive limit homomorphism is dense when the
 ultrafilter contains every cofinite set. -/]
 theorem dense_fiber_limMonoidHom (U : Ultrafilter ι) (hU : (U : Filter ι) ≤ cofinite)
     (h : H) : Dense {f : ι → H | U.limMonoidHom f = h} := by
-  classical
-  intro g
-  rw [mem_closure_iff_nhds]
-  intro W hW
-  obtain ⟨F, hF⟩ := exists_finset_piecewise_mem_of_mem_nhds hW (fun _ => h)
-  refine ⟨F.piecewise g (fun _ => h), hF, ?_⟩
-  apply U.limMonoidHom_eq_of_tendsto
-  have heq : F.piecewise g (fun _ => h) =ᶠ[(U : Filter ι)] fun _ => h := by
-    filter_upwards [hU F.finite_toSet.compl_mem_cofinite] with i hi
-    simp only [Finset.piecewise, Set.mem_compl_iff, Finset.mem_coe] at hi ⊢
-    simp [hi]
-  exact tendsto_const_nhds.congr' heq.symm
+  simpa only [Ultrafilter.limMonoidHom_apply] using (Ultrafilter.dense_fiber_lim U hU h)
 
 /-- For a free ultrafilter and a nontrivial target, the limit homomorphism is not
 continuous at the constant identity family. -/
@@ -124,15 +217,11 @@ homomorphism is not continuous at the constant zero family. -/]
 theorem not_continuousAt_limMonoidHom [Nontrivial H] (U : Ultrafilter ι)
     (hU : (U : Filter ι) ≤ cofinite) :
     ¬ ContinuousAt (U.limMonoidHom : (ι → H) → H) 1 := by
-  obtain ⟨h, hh⟩ := exists_ne (1 : H)
-  intro hc
-  have hn : {h}ᶜ ∈ 𝓝 (U.limMonoidHom (1 : ι → H)) := by
-    simpa using isClosed_singleton.isOpen_compl.mem_nhds (Ne.symm hh)
-  have hp := hc.preimage_mem_nhds hn
-  have hd := U.dense_fiber_limMonoidHom hU h (1 : ι → H)
-  rw [mem_closure_iff_nhds] at hd
-  obtain ⟨f, hf, hfh⟩ := hd _ hp
-  exact hf hfh
+  have heq : (U.limMonoidHom : (ι → H) → H) =
+      fun f => Ultrafilter.lim (Ultrafilter.map f U) :=
+    funext (Ultrafilter.limMonoidHom_apply U)
+  rw [heq]
+  exact Ultrafilter.not_continuousAt_lim U hU 1
 
 /-- For a free ultrafilter and a nontrivial target, the limit homomorphism is not
 continuous. -/
@@ -178,6 +267,25 @@ theorem exists_surjective_not_continuous_limMonoidHom [Nontrivial H] :
     ∃ L : (ℕ → H) →* H, Function.Surjective L ∧ ¬ Continuous L := by
   obtain ⟨U, hU⟩ := Ultrafilter.exists_le (cofinite : Filter ℕ)
   exact ⟨U.limMonoidHom, U.limMonoidHom_surjective, U.not_continuous_limMonoidHom hU⟩
+
+section Group
+
+variable {G : Type v} [Group G] [TopologicalSpace G]
+variable [CompactSpace G] [T2Space G] [ContinuousMul G]
+
+/-- A subgroup has open comap under the limit homomorphism of a cofinite-containing
+ultrafilter exactly when it is the whole target group. No finite-index assumption is needed. -/
+@[to_additive
+  /-- An additive subgroup has open comap under the additive limit homomorphism of a
+  cofinite-containing ultrafilter exactly when it is the whole target group. No finite-index
+  assumption is needed. -/]
+theorem isOpen_comap_limMonoidHom_iff (U : Ultrafilter ι)
+    (hU : (U : Filter ι) ≤ Filter.cofinite) (H : Subgroup G) :
+    IsOpen (H.comap (U.limMonoidHom) : Set (ι → G)) ↔ H = ⊤ :=
+  Subgroup.isOpen_comap_iff_eq_top_of_dense_fibers
+    U.limMonoidHom (U.dense_fiber_limMonoidHom hU) H
+
+end Group
 
 end Ultrafilter
 

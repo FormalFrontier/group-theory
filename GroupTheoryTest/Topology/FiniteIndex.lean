@@ -8,6 +8,7 @@ module
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheoryTest.Topology.PadicDenseIntegers
 import GroupTheory.Topology.OpenKernel
+import GroupTheory.Topology.Ultrafilter
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.Ring.Units
 import GroupTheory.Topology.Algebra.Group.TotalBounded
@@ -223,3 +224,99 @@ private theorem padicThree_multiplicative_totallyBounded :
 end GroupTheoryTest.Topology.FiniteIndex
 
 end
+
+section
+
+open Topology
+
+universe u v
+
+example {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) [H.FiniteIndex] (hH : IsClosed (H : Set G)) :
+    (H : Set G) ∈ 𝓝 (1 : G) :=
+  H.isOpen_iff_mem_nhds_one.mp (H.isOpen_iff_isClosed.mpr hH)
+
+example {A : Type v} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    (H : AddSubgroup A) [H.FiniteIndex] (hH : IsClosed (H : Set A)) :
+    (H : Set A) ∈ 𝓝 (0 : A) :=
+  H.isOpen_iff_mem_nhds_zero.mp (H.isOpen_iff_isClosed.mpr hH)
+
+example {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) : IsClopen (H : Set G) ↔ IsOpen (H : Set G) :=
+  H.isClopen_iff_isOpen
+
+example {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (H : Subgroup G) [H.FiniteIndex] : IsOpen (H : Set G) ↔ IsClosed (H : Set G) :=
+  H.isOpen_iff_isClosed
+
+example {A : Type v} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    (K : AddSubgroup A) : IsClopen (K : Set A) ↔ IsOpen (K : Set A) :=
+  K.isClopen_iff_isOpen
+
+example {A : Type v} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    (K : AddSubgroup A) [K.FiniteIndex] : IsOpen (K : Set A) ↔ IsClosed (K : Set A) :=
+  K.isOpen_iff_isClosed
+
+end
+
+/-!
+## Finite-index pullbacks along ultrafilter limits
+
+For an ultrafilter finer than the cofinite filter, pulling back a proper
+finite-index subgroup along its limit homomorphism gives a finite-index subgroup
+that is not open. The same obstruction applies to additive groups and, for a
+finite nontrivial T1 target, to the kernel of the prescribed limit homomorphism.
+-/
+
+section UltrafilterPullbacks
+
+universe u v
+
+example {ι : Type u} {G : Type v} [Group G] [TopologicalSpace G]
+    [CompactSpace G] [T2Space G] [ContinuousMul G]
+    (U : Ultrafilter ι) (hU : (U : Filter ι) ≤ Filter.cofinite)
+    (H : Subgroup G) [H.FiniteIndex] (hH : H ≠ ⊤) :
+    (H.comap (U.limMonoidHom)).FiniteIndex ∧
+      ¬ IsOpen (H.comap (U.limMonoidHom) : Set (ι → G)) := by
+  constructor
+  · have hrel : H.IsFiniteRelIndex (⊤ : Subgroup G) :=
+      Subgroup.isFiniteRelIndex_top_iff.mpr inferInstance
+    have hcomap : (H.comap U.limMonoidHom).IsFiniteRelIndex
+        (⊤ : Subgroup (ι → G)) := by
+      simpa using
+        (Subgroup.IsFiniteRelIndex.comap (H := H) (K := ⊤) U.limMonoidHom hrel)
+    exact Subgroup.isFiniteRelIndex_top_iff.mp hcomap
+  · intro hopen
+    exact hH ((Ultrafilter.isOpen_comap_limMonoidHom_iff U hU H).mp hopen)
+
+example {ι : Type u} {A : Type v} [AddGroup A] [TopologicalSpace A]
+    [CompactSpace A] [T2Space A] [ContinuousAdd A]
+    (U : Ultrafilter ι) (hU : (U : Filter ι) ≤ Filter.cofinite)
+    (H : AddSubgroup A) [H.FiniteIndex] (hH : H ≠ ⊤) :
+    (H.comap (U.limAddMonoidHom)).FiniteIndex ∧
+      ¬ IsOpen (H.comap (U.limAddMonoidHom) : Set (ι → A)) := by
+  constructor
+  · have hrel : H.IsFiniteRelIndex (⊤ : AddSubgroup A) :=
+      AddSubgroup.isFiniteRelIndex_top_iff.mpr inferInstance
+    have hcomap : (H.comap U.limAddMonoidHom).IsFiniteRelIndex
+        (⊤ : AddSubgroup (ι → A)) := by
+      simpa using
+        (AddSubgroup.IsFiniteRelIndex.comap (H := H) (K := ⊤) U.limAddMonoidHom hrel)
+    exact AddSubgroup.isFiniteRelIndex_top_iff.mp hcomap
+  · intro hopen
+    exact hH ((Ultrafilter.isOpen_comap_limAddMonoidHom_iff U hU H).mp hopen)
+
+example {ι : Type u} {G : Type v} [Group G] [Finite G]
+    [TopologicalSpace G] [T1Space G] [Nontrivial G]
+    (U : Ultrafilter ι) (hU : (U : Filter ι) ≤ Filter.cofinite) :
+    (U.limMonoidHom : (ι → G) →* G).ker.FiniteIndex ∧
+      ¬ IsOpen ((U.limMonoidHom : (ι → G) →* G).ker : Set (ι → G)) := by
+  constructor
+  · infer_instance
+  · intro hopen
+    have hbot : (⊥ : Subgroup G) = ⊤ :=
+      (Ultrafilter.isOpen_comap_limMonoidHom_iff U hU (⊥ : Subgroup G)).mp
+        (by simpa using hopen)
+    exact bot_ne_top hbot
+
+end UltrafilterPullbacks

@@ -5,12 +5,16 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Algebra.Group.Hom.Power
+public import GroupTheory.Algebra.Order.Subsemigroup
 public import GroupTheory.Finsupp.CoefficientSum
 public import GroupTheory.Topology.ContinuousMap.Quotient
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Semigroup.StableEquality
 public import GroupTheory.Topology.Ultrafilter
 public import GroupTheory.Topology.QuotientGroup
+public import GroupTheory.Topology.DenseFibers
+public import GroupTheory.Topology.Cofinite
 
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
@@ -21,11 +25,13 @@ public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
 public import GroupTheory.GroupAction.DoubleCoset
 public import GroupTheory.GroupAction.InvariantSetoid
+public import GroupTheory.GroupAction.Orbit
 public import GroupTheory.GroupAction.Quotient
 public import GroupTheory.GroupAction.QuotientMap
 public import GroupTheory.IndexNSmul
 public import GroupTheory.LinearAlgebra.Prod
 public import GroupTheory.LinearAlgebra.Pi
+public import GroupTheory.MonoidHom.Finite
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Nilpotent
@@ -35,6 +41,7 @@ public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.RepresentationDirectSum
 public import GroupTheory.RepresentationDirectSumMap
 public import GroupTheory.RepresentationInvariants
+public import GroupTheory.RepresentationFixedFunctoriality
 public import GroupTheory.RepresentationFixedGenerators
 public import GroupTheory.RepresentationFixedUniversalProperty
 public import GroupTheory.RepresentationFixedKernels
@@ -48,6 +55,7 @@ public import GroupTheory.Topology.ContinuousMap.CompactDiscrete
 public import GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.PiDiscreteFactor
+public import GroupTheory.Topology.Algebra.Group.Cofinite
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
@@ -59,6 +67,8 @@ public import GroupTheory.Topology.AddCircle
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheory.Topology.AutomaticContinuity
 public import GroupTheory.Topology.FiniteIndex.Descent
+public import GroupTheory.Topology.FiniteIndex.Ascent
+public import GroupTheory.Topology.FiniteIndex.Injective
 public import GroupTheory.Topology.FiniteGeneration
 public import GroupTheory.Topology.CharacterSubgroups
 public import GroupTheory.Topology.RationalCircle
@@ -70,3 +80,4 @@ public import GroupTheory.Transversal
 public import GroupTheory.Topology.CrossedHom
 public import GroupTheory.Topology.Algebra.MulAction
 public import GroupTheory.RepresentationTopology
+public import GroupTheory.Topology.GroupAction.Orbit
