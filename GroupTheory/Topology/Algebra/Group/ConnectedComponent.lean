@@ -86,6 +86,50 @@ theorem map_connectedComponentOfOneOfContinuousConstSMul_subtype (H : Subgroup G
     congrArg (fun z : H ↦ (z : G))
       (MonoidHom.connectedComponentOfOneMap_apply ι hι ⟨⟨x, hx⟩, hx'⟩)⟩
 
+/-!
+## Open subgroups
+
+An open subgroup contains the identity component. If the component space is finite,
+every open subgroup has finite index, still assuming only continuity of fixed left
+translations.
+-/
+
+open scoped Pointwise
+
+/-- An open subgroup contains the identity-component subgroup when fixed left
+translations are continuous. -/
+@[to_additive
+/-- An open additive subgroup contains the zero-component subgroup when fixed left
+translations are continuous. -/]
+theorem connectedComponentOfOneOfContinuousConstSMul_le_of_isOpen
+    (H : Subgroup G) (hH : IsOpen (H : Set G)) :
+    connectedComponentOfOneOfContinuousConstSMul G ≤ H := by
+  have hopen : IsOpen (H : Set G)ᶜ := by
+    refine isOpen_iff_forall_mem_open.mpr ?_
+    intro g hg
+    refine ⟨g • (H : Set G), ?_, IsOpen.smul hH g, ?_⟩
+    · rintro y ⟨h, hh, rfl⟩ hy
+      apply hg
+      change g ∈ H
+      simpa only [smul_eq_mul, mul_inv_cancel_right] using H.mul_mem hy (H.inv_mem hh)
+    · exact ⟨1, H.one_mem, by simp only [smul_eq_mul, mul_one]⟩
+  have hclopen : IsClopen (H : Set G) := ⟨isOpen_compl_iff.mp hopen, hH⟩
+  intro x hx
+  exact IsClopen.connectedComponent_subset hclopen H.one_mem
+    ((mem_connectedComponentOfOneOfContinuousConstSMul x).mp hx)
+
+/-- In a group with finitely many connected components, every open subgroup has
+finite index, assuming only continuity of fixed left translations. -/
+@[to_additive
+/-- In an additive group with finitely many connected components, every open
+additive subgroup has finite index, assuming only continuity of fixed left translations. -/]
+theorem finiteIndex_of_isOpen_of_finite_connectedComponents
+    [Finite (ConnectedComponents G)] (H : Subgroup G) (hH : IsOpen (H : Set G)) :
+    H.FiniteIndex := by
+  have : (connectedComponentOfOneOfContinuousConstSMul G).FiniteIndex :=
+    finiteIndex_connectedComponentOfOneOfContinuousConstSMul
+  exact finiteIndex_of_le (connectedComponentOfOneOfContinuousConstSMul_le_of_isOpen H hH)
+
 open Topology
 
 /-- When open subgroups form a neighborhood basis at the identity, their infimum

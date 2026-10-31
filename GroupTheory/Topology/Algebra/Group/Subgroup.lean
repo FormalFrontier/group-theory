@@ -37,7 +37,10 @@ The left-coset projection restricted to a dense set is surjective for any open
 subgroup, assuming only continuity of fixed left translations. The proof uses
 `Dense.exists_mem_open` on an open left coset. Consequently, restricting an open
 subgroup to a dense subgroup preserves its index, without finiteness or normality
-assumptions.
+assumptions. When open subgroups form a neighborhood basis at the identity,
+surjectivity onto all their left-coset spaces conversely characterizes density.
+More generally, a point belongs to the closure of a set exactly when its image
+belongs to the image of that set in every such left-coset space.
 
 A closed subgroup has finite index if its inverse image in a dense subgroup has
 finite index. The finite-index closedness criterion then makes the subgroup open,
@@ -534,6 +537,43 @@ theorem connectedComponentOfOneOfContinuousConstSMul_eq_connectedComponentOfOne
 
 end Subgroup
 
+/-- Closure is detected by images in open-subgroup left-coset quotients. -/
+public theorem OpenSubgroup.mem_closure_iff_mem_quotient_image
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (hb : (nhds (1 : G)).HasBasis
+      (fun _ : OpenSubgroup G => True) (fun H => (H : Set G)))
+    (S : Set G) (x : G) :
+    x ∈ closure S ↔ ∀ H : OpenSubgroup G,
+      (QuotientGroup.mk x : G ⧸ (H : Subgroup G)) ∈
+        (fun y : G => (QuotientGroup.mk y : G ⧸ (H : Subgroup G))) '' S := by
+  let e : G ≃ₜ G := Homeomorph.smul (α := G) x
+  have e_apply (y : G) : e y = x * y := rfl
+  have he : Filter.map e (nhds (1 : G)) = nhds x := by
+    simpa only [e_apply, mul_one] using e.map_nhds_eq (1 : G)
+  have hx : (nhds x).HasBasis
+      (fun _ : OpenSubgroup G => True)
+      (fun H => e '' (H : Set G)) := by
+    rw [← he]
+    exact hb.map e
+  rw [mem_closure_iff_frequently, hx.frequently_iff]
+  constructor
+  · intro h H
+    rcases h H trivial with ⟨y, hyH, hyS⟩
+    rcases hyH with ⟨z, hz, hzy⟩
+    simp only [e_apply] at hzy
+    have hxy : x⁻¹ * y ∈ (H : Subgroup G) := by
+      rw [← hzy, ← mul_assoc, inv_mul_cancel, one_mul]
+      exact hz
+    refine ⟨y, hyS, ?_⟩
+    exact (QuotientGroup.eq.mpr hxy).symm
+  · intro h H _
+    rcases h H with ⟨y, hyS, hyq⟩
+    have hxy : x⁻¹ * y ∈ (H : Subgroup G) :=
+      QuotientGroup.eq.mp hyq.symm
+    refine ⟨y, ?_, hyS⟩
+    refine ⟨x⁻¹ * y, hxy, ?_⟩
+    simp only [e_apply, ← mul_assoc, mul_inv_cancel, one_mul]
+
 /-- A set is dense if it surjects onto every left coset space of an open subgroup,
 provided open subgroups form a neighborhood basis at the identity. Only continuity
 of fixed left translations is required. -/
@@ -543,17 +583,22 @@ theorem dense_of_surjective_openSubgroup_quotients {G : Type u} [Group G]
       (fun H => (H : Set G))) {S : Set G}
     (hs : ∀ H : OpenSubgroup G, Function.Surjective
       (fun s : S => (QuotientGroup.mk (s : G) : G ⧸ (H : Subgroup G)))) : Dense S := by
-  rw [dense_iff_inter_open]
-  intro U hU hUne
-  obtain ⟨g, hg⟩ := hUne
-  have hleft : Continuous (fun y : G => g * y) := continuous_const_smul g
-  have hV : {y : G | g * y ∈ U} ∈ nhds (1 : G) :=
-    (hU.preimage hleft).mem_nhds (by simpa only [Set.mem_preimage, mul_one] using hg)
-  obtain ⟨H, _, hH⟩ := hb.mem_iff.mp hV
-  obtain ⟨s, hsg⟩ := hs H (QuotientGroup.mk g : G ⧸ (H : Subgroup G))
-  have hmem : g⁻¹ * (s : G) ∈ (H : Subgroup G) := QuotientGroup.eq.mp hsg.symm
-  have hsU : (s : G) ∈ U := by
-    have hgs : g * (g⁻¹ * (s : G)) ∈ U := hH hmem
-    simpa only [← mul_assoc, mul_inv_cancel, one_mul] using hgs
-  have hs_mem := s.property
-  exact ⟨(s : G), by constructor <;> assumption⟩
+  intro x
+  apply (OpenSubgroup.mem_closure_iff_mem_quotient_image hb S x).2
+  intro H
+  obtain ⟨s, hsq⟩ := hs H (QuotientGroup.mk x : G ⧸ (H : Subgroup G))
+  exact ⟨(s : G), s.property, hsq⟩
+
+/-- With an open-subgroup neighborhood basis at the identity, density is equivalent
+to surjectivity onto every open-subgroup left-coset space. Only continuity of fixed
+left translations is needed. -/
+theorem dense_iff_surjective_openSubgroup_quotients {G : Type u} [Group G]
+    [TopologicalSpace G] [ContinuousConstSMul G G]
+    (hb : (nhds (1 : G)).HasBasis (fun _ : OpenSubgroup G => True)
+      (fun H => (H : Set G))) {S : Set G} :
+    Dense S ↔ ∀ H : OpenSubgroup G, Function.Surjective
+      (fun s : S => (QuotientGroup.mk (s : G) : G ⧸ (H : Subgroup G))) := by
+  constructor
+  · intro hS H
+    exact (H : Subgroup G).quotient_mk_surjective_of_dense H.isOpen hS
+  · exact dense_of_surjective_openSubgroup_quotients hb

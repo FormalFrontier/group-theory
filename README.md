@@ -16,9 +16,11 @@ additive quotients, additive and biadditive Grothendieck extensions, ring struct
 and multiplicative universal properties on additive Grothendieck groups of semirings,
 canonical coset-action isomorphisms, product-coset orbits and double cosets,
 invariant equivalence relations, and automorphism groups of group actions.
-The library depends directly on mathlib, not on a source repository or the
-incubator. The mathematical guides explain the proof ideas, examples and limits
-in more detail.
+The library depends directly on [Mathlib](https://github.com/leanprover-community/mathlib4)
+and [Homological Algebra](https://github.com/FormalFrontier/homological-algebra),
+not on a source repository or the incubator. Homological Algebra supplies the
+finite-homology interface used by the finite group-cohomology results. The
+mathematical guides explain the proof ideas, examples and limits in more detail.
 
 ## Headline results
 
@@ -456,8 +458,11 @@ downstream imports.
 ### Building and checking the repository
 
 The checkout's [`lean-toolchain`](lean-toolchain), [`lakefile.toml`](lakefile.toml)
-and [`lake-manifest.json`](lake-manifest.json) record the Lean version and
-resolved mathlib dependency. Run from this repository:
+and [`lake-manifest.json`](lake-manifest.json) record the Lean version and exact
+resolved dependency revisions. Mathlib and the public GitHub release of Homological
+Algebra are pinned to full commits, with a common Mathlib revision. Use the
+checked-in manifest and toolchain together for a reproducible build rather than
+updating either dependency independently. Run from this repository:
 
 ```sh
 lake exe cache get

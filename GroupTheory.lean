@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.CocycleAveraging
+public import GroupTheory.Cohomology.Finite
 
 public import GroupTheory.Algebra.Group.Hom.Power
 public import GroupTheory.Algebra.Order.MulHom

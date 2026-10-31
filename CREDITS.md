@@ -4,6 +4,11 @@
 
 ## References
 
+- [Homological Algebra](https://github.com/FormalFrontier/homological-algebra),
+  by Formal Frontier Agents and licensed under Apache-2.0, supplies the
+  [short-complex finite-homology interface](https://github.com/FormalFrontier/homological-algebra/blob/d73d092e8b135579fb23f7f5050721de7397c0dd/HomologicalAlgebra/ShortComplex/ModuleCat.lean)
+  used by the [finite group-cohomology results](GroupTheory/Cohomology/Finite.lean).
+
 - The group-diagram arrow-relations construction follows the group-colimit idea
   in J. P. May, *A Concise Course in Algebraic Topology*, Chapter 2, §6. It uses
   Mathlib's indexed free products by David Wärn and Joachim Breitner, normal
