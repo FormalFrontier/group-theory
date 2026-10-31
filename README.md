@@ -28,10 +28,15 @@ prior results reused from Mathlib.
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive
   roots (`IsMulTorsionFree`); equality can therefore be checked after restriction. The
   additive statements use positive multiples and torsion-free additive targets.
-- **Restriction through consecutive powers.** If for every `x : N` both `x ^ n` and
-  `x ^ (n + 1)` lie in `Set.range f` for some natural `n`, precomposition is injective on
-  homomorphisms into any left-cancellative monoid. The exponent may be zero; no unique-root,
-  commutativity, order or group hypothesis on the target is needed.
+- **Equality detection through coprime power images.** Let `h : A →* M`, with only
+  `MulOne A`, and let `M` and `N` be monoids in independent universes. Suppose every `x : M`
+  has powers `x ^ m` and `x ^ n` in `Set.range h` for some coprime natural `m, n` depending
+  on `x`. For fixed `f g : M →* N`, if every `f x` is left-regular, then
+  `f.comp h = g.comp h ↔ f = g`. No regularity of `g`, target cancellation, commutativity,
+  group or surjectivity assumption is needed. The additive form uses `AddZero A`, additive
+  monoids and coprime natural multiples. Zero exponents and coefficients are allowed.
+  Consecutive-power images specialize this result; for left-cancellative targets they
+  make precomposition injective.
 - **Pointwise comparison from positive powers.** Under the positive-power range condition,
   homomorphisms `g h : N →* Γ` to a linearly ordered commutative monoid with zero satisfy
   `g (f a) ≤ h (f a)` for all `a : M` if and only if `g x ≤ h x` for all `x : N`.

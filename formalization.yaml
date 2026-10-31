@@ -3,6 +3,14 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    If the image of h : A →* M contains two powers of each element with coprime
+    natural exponents, equality after precomposition with h detects equality of
+    fixed homomorphisms f, g : M →* N whenever every f x is left-regular. Here A
+    needs only MulOne, M and N are monoids in independent universes, and g has
+    no regularity assumption. The additive form uses AddZero and coprime natural
+    multiples. Zero exponents and coefficients are allowed; consecutive-power
+    restriction and its left-cancellative injectivity form are specializations.
+
     In any monoid, a left-regular element a and arbitrary b have equal powers at
     the gcd of a finite family of natural exponents if and only if their powers
     agree at every selected exponent. Gcd one gives a = b. The additive images
@@ -485,6 +493,10 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: MonoidHom.cancel_right_of_coprime_powers_mem_range
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: AddMonoidHom.cancel_right_of_coprime_multiples_mem_range
+      file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: IsLeftRegular.pow_finset_gcd_eq_pow_finset_gcd_iff
       file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one

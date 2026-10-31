@@ -20,8 +20,12 @@ precomposition is injective for homomorphisms into a monoid with unique positive
 For a linearly ordered commutative monoid with zero, pointwise comparison can likewise
 be checked on that range. The positive exponent may depend on the element.
 
-If two consecutive powers of every element lie in the range, precomposition is injective
-for homomorphisms into any left-cancellative monoid. Here the exponent may be zero.
+If the image of a homomorphism contains two coprime powers of every element, equality
+after precomposition detects equality of fixed homomorphisms whenever the values of the
+first homomorphism are left-regular. No regularity is required of the second map, and the
+target need not be cancellative. The additive form uses coprime natural multiples.
+Consecutive powers specialize this result and give injectivity of precomposition for
+left-cancellative targets. All these exponents and coefficients may be zero.
 
 In any monoid, if the first element is left-regular, equality at a finite family of powers
 is equivalent to equality at the gcd of their exponents. When this gcd is one, the family
@@ -208,22 +212,26 @@ end Ordered
 
 section RegularValues
 
-/-- Equality of two monoid homomorphisms can be checked after precomposition with a
-homomorphism whose range contains two successive powers of every element, provided that
-every value of the first homomorphism is left-regular. The exponent may be zero. -/
-theorem cancel_right_of_successive_powers_mem_range
+/-- Equality of homomorphisms can be tested on an image containing two coprime
+powers of every element, provided the values of the first homomorphism are
+left-regular. The exponents may be zero. -/
+@[to_additive
+  /-- Equality of additive homomorphisms can be tested on an image containing two
+  coprime multiples of every element, provided the values of the first
+  homomorphism are add-left-regular. The coefficients may be zero. -/]
+theorem cancel_right_of_coprime_powers_mem_range
     {A : Type u} {M : Type v} {N : Type w}
     [MulOne A] [Monoid M] [Monoid N]
     (h : A →* M)
-    (hpowers : ∀ x : M, ∃ n : ℕ,
-      x ^ n ∈ Set.range h ∧ x ^ (n + 1) ∈ Set.range h)
+    (hpowers : ∀ x : M, ∃ m n : ℕ,
+      Nat.Coprime m n ∧ x ^ m ∈ Set.range h ∧ x ^ n ∈ Set.range h)
     (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
     f.comp h = g.comp h ↔ f = g := by
   constructor
   · intro hcomp
     apply MonoidHom.ext
     intro x
-    obtain ⟨n, hn, hn'⟩ := hpowers x
+    obtain ⟨m, n, hmn, hm, hn⟩ := hpowers x
     have hpow (k : ℕ) (hk : x ^ k ∈ Set.range h) : f x ^ k = g x ^ k := by
       obtain ⟨a, ha⟩ := hk
       calc
@@ -235,10 +243,28 @@ theorem cancel_right_of_successive_powers_mem_range
         _ = g (x ^ k) := congrArg g ha
         _ = g x ^ k := g.map_pow x k
     have hgcd := (IsLeftRegular.pow_gcd_eq_pow_gcd_iff
-      (hf x) (g x) n (n + 1)).mpr ⟨hpow n hn, hpow (n + 1) hn'⟩
-    simpa only [Nat.gcd_self_add_right, Nat.gcd_one_right, pow_one] using hgcd
+      (hf x) (g x) m n).mpr ⟨hpow m hm, hpow n hn⟩
+    simpa only [hmn.gcd_eq_one, pow_one] using hgcd
   · intro hfg
     exact congrArg (fun q : M →* N => q.comp h) hfg
+
+/-- Equality of two monoid homomorphisms can be checked after precomposition with a
+homomorphism whose range contains two successive powers of every element, provided that
+every value of the first homomorphism is left-regular. The exponent may be zero. -/
+theorem cancel_right_of_successive_powers_mem_range
+    {A : Type u} {M : Type v} {N : Type w}
+    [MulOne A] [Monoid M] [Monoid N]
+    (h : A →* M)
+    (hpowers : ∀ x : M, ∃ n : ℕ,
+      x ^ n ∈ Set.range h ∧ x ^ (n + 1) ∈ Set.range h)
+    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
+    f.comp h = g.comp h ↔ f = g := by
+  apply cancel_right_of_coprime_powers_mem_range h ?_ f g hf
+  intro x
+  obtain ⟨n, hn, hn'⟩ := hpowers x
+  refine ⟨n, n + 1, ?_, hn, hn'⟩
+  exact Nat.coprime_iff_gcd_eq_one.mpr (by
+    simp only [Nat.gcd_self_add_right, Nat.gcd_one_right])
 
 end RegularValues
 
@@ -258,7 +284,7 @@ theorem comp_injective_of_successive_powers_mem_range
     Function.Injective (fun g : N →* T => g.comp f) := by
   intro g₁ g₂ hcomp
   exact (cancel_right_of_successive_powers_mem_range f h g₁ g₂
-    (fun _ => fun _ _ h => mul_left_cancel h)).mp hcomp
+    (fun x => IsLeftRegular.all (g₁ x))).mp hcomp
 
 end SuccessivePowers
 
