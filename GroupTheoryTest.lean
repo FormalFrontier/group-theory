@@ -55,3 +55,4 @@ public import GroupTheoryTest.Topology.RationalCircleCharacter
 public import GroupTheoryTest.Subgroup.IndexTwo
 public import GroupTheoryTest.FreeGroup.IndexTwo
 import GroupTheoryTest.Algebra.Order.Ring.MulHom
+import GroupTheoryTest.MonoidHom.PositivePower

@@ -10,6 +10,11 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Finite power kernels.** In a left-cancellative monoid, two elements have equal powers
+  at the gcd of a finite family of natural exponents if and only if they have equal powers
+  at every exponent in the family. A family with gcd one distinguishes elements, with no
+  commutativity or group assumption. Empty families and zero exponents are included; see
+  [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 - **Restriction through powers.** Let `f : M →* N`, where `M` has the stock `MulOne`
   structure and `N` is a monoid. If every `x : N` has some positive power in `Set.range f`,
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive

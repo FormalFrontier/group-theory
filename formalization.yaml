@@ -690,6 +690,10 @@ status:
       file: GroupTheory/GroupAction/QuotientMap.lean
     - declaration: MulActionHom.quotientMapOfLE_eq_quotientToQuotientOfLE
       file: GroupTheory/GroupAction/QuotientMap.lean
+    - declaration: Finset.pow_gcd_eq_pow_gcd_iff
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: Finset.eq_of_forall_pow_eq_of_gcd_eq_one
+      file: GroupTheory/MonoidHom/PositivePower.lean
 
 review:
   status: in-progress

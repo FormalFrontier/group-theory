@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -19,6 +20,11 @@ be checked on that range. The positive exponent may depend on the element.
 
 If two consecutive powers of every element lie in the range, precomposition is injective
 for homomorphisms into any left-cancellative monoid. Here the exponent may be zero.
+
+Equality of a finite family of powers in a left-cancellative monoid is equivalent to
+equality at the gcd of their exponents. When this gcd is one, the family distinguishes
+elements. This combines `pow_gcd_eq_pow_gcd_iff` with Mathlib's `Finset.gcd` API,
+including empty families and zero exponents.
 
 The domain of the precomposed homomorphism needs only the stock `MulOne` structure:
 its associativity, identity laws and powers are not used. The intermediate monoid need
@@ -174,3 +180,27 @@ theorem comp_injective_of_successive_powers_mem_range
 end SuccessivePowers
 
 end MonoidHom
+
+namespace Finset
+
+variable {ι : Type u} {T : Type v} [LeftCancelMonoid T]
+
+/-- Two elements of a left-cancellative monoid have equal powers at the gcd of a finite
+family of exponents if and only if they have equal powers at every exponent in the family. -/
+theorem pow_gcd_eq_pow_gcd_iff (s : Finset ι) (e : ι → ℕ) (a b : T) :
+    a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ ih =>
+      rw [Finset.gcd_insert, gcd_eq_nat_gcd, _root_.pow_gcd_eq_pow_gcd_iff, ih,
+        Finset.forall_mem_insert]
+
+/-- A finite family of powers whose exponents have gcd one distinguishes elements of a
+left-cancellative monoid. -/
+theorem eq_of_forall_pow_eq_of_gcd_eq_one {s : Finset ι} {e : ι → ℕ} {a b : T}
+    (hg : s.gcd e = 1) (h : ∀ i ∈ s, a ^ (e i) = b ^ (e i)) : a = b := by
+  have hab := (pow_gcd_eq_pow_gcd_iff s e a b).2 h
+  simpa only [hg, pow_one] using hab
+
+end Finset
