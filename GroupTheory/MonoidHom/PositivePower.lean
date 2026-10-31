@@ -31,10 +31,12 @@ with Mathlib's `Finset.gcd` API, including empty families and zero exponents. Th
 images require only an additive monoid and injective left addition by the first element.
 The `Finset` statements retain the left-cancellative specialization.
 
-For two exponents, right regularity of the first element also suffices, with no
-regularity assumption on the second element. Coprime exponents then determine the
-element. The multiplicative and additive statements are transported from the
-corresponding left-regular binary kernels through Mathlib's opposite structures.
+The same finite-family criterion holds when the first element is right-regular, with
+no regularity assumption on the second element. A family with gcd one determines the
+element; in particular, two coprime exponents suffice. The additive statements require
+only an additive monoid and injective right addition by the first element.
+The right-regular multiplicative and additive statements use the corresponding
+left-regular kernels through Mathlib's opposite structures.
 
 The domain of the precomposed homomorphism needs only the stock `MulOne` structure:
 its associativity, identity laws and powers are not used. The intermediate monoid need
@@ -295,6 +297,41 @@ theorem eq_of_forall_pow_eq_of_gcd_eq_one {a : T} (ha : IsLeftRegular a)
   simpa only [hg, pow_one] using hab
 
 end IsLeftRegular
+
+namespace IsRightRegular
+
+variable {ι : Type u} {T : Type v} [Monoid T]
+
+/-- If right multiplication by `a` is injective, the powers of `a` and any `b` agree at
+the gcd of a finite family of exponents if and only if they agree at every selected
+exponent. Empty families and zero exponents are included. -/
+@[to_additive
+  /-- If right addition by `a` is injective, the multiples of `a` and any `b` agree at
+  the gcd of a finite family of coefficients if and only if they agree at every selected
+  coefficient. Empty families and zero coefficients are included. -/]
+theorem pow_finset_gcd_eq_pow_finset_gcd_iff {a : T} (ha : IsRightRegular a)
+    (b : T) (s : Finset ι) (e : ι → ℕ) :
+    a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i) := by
+  have haop : IsLeftRegular (MulOpposite.op a) := by
+    intro x y h
+    exact congrArg MulOpposite.op (ha (congrArg MulOpposite.unop h))
+  have hop (x y : T) : MulOpposite.op x = MulOpposite.op y ↔ x = y :=
+    ⟨fun h => congrArg MulOpposite.unop h, fun h => congrArg MulOpposite.op h⟩
+  simpa only [← MulOpposite.op_pow, hop] using
+    (IsLeftRegular.pow_finset_gcd_eq_pow_finset_gcd_iff haop (MulOpposite.op b) s e)
+
+/-- A finite family of powers with gcd one distinguishes a right-regular element
+from any other element of a monoid. -/
+@[to_additive eq_of_forall_nsmul_eq_of_gcd_eq_one
+  /-- A finite family of natural multiples with gcd one distinguishes an add-right-regular
+  element from any other element of an additive monoid. -/]
+theorem eq_of_forall_pow_eq_of_gcd_eq_one {a : T} (ha : IsRightRegular a)
+    {s : Finset ι} {e : ι → ℕ} {b : T}
+    (hg : s.gcd e = 1) (h : ∀ i ∈ s, a ^ (e i) = b ^ (e i)) : a = b := by
+  have hab := (ha.pow_finset_gcd_eq_pow_finset_gcd_iff b s e).2 h
+  simpa only [hg, pow_one] using hab
+
+end IsRightRegular
 
 namespace Finset
 
