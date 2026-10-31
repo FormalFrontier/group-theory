@@ -17,7 +17,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "homological_algebra"
 git = "https://github.com/FormalFrontier/homological-algebra.git"
-rev = "a1c137042813254f80998a04fc345526779b0442"
+rev = "1ecd25213926138278dbd661bd516de9135d944a"
 
 [[lean_lib]]
 name = "GroupTheory"
