@@ -28,15 +28,18 @@ prior results reused from Mathlib.
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive
   roots (`IsMulTorsionFree`); equality can therefore be checked after restriction. The
   additive statements use positive multiples and torsion-free additive targets.
-- **Equality detection through coprime power images.** Let `h : A →* M`, with only
-  `MulOne A`, and let `M` and `N` be monoids in independent universes. Suppose every `x : M`
-  has powers `x ^ m` and `x ^ n` in `Set.range h` for some coprime natural `m, n` depending
-  on `x`. For fixed `f g : M →* N`, if every `f x` is left-regular, then
-  `f.comp h = g.comp h ↔ f = g`. No regularity of `g`, target cancellation, commutativity,
-  group or surjectivity assumption is needed. The additive form uses `AddZero A`, additive
-  monoids and coprime natural multiples. Zero exponents and coefficients are allowed.
-  Consecutive-power images specialize this result; for left-cancellative targets they
-  make precomposition injective.
+- **Equality detection through finite power images.** Let `h : A →* M`, with only
+  `MulOne A`, and let `M` and `N` be monoids in independent universes. Suppose for every
+  `x : M` there is a finite set `s : Finset ℕ` with `s.gcd id = 1` and
+  `x ^ n ∈ Set.range h` for every `n ∈ s`. For fixed `f g : M →* N`, if every `f x` is
+  left-regular, then `f.comp h = g.comp h ↔ f = g`. The finite set may depend on `x`.
+  No regularity of `g`, target cancellation, commutativity, group or surjectivity
+  assumption is needed. The additive form uses `AddZero A`, additive monoids and natural
+  multiples with gcd one. Zero exponents and coefficients are allowed; singleton `{1}`
+  is legal, while empty or all-zero sets cannot have gcd one. Coprime pairs and
+  consecutive-power images specialize this result; for left-cancellative targets the
+  latter make precomposition injective. See
+  [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 - **Pointwise comparison from positive powers.** Under the positive-power range condition,
   homomorphisms `g h : N →* Γ` to a linearly ordered commutative monoid with zero satisfy
   `g (f a) ≤ h (f a)` for all `a : M` if and only if `g x ≤ h x` for all `x : N`.

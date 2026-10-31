@@ -20,12 +20,14 @@ precomposition is injective for homomorphisms into a monoid with unique positive
 For a linearly ordered commutative monoid with zero, pointwise comparison can likewise
 be checked on that range. The positive exponent may depend on the element.
 
-If the image of a homomorphism contains two coprime powers of every element, equality
-after precomposition detects equality of fixed homomorphisms whenever the values of the
-first homomorphism are left-regular. No regularity is required of the second map, and the
-target need not be cancellative. The additive form uses coprime natural multiples.
-Consecutive powers specialize this result and give injectivity of precomposition for
-left-cancellative targets. All these exponents and coefficients may be zero.
+If the image of a homomorphism contains a finite set of powers of every element whose
+exponents have gcd one, equality after precomposition detects equality of fixed
+homomorphisms whenever the values of the first homomorphism are left-regular. The finite
+set may depend on the element. No regularity is required of the second map, and the
+target need not be cancellative. The additive form uses natural multiples with gcd one.
+Coprime pairs and consecutive powers specialize this result; consecutive powers also give
+injectivity of precomposition for left-cancellative targets. Exponents and coefficients may
+be zero; empty or all-zero sets cannot have gcd one.
 
 In any monoid, if the first element is left-regular, equality at a finite family of powers
 is equivalent to equality at the gcd of their exponents. When this gcd is one, the family
@@ -210,83 +212,6 @@ theorem forall_comp_le_iff_of_forall_pow_mem_range (f : M →* N)
 
 end Ordered
 
-section RegularValues
-
-/-- Equality of homomorphisms can be tested on an image containing two coprime
-powers of every element, provided the values of the first homomorphism are
-left-regular. The exponents may be zero. -/
-@[to_additive
-  /-- Equality of additive homomorphisms can be tested on an image containing two
-  coprime multiples of every element, provided the values of the first
-  homomorphism are add-left-regular. The coefficients may be zero. -/]
-theorem cancel_right_of_coprime_powers_mem_range
-    {A : Type u} {M : Type v} {N : Type w}
-    [MulOne A] [Monoid M] [Monoid N]
-    (h : A →* M)
-    (hpowers : ∀ x : M, ∃ m n : ℕ,
-      Nat.Coprime m n ∧ x ^ m ∈ Set.range h ∧ x ^ n ∈ Set.range h)
-    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
-    f.comp h = g.comp h ↔ f = g := by
-  constructor
-  · intro hcomp
-    apply MonoidHom.ext
-    intro x
-    obtain ⟨m, n, hmn, hm, hn⟩ := hpowers x
-    have hpow (k : ℕ) (hk : x ^ k ∈ Set.range h) : f x ^ k = g x ^ k := by
-      obtain ⟨a, ha⟩ := hk
-      calc
-        f x ^ k = f (x ^ k) := (f.map_pow x k).symm
-        _ = f (h a) := congrArg f ha.symm
-        _ = g (h a) := by
-          simpa only [MonoidHom.comp_apply] using
-            congrArg (fun q : A →* N => q a) hcomp
-        _ = g (x ^ k) := congrArg g ha
-        _ = g x ^ k := g.map_pow x k
-    have hgcd := (IsLeftRegular.pow_gcd_eq_pow_gcd_iff
-      (hf x) (g x) m n).mpr ⟨hpow m hm, hpow n hn⟩
-    simpa only [hmn.gcd_eq_one, pow_one] using hgcd
-  · intro hfg
-    exact congrArg (fun q : M →* N => q.comp h) hfg
-
-/-- Equality of two monoid homomorphisms can be checked after precomposition with a
-homomorphism whose range contains two successive powers of every element, provided that
-every value of the first homomorphism is left-regular. The exponent may be zero. -/
-theorem cancel_right_of_successive_powers_mem_range
-    {A : Type u} {M : Type v} {N : Type w}
-    [MulOne A] [Monoid M] [Monoid N]
-    (h : A →* M)
-    (hpowers : ∀ x : M, ∃ n : ℕ,
-      x ^ n ∈ Set.range h ∧ x ^ (n + 1) ∈ Set.range h)
-    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
-    f.comp h = g.comp h ↔ f = g := by
-  apply cancel_right_of_coprime_powers_mem_range h ?_ f g hf
-  intro x
-  obtain ⟨n, hn, hn'⟩ := hpowers x
-  refine ⟨n, n + 1, ?_, hn, hn'⟩
-  exact Nat.coprime_iff_gcd_eq_one.mpr (by
-    simp only [Nat.gcd_self_add_right, Nat.gcd_one_right])
-
-end RegularValues
-
-section SuccessivePowers
-
-universe uM uN uT
-
-/-- Precomposition is injective for homomorphisms to a left-cancellative monoid if every
-element has two consecutive powers in the range. The exponent may be zero, and the domain
-of the precomposed homomorphism needs only multiplication and a distinguished one. -/
-theorem comp_injective_of_successive_powers_mem_range
-    {M : Type uM} {N : Type uN} {T : Type uT}
-    [MulOne M] [Monoid N] [LeftCancelMonoid T]
-    (f : M →* N)
-    (h : ∀ x : N, ∃ n : ℕ,
-      x ^ n ∈ Set.range f ∧ x ^ (n + 1) ∈ Set.range f) :
-    Function.Injective (fun g : N →* T => g.comp f) := by
-  intro g₁ g₂ hcomp
-  exact (cancel_right_of_successive_powers_mem_range f h g₁ g₂
-    (fun x => IsLeftRegular.all (g₁ x))).mp hcomp
-
-end SuccessivePowers
 
 end MonoidHom
 
@@ -376,3 +301,110 @@ theorem eq_of_forall_pow_eq_of_gcd_eq_one {s : Finset ι} {e : ι → ℕ} {a b 
   (IsLeftRegular.all a).eq_of_forall_pow_eq_of_gcd_eq_one hg h
 
 end Finset
+
+namespace MonoidHom
+
+section RegularValues
+
+/-- Equality of homomorphisms can be tested on an image containing a finite set of
+powers of every element with gcd one, provided the values of the first homomorphism
+are left-regular. The finite set may depend on the element, and exponents may be zero. -/
+@[to_additive
+  /-- Equality of additive homomorphisms can be tested on an image containing a finite set
+  of natural multiples of every element with gcd one, provided the values of the first
+  homomorphism are add-left-regular. The finite set may depend on the element, and
+  coefficients may be zero. -/]
+theorem cancel_right_of_finite_powers_mem_range
+    {A : Type u} {M : Type v} {N : Type w}
+    [MulOne A] [Monoid M] [Monoid N]
+    (h : A →* M)
+    (hpowers : ∀ x : M, ∃ s : Finset ℕ,
+      s.gcd _root_.id = 1 ∧ ∀ n ∈ s, x ^ n ∈ Set.range h)
+    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
+    f.comp h = g.comp h ↔ f = g := by
+  constructor
+  · intro hcomp
+    apply MonoidHom.ext
+    intro x
+    obtain ⟨s, hg, hs⟩ := hpowers x
+    apply IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hf x) (e := _root_.id) hg
+    intro n hn
+    obtain ⟨a, ha⟩ := hs n hn
+    calc
+      f x ^ n = f (x ^ n) := (f.map_pow x n).symm
+      _ = f (h a) := congrArg f ha.symm
+      _ = g (h a) := by
+        simpa only [MonoidHom.comp_apply] using
+          congrArg (fun q : A →* N => q a) hcomp
+      _ = g (x ^ n) := congrArg g ha
+      _ = g x ^ n := g.map_pow x n
+  · intro hfg
+    exact congrArg (fun q : M →* N => q.comp h) hfg
+
+/-- Equality of homomorphisms can be tested on an image containing two coprime
+powers of every element, provided the values of the first homomorphism are
+left-regular. The exponents may be zero. -/
+@[to_additive
+  /-- Equality of additive homomorphisms can be tested on an image containing two
+  coprime multiples of every element, provided the values of the first
+  homomorphism are add-left-regular. The coefficients may be zero. -/]
+theorem cancel_right_of_coprime_powers_mem_range
+    {A : Type u} {M : Type v} {N : Type w}
+    [MulOne A] [Monoid M] [Monoid N]
+    (h : A →* M)
+    (hpowers : ∀ x : M, ∃ m n : ℕ,
+      Nat.Coprime m n ∧ x ^ m ∈ Set.range h ∧ x ^ n ∈ Set.range h)
+    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
+    f.comp h = g.comp h ↔ f = g := by
+  apply cancel_right_of_finite_powers_mem_range h (hpowers := ?_) f g hf
+  intro x
+  obtain ⟨m, n, hmn, hm, hn⟩ := hpowers x
+  refine ⟨{m, n}, ?_, ?_⟩
+  · simpa [gcd_eq_nat_gcd] using hmn.gcd_eq_one
+  · intro k hk
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hk
+    rcases hk with rfl | rfl
+    · exact hm
+    · exact hn
+
+/-- Equality of two monoid homomorphisms can be checked after precomposition with a
+homomorphism whose range contains two successive powers of every element, provided that
+every value of the first homomorphism is left-regular. The exponent may be zero. -/
+theorem cancel_right_of_successive_powers_mem_range
+    {A : Type u} {M : Type v} {N : Type w}
+    [MulOne A] [Monoid M] [Monoid N]
+    (h : A →* M)
+    (hpowers : ∀ x : M, ∃ n : ℕ,
+      x ^ n ∈ Set.range h ∧ x ^ (n + 1) ∈ Set.range h)
+    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
+    f.comp h = g.comp h ↔ f = g := by
+  apply cancel_right_of_coprime_powers_mem_range h ?_ f g hf
+  intro x
+  obtain ⟨n, hn, hn'⟩ := hpowers x
+  refine ⟨n, n + 1, ?_, hn, hn'⟩
+  exact Nat.coprime_iff_gcd_eq_one.mpr (by
+    simp only [Nat.gcd_self_add_right, Nat.gcd_one_right])
+
+end RegularValues
+
+section SuccessivePowers
+
+universe uM uN uT
+
+/-- Precomposition is injective for homomorphisms to a left-cancellative monoid if every
+element has two consecutive powers in the range. The exponent may be zero, and the domain
+of the precomposed homomorphism needs only multiplication and a distinguished one. -/
+theorem comp_injective_of_successive_powers_mem_range
+    {M : Type uM} {N : Type uN} {T : Type uT}
+    [MulOne M] [Monoid N] [LeftCancelMonoid T]
+    (f : M →* N)
+    (h : ∀ x : N, ∃ n : ℕ,
+      x ^ n ∈ Set.range f ∧ x ^ (n + 1) ∈ Set.range f) :
+    Function.Injective (fun g : N →* T => g.comp f) := by
+  intro g₁ g₂ hcomp
+  exact (cancel_right_of_successive_powers_mem_range f h g₁ g₂
+    (fun x => IsLeftRegular.all (g₁ x))).mp hcomp
+
+end SuccessivePowers
+
+end MonoidHom
