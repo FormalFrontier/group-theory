@@ -7,6 +7,7 @@ module
 
 public import GroupTheory.CocycleAveraging
 public import GroupTheory.Cohomology.Finite
+public import GroupTheory.Cohomology.Noetherian
 
 public import GroupTheory.Algebra.Group.Hom.Power
 public import GroupTheory.Algebra.Order.MulHom
@@ -70,6 +71,7 @@ public import GroupTheory.Topology.Algebra.Group.Commutator
 public import GroupTheory.Topology.Algebra.Group.Subgroup
 public import GroupTheory.Topology.Algebra.Group.Subsemigroup
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
+public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.OpenMap
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom

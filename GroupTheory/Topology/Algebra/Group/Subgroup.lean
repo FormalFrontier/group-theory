@@ -40,7 +40,9 @@ subgroup to a dense subgroup preserves its index, without finiteness or normalit
 assumptions. When open subgroups form a neighborhood basis at the identity,
 surjectivity onto all their left-coset spaces conversely characterizes density.
 More generally, a point belongs to the closure of a set exactly when its image
-belongs to the image of that set in every such left-coset space.
+belongs to the image of that set in every such left-coset space. The same
+criterion identifies the closure of a normal subgroup with the intersection of its
+open overgroups.
 
 A closed subgroup has finite index if its inverse image in a dense subgroup has
 finite index. The finite-index closedness criterion then makes the subgroup open,
@@ -538,6 +540,8 @@ theorem connectedComponentOfOneOfContinuousConstSMul_eq_connectedComponentOfOne
 end Subgroup
 
 /-- Closure is detected by images in open-subgroup left-coset quotients. -/
+@[to_additive
+/-- Closure is detected by images in open-additive-subgroup coset quotients. -/]
 public theorem OpenSubgroup.mem_closure_iff_mem_quotient_image
     {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
     (hb : (nhds (1 : G)).HasBasis
@@ -602,3 +606,68 @@ theorem dense_iff_surjective_openSubgroup_quotients {G : Type u} [Group G]
   · intro hS H
     exact (H : Subgroup G).quotient_mk_surjective_of_dense H.isOpen hS
   · exact dense_of_surjective_openSubgroup_quotients hb
+
+namespace Subgroup
+
+/-- If open subgroups form a neighborhood basis at the identity, the closure of a
+normal subgroup is the intersection of its open overgroups. Only continuity of
+fixed left translations is required; no normality of the closure is asserted. -/
+@[to_additive
+/-- If open additive subgroups form a neighborhood basis at zero, the closure of a
+normal additive subgroup is the intersection of its open overgroups. Only continuity
+of fixed left additions is required; no normality of the closure is asserted. -/]
+theorem closure_eq_sInf_isOpen
+    {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+    (hb : (nhds (1 : G)).HasBasis
+      (fun _ : OpenSubgroup G => True) (fun U => (U : Set G)))
+    (H : Subgroup G) [H.Normal] :
+    _root_.closure (H : Set G) =
+      ((sInf {K : Subgroup G | H ≤ K ∧ IsOpen (K : Set G)} : Subgroup G) : Set G) := by
+  ext x
+  change x ∈ _root_.closure (H : Set G) ↔
+    x ∈ (sInf {K : Subgroup G | H ≤ K ∧ IsOpen (K : Set G)} : Subgroup G)
+  rw [Subgroup.mem_sInf]
+  constructor
+  · intro hx K hK
+    let U : OpenSubgroup G := { K with isOpen' := hK.2 }
+    obtain ⟨h, hh, hq⟩ :=
+      (OpenSubgroup.mem_closure_iff_mem_quotient_image hb (H : Set G) x).mp hx U
+    have hxh : x⁻¹ * h ∈ K := QuotientGroup.eq.mp hq.symm
+    have hxK := K.mul_mem (hK.1 hh) (K.inv_mem hxh)
+    simpa only [mul_inv_rev, inv_inv, ← mul_assoc, mul_inv_cancel, one_mul] using hxK
+  · intro hx
+    apply (OpenSubgroup.mem_closure_iff_mem_quotient_image hb (H : Set G) x).mpr
+    intro U
+    have hopen : IsOpen ((H ⊔ (U : Subgroup G) : Subgroup G) : Set G) := by
+      refine isOpen_iff_forall_mem_open.mpr ?_
+      intro g hg
+      refine ⟨g • (U : Set G), ?_, IsOpen.smul U.isOpen g, ?_⟩
+      · rintro y ⟨u, hu, rfl⟩
+        exact (H ⊔ (U : Subgroup G)).mul_mem hg
+          ((show (U : Subgroup G) ≤ H ⊔ (U : Subgroup G) from le_sup_right) hu)
+      · exact ⟨1, U.one_mem, by simp only [smul_eq_mul, mul_one]⟩
+    have hxU : x ∈ H ⊔ (U : Subgroup G) :=
+      hx (H ⊔ (U : Subgroup G)) ⟨le_sup_left, hopen⟩
+    rw [Subgroup.mem_sup_of_normal_left] at hxU
+    obtain ⟨h, hh, u, hu, hxu⟩ := hxU
+    refine ⟨h, hh, QuotientGroup.eq.mpr ?_⟩
+    rw [← hxu, ← mul_assoc, inv_mul_cancel, one_mul]
+    exact hu
+
+/-- In a topological group with an open-subgroup neighborhood basis, the bundled
+closure of a normal subgroup is the infimum of its open overgroups. -/
+@[to_additive
+/-- In a topological additive group with an open-additive-subgroup neighborhood basis,
+the bundled closure of a normal additive subgroup is the infimum of its open overgroups. -/]
+theorem topologicalClosure_eq_sInf_isOpen
+    {G : Type u} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+    (hb : (nhds (1 : G)).HasBasis
+      (fun _ : OpenSubgroup G => True) (fun U => (U : Set G)))
+    (H : Subgroup G) [H.Normal] :
+    H.topologicalClosure = sInf {K : Subgroup G | H ≤ K ∧ IsOpen (K : Set G)} := by
+  apply SetLike.coe_injective
+  change _root_.closure (H : Set G) =
+    ((sInf {K : Subgroup G | H ≤ K ∧ IsOpen (K : Set G)} : Subgroup G) : Set G)
+  exact closure_eq_sInf_isOpen hb H
+
+end Subgroup
