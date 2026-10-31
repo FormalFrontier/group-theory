@@ -158,6 +158,13 @@ prior results reused from Mathlib.
   at most `1`; the same criterion holds for the raw range of a multiplicative map from
   a type with only multiplication. Selected sets may be empty and need not contain `1`.
 
+- **[Finite T0 pretransitive action spaces are discrete](docs/Results.md#finite-t0-pretransitive-action-spaces).**
+  If a group `G` acts pretransitively on a finite T0 topological space `X`,
+  and `x ↦ g • x` is continuous for every fixed `g`, the given topology on
+  `X` is discrete. No topology or finiteness of `G`, or nonemptiness of `X`,
+  is required. See
+  [`MulAction.discreteTopology_of_finite_of_isPretransitive`](GroupTheory/Topology/GroupAction/Orbit.lean).
+
 - **Finite-neighborhood joint continuity.** For `f : S × X → Y` between
   topological spaces, fix `(s, x)` and a finite neighborhood `V` of `x`.
   If `t ↦ f (t, y)` is continuous at `s` for every `y ∈ V` and

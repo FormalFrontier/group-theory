@@ -481,6 +481,22 @@ on discrete spaces below. See
   is `QuotientAddGroup.continuousConstVAdd`. See
   [the coset quotient API](../GroupTheory/Topology/Algebra/Group/Quotient.lean).
 
+<a id="finite-t0-pretransitive-action-spaces"></a>
+**Finite T0 pretransitive action spaces are discrete.**
+
+Let `G` be a group and `X` a finite T0 topological space with a
+pretransitive action of `G` (any point can be moved to any other).
+If each map `x ↦ g • x`, for fixed `g : G`, is continuous on `X`,
+then the given topology on `X` is discrete. This is
+[`MulAction.discreteTopology_of_finite_of_isPretransitive`](../GroupTheory/Topology/GroupAction/Orbit.lean).
+
+No topology or finiteness assumption on `G`, or nonemptiness assumption
+on `X`, is needed. The continuity hypothesis concerns fixed-element
+maps on `X`, not orbit maps with a varying group element or a joint
+action map; it does not ask for a topology on `G`.
+Unlike the following discrete-action criteria, this theorem deduces
+discreteness of the original topology rather than assuming it.
+
 **Continuous actions on discrete spaces.** For a group with a topology whose fixed
 left translations are continuous, acting on a discrete space,
 [`MulAction.continuous_smul_const_iff_stabilizer_isOpen`](../GroupTheory/Topology/Algebra/MulAction.lean)
