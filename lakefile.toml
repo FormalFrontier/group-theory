@@ -16,12 +16,23 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 
 [[lean_lib]]
 name = "GroupTheory"
+roots = [
+  "GroupTheory",
+  "GroupTheory.Topology.LocallyConstant",
+  "GroupTheory.Topology.Separation.Finite",
+  "GroupTheory.Topology.Algebra.Group.Subsemigroup"
+]
 
 [[lean_lib]]
 name = "GroupTheoryTest"
 roots = [
   "GroupTheoryTest",
   "GroupTheoryTest.GroupAction.CentralizerTransitivity",
-  "GroupTheoryTest.Topology.Algebra.Group.PiQuotientSimp"
+  "GroupTheoryTest.GroupAction.FiniteKernelQuotient",
+  "GroupTheoryTest.Topology.Algebra.Group.PiQuotientSimp",
+  "GroupTheoryTest.Topology.GroupAction.FiniteOrbit",
+  "GroupTheoryTest.Topology.Algebra.Group.Constructible",
+  "GroupTheoryTest.Topology.Algebra.Group.FiniteComponents",
+  "GroupTheoryTest.Topology.Algebra.Group.NoetherianSubsemigroup"
 ]
 leanOptions.weak.linter.privateModule = false

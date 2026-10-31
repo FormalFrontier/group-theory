@@ -5,7 +5,12 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.CocycleAveraging
+
 public import GroupTheory.Algebra.Group.Hom.Power
+public import GroupTheory.Algebra.Order.MulHom
+public import GroupTheory.Algebra.Order.Ring.MulHom
+public import GroupTheory.Algebra.Order.Ring.Sign
 public import GroupTheory.Algebra.Order.Subsemigroup
 public import GroupTheory.Finsupp.CoefficientSum
 public import GroupTheory.Topology.ContinuousMap.Quotient
@@ -19,6 +24,7 @@ public import GroupTheory.Topology.Cofinite
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
 public import GroupTheory.Category.Grp.Pushout
+public import GroupTheory.Category.Grp.Colimits
 public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
@@ -41,6 +47,8 @@ public import GroupTheory.QuotientTorsion.Cardinality
 public import GroupTheory.RepresentationDirectSum
 public import GroupTheory.RepresentationDirectSumMap
 public import GroupTheory.RepresentationInvariants
+public import GroupTheory.RepresentationLinHomAdd
+public import GroupTheory.RepresentationLifting
 public import GroupTheory.RepresentationFixedFunctoriality
 public import GroupTheory.RepresentationFixedGenerators
 public import GroupTheory.RepresentationFixedUniversalProperty
@@ -49,6 +57,7 @@ public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
 public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections
+public import GroupTheory.Topology.Separation.Finite
 public import GroupTheory.Topology.ConnectedComponentQuotient
 public import GroupTheory.Topology.OpenQuotient
 public import GroupTheory.Topology.ContinuousMap.CompactDiscrete
@@ -56,9 +65,15 @@ public import GroupTheory.Topology.Algebra.CompactGroup.DiscreteFactor
 public import GroupTheory.Topology.Algebra.CompactGroup.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.Cofinite
+public import GroupTheory.Topology.Algebra.Group.Commutator
+public import GroupTheory.Topology.Algebra.Group.Subgroup
+public import GroupTheory.Topology.Algebra.Group.Subsemigroup
+public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
+public import GroupTheory.Topology.Algebra.MulAction.Irreducible
+public import GroupTheory.Topology.Algebra.MulAction.IrreducibleComponents
 public import GroupTheory.Topology.Algebra.Group.TotalBounded
 public import GroupTheory.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheory.Topology.OpenKernel

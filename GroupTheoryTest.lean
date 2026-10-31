@@ -5,6 +5,9 @@ Authors: Formal Frontier Agents
 
 module
 
+import GroupTheoryTest.CocycleAveraging
+import GroupTheoryTest.Category.Grp.Colimits
+
 import GroupTheoryTest.Finsupp.CoefficientSum
 import GroupTheoryTest.Topology.Cofinite
 import GroupTheoryTest.Topology.ContinuousMap.Quotient
@@ -51,3 +54,4 @@ public import GroupTheoryTest.Topology.TypeTags
 public import GroupTheoryTest.Topology.RationalCircleCharacter
 public import GroupTheoryTest.Subgroup.IndexTwo
 public import GroupTheoryTest.FreeGroup.IndexTwo
+import GroupTheoryTest.Algebra.Order.Ring.MulHom

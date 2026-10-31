@@ -4,6 +4,14 @@
 
 ## References
 
+- The group-diagram arrow-relations construction follows the group-colimit idea
+  in J. P. May, *A Concise Course in Algebraic Topology*, Chapter 2, §6. It uses
+  Mathlib's indexed free products by David Wärn and Joachim Breitner, normal
+  closure by Kexing Ying, quotient groups by Kevin Buzzard and Patrick Massot,
+  and categorical colimit comparison by Reid Barton, Mario Carneiro, Kim Morrison
+  and Floris van Doorn. The independent-universe monoid-target universal property
+  composes those existing algebraic constructions.
+
 - The group-pushout normal-closure result assembles Mathlib's normal-closure
   API by Kexing Ying, its quotient-group construction and universal property
   by Kevin Buzzard and Patrick Massot (based in part on Johannes Hölzl's
@@ -44,6 +52,14 @@
   dependent-function module instances in `Mathlib.Algebra.Module.Pi` are by Simon
   Hudon and Patrick Massot. The indexed naturality result reuses the same
   fixed-submodule restrictions and the pointwise intertwiner constructor.
+
+- Finite-group intertwining lifts use the additive conjugation representation on
+  linear maps, Mathlib's norm by Antoine Labelle, and this library's norm
+  naturality API. Normalization uses `LinearEquiv.ofBijective` for the natural-scalar
+  linear map, so it does not presume an action of a noncommutative coefficient
+  semiring on its linear maps. The related commutative-ring retraction averaging
+  construction `LinearMap.equivariantProjection` is due to Kim Morrison in
+  `Mathlib.RepresentationTheory.Maschke`.
 
 - J. P. May, *A Concise Course in Algebraic Topology*, Chapter 3, discussion
   of automorphisms of `G`-sets, motivates the centralizer identification for

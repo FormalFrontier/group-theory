@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.Quotient
+public import GroupTheory.Topology.Algebra.Group.Subgroup
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
@@ -14,8 +15,9 @@ public import Mathlib.Topology.Algebra.OpenSubgroup
 /-!
 # Finite-index subgroups and closed power ranges
 
-A dense finitely generated subgroup of a commutative topological group makes every
-closed positive-power range have finite index and be open. In a compact Hausdorff
+In a commutative group with continuous fixed left translations, a dense finitely
+generated subgroup makes every closed positive-power range have finite index and be open.
+In a compact Hausdorff
 group, the power range is automatically closed, and every abstract finite-index
 subgroup is open without a closedness assumption. The additive statements concern
 the ranges of natural-number scalar homomorphisms, not repeated sums of subgroups.
@@ -37,71 +39,52 @@ universe u
 
 namespace Subgroup
 
-variable {G : Type u} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+variable {G : Type u} [CommGroup G] [TopologicalSpace G]
 
-/-- A closed positive-power range has finite index in a commutative topological group
-with a dense finitely generated subgroup. The dense subgroup has finite image in the
-quotient by the closed power range; that image is closed as well as dense, so it is
-the whole quotient. Neither compactness nor separation of the ambient group is needed.
+section
+
+variable [ContinuousConstSMul G G]
+
+/-- A closed positive-power range has finite index in a commutative group with
+continuous fixed left translations and a dense finitely generated subgroup. Finite relative
+index gives finite index for the inverse image of the power range in the dense subgroup;
+finite-index descent for closed subgroups then gives finite index in the ambient group.
+Neither compactness nor ambient separation is needed.
 The compact case extends the profinite abelian finite-index argument in Neukirch,
 Schmidt, and Wingberg, *Cohomology of Number Fields*, Chapter I, §1. -/
 @[to_additive /-- A closed positive-scalar range has finite index in a commutative
-topological additive group with a dense finitely generated subgroup. Neither compactness
-nor separation of the ambient group is needed. -/]
+additive group with continuous fixed additions and a dense finitely generated subgroup.
+Neither compactness nor separation of the ambient group is needed. -/]
 theorem finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed (D : Subgroup G)
     (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
     (hclosed : IsClosed ((powMonoidHom (α := G) n).range : Set G)) :
     (powMonoidHom (α := G) n).range.FiniteIndex := by
   let P : Subgroup G := (powMonoidHom (α := G) n).range
-  let quotientMap : D →* G ⧸ P := (QuotientGroup.mk' P).comp D.subtype
   have hrel : (D.map (powMonoidHom (α := G) n)).IsFiniteRelIndex D :=
     isFiniteRelIndex_map_powMonoidHom_of_fg hfg (Nat.ne_of_gt hn)
   have hmap_le : D.map (powMonoidHom (α := G) n) ≤ P := by
     rintro _ ⟨g, _, rfl⟩
     exact ⟨g, rfl⟩
-  have hker : quotientMap.ker.FiniteIndex := by
-    have hrelP : P.IsFiniteRelIndex D :=
-      @isFiniteRelIndex_of_le_left G _ (D.map (powMonoidHom (α := G) n)) P D
-        hrel hmap_le
-    have hker_eq : quotientMap.ker = P.subgroupOf D := by
-      ext g
-      exact QuotientGroup.eq_one_iff (g : G)
-    rw [hker_eq]
-    exact isFiniteRelIndex_iff_finiteIndex.mp hrelP
-  have hfiniteQuotientD : Finite (D ⧸ quotientMap.ker) :=
-    finiteIndex_iff_finite_quotient.mp hker
-  have hfiniteImage : Finite quotientMap.range :=
-    @Finite.of_equiv _ _ hfiniteQuotientD
-      (QuotientGroup.quotientKerEquivRange quotientMap).toEquiv
-  have hfiniteRange : (Set.range (quotientMap : D → G ⧸ P)).Finite :=
-    @Set.toFinite _ _ hfiniteImage
-  have hclosedRange : IsClosed (Set.range (quotientMap : D → G ⧸ P)) :=
-    @Set.Finite.isClosed _ _ (QuotientGroup.t1Space_iff.mpr hclosed) _ hfiniteRange
-  have hdenseQuotient : DenseRange quotientMap := by
-    change DenseRange ((QuotientGroup.mk' P : G →* G ⧸ P) ∘ ((↑) : D → G))
-    exact (QuotientGroup.mk'_surjective P).denseRange.comp
-      hdense.denseRange_val QuotientGroup.continuous_mk
-  have hsurj : Function.Surjective quotientMap := by
-    intro g
-    have hg := hdenseQuotient g
-    rw [hclosedRange.closure_eq] at hg
-    exact hg
-  have hfiniteQuotient : Finite (G ⧸ P) :=
-    Set.finite_univ_iff.mp (by simpa only [hsurj.range_eq] using hfiniteRange)
-  exact finiteIndex_iff_finite_quotient.mpr hfiniteQuotient
+  have hrelP : P.IsFiniteRelIndex D :=
+    @isFiniteRelIndex_of_le_left G _ (D.map (powMonoidHom (α := G) n)) P D
+      hrel hmap_le
+  have : (P.comap D.subtype).FiniteIndex := isFiniteRelIndex_iff_finiteIndex.mp hrelP
+  exact P.finiteIndex_of_isClosed_of_dense_subgroup D hclosed hdense
 
-/-- A closed positive-power range is open in a commutative topological group with a
-dense finitely generated subgroup. -/
-@[to_additive /-- A closed positive-scalar range is open in a commutative topological
-additive group with a dense finitely generated subgroup. -/]
+/-- A closed positive-power range is open in a commutative group with continuous fixed
+left translations and a dense finitely generated subgroup. -/
+@[to_additive /-- A closed positive-scalar range is open in a commutative additive
+group with continuous fixed additions and a dense finitely generated subgroup. -/]
 theorem isOpen_range_powMonoidHom_of_dense_fg_of_isClosed (D : Subgroup G)
     (hfg : D.FG) (hdense : Dense (D : Set G)) {n : ℕ} (hn : 0 < n)
     (hclosed : IsClosed ((powMonoidHom (α := G) n).range : Set G)) :
     IsOpen ((powMonoidHom (α := G) n).range : Set G) := by
-  have := finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed D hfg hdense hn hclosed
-  exact Subgroup.isOpen_of_isClosed_of_finiteIndex _ hclosed
+  let := finiteIndex_range_powMonoidHom_of_dense_fg_of_isClosed D hfg hdense hn hclosed
+  exact (Subgroup.isOpen_iff_isClosed _).mpr hclosed
 
-variable [CompactSpace G] [T2Space G]
+end
+
+variable [IsTopologicalGroup G] [CompactSpace G] [T2Space G]
 
 /-- In a compact Hausdorff commutative group with a dense finitely generated subgroup,
 the range of every positive power map has finite index. This extends Mathlib's
@@ -193,15 +176,16 @@ theorem AddSubgroup.isClopen_iff_isOpen
     ⟨fun a => (continuous_const_vadd a.toAdd : Continuous (fun b : A => a.toAdd + b))⟩
   exact K.toSubgroup.isClopen_iff_isOpen
 
-/-- A finite-index additive subgroup is open exactly when it is closed, assuming only
-continuity of fixed left additions. -/
-theorem AddSubgroup.isOpen_iff_isClosed
-    {A : Type u} [AddGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
-    (K : AddSubgroup A) [K.FiniteIndex] : IsOpen (K : Set A) ↔ IsClosed (K : Set A) := by
-  have : K.toSubgroup.FiniteIndex :=
-    (AddSubgroup.finiteIndex_toSubgroup_iff K).mpr inferInstance
-  have : ContinuousConstSMul (Multiplicative A) (Multiplicative A) :=
-    ⟨fun a => (continuous_const_vadd a.toAdd : Continuous (fun b : A => a.toAdd + b))⟩
-  exact K.toSubgroup.isOpen_iff_isClosed
+/-- A closed positive-scalar range is open in a commutative additive group with
+continuous fixed additions and a dense finitely generated subgroup. -/
+theorem AddSubgroup.FG.isOpen_range_nsmul_of_isClosed
+    {A : Type u} [AddCommGroup A] [TopologicalSpace A] [ContinuousConstVAdd A A]
+    {D : AddSubgroup A} (hFG : D.FG) (hD : Dense (D : Set A)) {n : ℕ} (hn : 0 < n)
+    (hc : IsClosed (Set.range (fun a : A => n • a))) :
+    IsOpen (Set.range (fun a : A => n • a)) := by
+  let N : AddSubgroup A := (nsmulAddMonoidHom (α := A) n).range
+  let : N.FiniteIndex :=
+    AddSubgroup.finiteIndex_range_nsmulAddMonoidHom_of_dense_fg_of_isClosed D hFG hD hn hc
+  exact (AddSubgroup.isOpen_iff_isClosed N).mpr hc
 
 end

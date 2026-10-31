@@ -4,11 +4,13 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import GroupTheory.Topology.LocallyConstant
 public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
-# Equivariant maps and isomorphisms of coset actions
+# Equivariant coset maps and finite-action kernel quotients
 
 For a subgroup `H` of a group `G`, a `G`-equivariant map from the left cosets `G ⧸ H`
 to a `G`-set `X` is determined by the image of the identity coset. This image can be any
@@ -35,13 +37,25 @@ An isomorphism preserves point stabilizers, so evaluating at the identity coset
 recovers the conjugate subgroup. Containment alone gives a map, not necessarily
 an isomorphism, even for endomorphisms of an infinite coset action.
 
+`MulAction.discreteTopology_quotient_ker_toPermHom` shows that the canonical quotient
+by the kernel of an action on a finite T0 space is discrete whenever each orbit map
+`g ↦ g • a` is continuous. The given topologies and action are retained, with no
+continuity assumption on the group operations and no nonemptiness assumption on the space.
+
 ## Implementation notes
 
 The inverse uses Mathlib's `MulAction.ofQuotientStabilizer` after
 `Subgroup.quotientMapOfLE`. The fixed-point condition is related to
 `MulAction.fixedPoints` by `MulAction.mem_fixedPoints_subgroup_iff`.
 
+The finite-action discreteness theorem reuses
+`isLocallyConstant_of_continuous_eval_of_bijective` for the family of action permutations.
+Every fiber of the canonical quotient map is a fiber of this locally constant family,
+so all quotient singletons are open without using continuity of translations.
+
 ## References
+
+These references concern the coset-action results.
 
 The construction uses the coset maps and orbit–stabilizer maps in Mathlib's
 `Mathlib.GroupTheory.Coset.Basic` and `Mathlib.GroupTheory.GroupAction.Quotient`,
@@ -58,6 +72,44 @@ Mathlib's `Equiv.toIso` and `Action.mkIso` from its category-of-actions API.
 universe u v w
 
 namespace MulAction
+
+/-- The canonical quotient by the kernel of an action on a finite T0 space is discrete
+if every orbit map `g ↦ g • a` is continuous. No continuity of the group operations
+or nonemptiness of the acted-on space is required. -/
+theorem discreteTopology_quotient_ker_toPermHom
+    {G : Type u} {A : Type v} [Group G] [TopologicalSpace G]
+    [TopologicalSpace A] [Finite A] [T0Space A] [MulAction G A]
+    (hcts : ∀ a : A, Continuous (fun g : G => g • a)) :
+    DiscreteTopology (G ⧸ (MulAction.toPermHom G A).ker) := by
+  let F : G → A → A := fun g a => g • a
+  have hbij : ∀ g : G, Function.Bijective (F g) := by
+    intro g
+    exact ((MulAction.toPermHom G A) g).bijective
+  have hF : IsLocallyConstant F :=
+    isLocallyConstant_of_continuous_eval_of_bijective G A F hbij hcts
+  have hquot (g h : G) :
+      (QuotientGroup.mk g : G ⧸ (MulAction.toPermHom G A).ker) =
+          QuotientGroup.mk h ↔ F g = F h := by
+    rw [QuotientGroup.eq]
+    change (MulAction.toPermHom G A) (g⁻¹ * h) = 1 ↔ F g = F h
+    rw [map_mul, map_inv, inv_mul_eq_one]
+    constructor
+    · intro heq
+      exact congrArg (fun p : Equiv.Perm A => (p : A → A)) heq
+    · intro heq
+      apply Equiv.ext
+      exact congrFun heq
+  apply discreteTopology_iff_isOpen_singleton.mpr
+  intro x
+  refine Quotient.inductionOn x ?_
+  intro g
+  change IsOpen {h : G |
+    (QuotientGroup.mk h : G ⧸ (MulAction.toPermHom G A).ker) =
+      QuotientGroup.mk g}
+  have hfiber := (IsLocallyConstant.iff_isOpen_fiber.mp hF) (F g)
+  convert hfiber using 1
+  ext h
+  simp only [Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_singleton_iff, hquot]
 
 variable {G : Type u} [Group G] {X : Type v} [MulAction G X]
 

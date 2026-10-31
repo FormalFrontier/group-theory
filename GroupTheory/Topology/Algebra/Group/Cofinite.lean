@@ -9,6 +9,7 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Separation.Hausdorff
 public import GroupTheory.MonoidHom.Finite
 public import GroupTheory.Topology.Cofinite
+public import GroupTheory.Topology.Algebra.MulAction.Irreducible
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -16,7 +17,9 @@ import Mathlib.Topology.WithTopology
 
 For an arbitrary group with the cofinite topology, inversion and every fixed left or right
 translation are continuous. In contrast, joint multiplication is continuous exactly when the group
-is finite. The domain of joint multiplication carries the **product of two cofinite topologies**,
+is finite. More generally, an action between cofinite topologies is jointly continuous exactly
+when the actor is finite or the action is pointwise trivial; its target is any type.
+The domain of joint multiplication carries the **product of two cofinite topologies**,
 not the cofinite topology on the set of pairs. The finite case includes the trivial group, and no
 commutativity assumption is needed.
 
@@ -31,8 +34,10 @@ use `AddGroup` and `AddZeroClass`, without a commutativity assumption.
 The coset quotient by a finite subgroup has the cofinite topology, while the coset quotient by
 an infinite subgroup has the indiscrete topology. Thus the quotient topology is cofinite exactly
 when the subgroup is finite or the quotient is subsingleton. These statements use the coset
-space of any subgroup, without a normality assumption. A surjective homomorphism with finite
-kernel likewise coinduces the cofinite topology, with only `MulOneClass` on the target.
+space of any subgroup, without a normality assumption. The canonical action on the coset space
+is jointly continuous exactly when the acting group is finite or the subgroup is infinite.
+A surjective homomorphism with finite kernel likewise coinduces the cofinite topology, with only
+`MulOneClass` on the target.
 
 ## Implementation notes
 
@@ -42,9 +47,10 @@ and translations. The homomorphism criterion uses `MonoidHom.finite_ker_iff_fini
 For necessity, a T0 open separator of a nonidentity image and the identity has a nonempty open
 preimage with finite complement. The kernel either lies in that complement or injects into it
 by a fixed translation.
-If joint multiplication were continuous on an infinite group, the independently proved continuity
-of inversion would make it a topological group. The cofinite topology is T1, so this topological
-group would be Hausdorff, contradicting irreducibility of an infinite cofinite space.
+For infinite cofinite actors, preirreducibility and continuous inversion reduce joint action
+continuity to orbitwise inseparability, which is equality in a cofinite target. For finite actors,
+the discrete-left product criterion and continuity of fixed scalar permutations suffice.
+The multiplication criterion is the regular-action case of this action criterion.
 
 The quotient results use Mathlib's characteristic coinduced-topology equation for the coset
 projection. Mathlib's equivalence between a left coset and its subgroup supplies the finite or
@@ -62,8 +68,9 @@ equalities of topologies. `WithTopology` transfers topological facts, not any gr
   and `CofiniteTopology.nhds_eq`.
 - Mathlib's weak kernel API, `exists_isOpen_xor_mem`, `Set.Finite.of_injOn`,
   and `Set.Finite.preimage'`.
-- Mathlib's cofinite T1 and irreducibility instances, `IsTopologicalGroup.t2Space_iff_one_closed`,
-  and `not_preirreducible_nontrivial_t2`.
+- Mathlib's cofinite T1 and irreducibility instances, `continuous_prod_of_discrete_left`,
+  and `MulAction.injective`, together with the orbit-inseparability criterion in
+  `GroupTheory.Topology.Algebra.MulAction.Irreducible`.
 - Mathlib's `QuotientGroup.isQuotientMap_mk`, `Topology.IsCoinducing.eq_coinduced`,
   `QuotientGroup.eq_class_eq_leftCoset`, and `Subgroup.leftCosetEquivSubgroup`.
 - The finite-fiber cofinite and dense-fiber coinduced-topology results in
@@ -112,6 +119,8 @@ variable {G : Type u} [Group G] [t : TopologicalSpace G]
 
 /-- Inversion is continuous for the cofinite topology on any group, independently of joint
 continuity of multiplication. -/
+@[to_additive /-- Negation is continuous for the cofinite topology on any additive group,
+independently of joint continuity of addition. -/]
 theorem continuous_inv (hcofinite : t = TopologicalSpace.cofinite) :
     Continuous (fun g : G => g⁻¹) := by
   have : T1Space G := t1Space_of_eq_cofinite hcofinite
@@ -129,34 +138,66 @@ theorem continuous_mul_right (hcofinite : t = TopologicalSpace.cofinite) (a : G)
   have : T1Space G := t1Space_of_eq_cofinite hcofinite
   exact continuous_of_tendsto_cofinite hcofinite (mul_left_injective a).tendsto_cofinite
 
+end Group
+
+section MulAction
+
+variable {G : Type u} {X : Type v} [Group G] [act : MulAction G X]
+  [tG : TopologicalSpace G] [tX : TopologicalSpace X]
+
+/-- An action between given cofinite topologies is jointly continuous exactly when the acting
+group is finite or the action is pointwise trivial. The target is an arbitrary type. -/
+@[to_additive /-- An additive action between given cofinite topologies is jointly continuous exactly
+when the acting additive group is finite or the action is pointwise trivial. The target is an
+arbitrary type. -/]
+theorem continuous_smul_iff
+    (hG : tG = TopologicalSpace.cofinite) (hX : tX = TopologicalSpace.cofinite) :
+    Continuous (fun p : G × X => p.1 • p.2) ↔
+      Finite G ∨ ∀ (g : G) (x : X), g • x = x := by
+  have : T1Space G := t1Space_of_eq_cofinite hG
+  have : T1Space X := t1Space_of_eq_cofinite hX
+  constructor
+  · intro h
+    by_cases hfinite : Finite G
+    · exact Or.inl hfinite
+    · let : Infinite G := not_finite_iff_infinite.mp hfinite
+      have hfrom : Continuous
+          (WithTopology.ofTopology (X := G) (t := TopologicalSpace.cofinite)) := by
+        rw [hG]
+        exact WithTopology.continuous_ofTopology _
+      let : IrreducibleSpace G :=
+        (WithTopology.ofTopology_surjective TopologicalSpace.cofinite).irreducibleSpace hfrom
+      let : ContinuousInv G := ⟨continuous_inv hG⟩
+      exact Or.inr fun g x =>
+        ((MulAction.continuous_smul_iff_inseparable.mp h) g x).eq
+  · rintro (hfinite | htrivial)
+    · let : Finite G := hfinite
+      let : DiscreteTopology G := inferInstance
+      exact continuous_prod_of_discrete_left.mpr fun g =>
+        continuous_of_tendsto_cofinite hX (MulAction.injective g).tendsto_cofinite
+    · simpa only [htrivial] using (continuous_snd : Continuous (fun p : G × X => p.2))
+
+end MulAction
+
+section Group
+
+variable {G : Type u} [Group G] [t : TopologicalSpace G]
+
 /-- Multiplication from the product of two copies of a group's cofinite topology to its cofinite
 topology is continuous exactly when the group is finite, including the trivial group. -/
 theorem continuous_mul_iff_finite (hcofinite : t = TopologicalSpace.cofinite) :
     Continuous (fun p : G × G => p.1 * p.2) ↔ Finite G := by
-  have hto : Continuous (WithTopology.toTopology (X := G) TopologicalSpace.cofinite) := by
-    rw [hcofinite]
-    exact WithTopology.continuous_toTopology _
-  let : T1Space G := t1Space_of_injective_of_continuous
-    (WithTopology.toTopology_injective _) hto
+  rw [show (fun p : G × G => p.1 * p.2) = (fun p : G × G => p.1 • p.2) from rfl,
+    continuous_smul_iff hcofinite hcofinite]
   constructor
-  · intro hmul
-    by_contra hfinite
-    let : Infinite G := not_finite_iff_infinite.mp hfinite
-    let : ContinuousInv G := ⟨continuous_inv hcofinite⟩
-    let : ContinuousMul G := ⟨hmul⟩
-    let : IsTopologicalGroup G := {}
-    let : T2Space G := IsTopologicalGroup.t2Space_iff_one_closed.mpr isClosed_singleton
-    have hfrom : Continuous
-        (WithTopology.ofTopology (X := G) (t := TopologicalSpace.cofinite)) := by
-      rw [hcofinite]
-      exact WithTopology.continuous_ofTopology _
-    let : IrreducibleSpace G :=
-      (WithTopology.ofTopology_surjective TopologicalSpace.cofinite).irreducibleSpace hfrom
-    exact not_preirreducible_nontrivial_t2 G
-  · intro hfinite
-    let : Finite G := hfinite
-    let : DiscreteTopology G := inferInstance
-    exact continuous_of_discreteTopology
+  · rintro (hfinite | htrivial)
+    · exact hfinite
+    · have : Subsingleton G := ⟨fun a b => by
+        have ha := htrivial a 1
+        have hb := htrivial b 1
+        simpa only [smul_eq_mul, mul_one] using ha.trans hb.symm⟩
+      infer_instance
+  · exact Or.inl
 
 end Group
 
@@ -296,6 +337,44 @@ theorem topology_eq_cofinite_iff (H : Subgroup G)
       exact topology_eq_cofinite_of_finite H hG
     · let : Subsingleton (G ⧸ H) := hsubsingleton
       exact Subsingleton.elim _ _
+
+/-- The canonical action of a cofinite group on its coset quotient is jointly continuous exactly
+when the group is finite or the subgroup is infinite. The quotient has its coinduced topology,
+and the domain has the product topology; no normality assumption is needed. -/
+@[to_additive
+  /-- The canonical action of a cofinite additive group on its coset quotient is jointly continuous
+  exactly when the group is finite or the additive subgroup is infinite. The quotient has its
+  coinduced topology, and the domain has the product topology; no commutativity assumption is
+  needed. -/]
+theorem continuous_smul_iff (H : Subgroup G) (hG : tG = TopologicalSpace.cofinite) :
+    Continuous (fun p : G × (G ⧸ H) => p.1 • p.2) ↔ Finite G ∨ Infinite H := by
+  constructor
+  · intro hcontinuous
+    by_cases hfiniteH : Finite H
+    · let : Finite H := hfiniteH
+      rcases (CofiniteTopology.continuous_smul_iff hG
+        (topology_eq_cofinite_of_finite H hG)).mp hcontinuous with hfiniteG | htrivial
+      · exact Or.inl hfiniteG
+      · have htop : H = ⊤ := by
+          rw [← MulAction.stabilizer_quotient H]
+          apply top_unique
+          intro g _
+          exact MulAction.mem_stabilizer_iff.mpr (htrivial g _)
+        have hsurj : Function.Surjective (Subtype.val : H → G) := by
+          intro g
+          refine ⟨⟨g, ?_⟩, rfl⟩
+          rw [htop]
+          exact Subgroup.mem_top g
+        exact Or.inl (Finite.of_surjective _ hsurj)
+    · exact Or.inr (not_finite_iff_infinite.mp hfiniteH)
+  · rintro (hfiniteG | hinfiniteH)
+    · let : Finite G := hfiniteG
+      let : Finite H := inferInstance
+      exact (CofiniteTopology.continuous_smul_iff hG
+        (topology_eq_cofinite_of_finite H hG)).mpr (Or.inl hfiniteG)
+    · let : Infinite H := hinfiniteH
+      let : IndiscreteTopology (G ⧸ H) := ⟨topology_eq_top_of_infinite H hG⟩
+      exact continuous_of_indiscreteTopology
 
 end QuotientGroup
 

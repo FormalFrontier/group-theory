@@ -48,45 +48,53 @@ private def permutationEvalZero :
   toFun s := s 0
   map_smul' _ _ := rfl
 
+variable [TopologicalSpace (Equiv.Perm (Fin 3))]
+  [DiscreteTopology (Equiv.Perm (Fin 3))]
+
 example :
     let g := Equiv.swap (0 : Fin 3) 1
     let z : orbit (Equiv.Perm (Fin 3)) (1 : Equiv.Perm (Fin 3)) :=
       ⟨g • 1, ⟨g, rfl⟩⟩
-    (orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3))
-        (permutationEvalZero 1) (permutationEvalZero.orbitMap 1 z),
-      ((orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3))
-        (permutationEvalZero 1)).symm (QuotientGroup.mk g) : Fin 3)) =
+    let hx : Continuous (fun s : Equiv.Perm (Fin 3) =>
+      s • (1 : Equiv.Perm (Fin 3))) := continuous_of_discreteTopology
+    let hy : Continuous (fun s : Equiv.Perm (Fin 3) =>
+      s • permutationEvalZero 1) :=
+      permutationEvalZero.continuous_smul_map 1 hx
+    (orbitHomeomorphQuotientStabilizer (Equiv.Perm (Fin 3))
+        (permutationEvalZero 1) hy (permutationEvalZero.orbitMap 1 z),
+      ((orbitHomeomorphQuotientStabilizer (Equiv.Perm (Fin 3))
+        (permutationEvalZero 1) hy).symm (QuotientGroup.mk g) : Fin 3)) =
       (QuotientGroup.mk g, 1) := by
   dsimp only
-  have hforward :
-      orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3)) (permutationEvalZero 1)
-        (permutationEvalZero.orbitMap 1
-          ⟨Equiv.swap (0 : Fin 3) 1 • 1, ⟨Equiv.swap 0 1, rfl⟩⟩) =
-        QuotientGroup.mk (Equiv.swap (0 : Fin 3) 1) := by
-    have hregular :
-        orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3))
-            (1 : Equiv.Perm (Fin 3))
-            ⟨Equiv.swap (0 : Fin 3) 1 • 1, ⟨Equiv.swap 0 1, rfl⟩⟩ =
-          QuotientGroup.mk (Equiv.swap (0 : Fin 3) 1) := by
-      apply (orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3))
-        (1 : Equiv.Perm (Fin 3))).symm.injective
-      apply Subtype.ext
-      simp only [Equiv.symm_apply_apply,
-        orbitEquivQuotientStabilizer_symm_apply]
+  let g := Equiv.swap (0 : Fin 3) 1
+  let z : orbit (Equiv.Perm (Fin 3)) (1 : Equiv.Perm (Fin 3)) :=
+    ⟨g • 1, ⟨g, rfl⟩⟩
+  let hx : Continuous (fun s : Equiv.Perm (Fin 3) =>
+    s • (1 : Equiv.Perm (Fin 3))) := continuous_of_discreteTopology
+  let hy : Continuous (fun s : Equiv.Perm (Fin 3) =>
+    s • permutationEvalZero 1) :=
+    permutationEvalZero.continuous_smul_map 1 hx
+  let e := orbitHomeomorphQuotientStabilizer (Equiv.Perm (Fin 3))
+    (permutationEvalZero 1) hy
+  change (e.toEquiv (permutationEvalZero.orbitMap 1 z),
+      (e.toEquiv.symm (QuotientGroup.mk g) : Fin 3)) =
+    (QuotientGroup.mk g, 1)
+  have hforward : e.toEquiv (permutationEvalZero.orbitMap 1 z) =
+      QuotientGroup.mk g := by
     calc
       _ = MulActionHom.quotientMapOfLE (permutationEvalZero.stabilizer_le 1)
-            (orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3)) 1
-              ⟨Equiv.swap (0 : Fin 3) 1 • 1, ⟨Equiv.swap 0 1, rfl⟩⟩) :=
-        permutationEvalZero.orbitEquivQuotientStabilizer_naturality 1 _
-      _ = _ := by rw [hregular, MulActionHom.quotientMapOfLE_apply_mk]
+            (orbitHomeomorphQuotientStabilizer (Equiv.Perm (Fin 3))
+              (1 : Equiv.Perm (Fin 3)) hx z) :=
+        permutationEvalZero.orbitHomeomorphQuotientStabilizer_naturality 1 hx z
+      _ = _ := by
+        dsimp only [z]
+        rw [orbitHomeomorphQuotientStabilizer_apply_smul,
+          MulActionHom.quotientMapOfLE_apply_mk]
   apply Prod.ext
   · exact hforward
   · calc
-      _ = (permutationEvalZero.orbitMap 1
-          ⟨Equiv.swap (0 : Fin 3) 1 • 1, ⟨Equiv.swap 0 1, rfl⟩⟩ : Fin 3) := by
-        simpa only [Equiv.symm_apply_apply] using
-          congrArg (fun q => ((orbitEquivQuotientStabilizer (Equiv.Perm (Fin 3))
-            (permutationEvalZero 1)).symm q : Fin 3)) hforward.symm
+      _ = (permutationEvalZero.orbitMap 1 z : Fin 3) := by
+        rw [← hforward, Equiv.symm_apply_apply]
       _ = 1 := by
         rw [MulActionHom.orbitMap_coe]
         change (Equiv.swap (0 : Fin 3) 1) 0 = 1

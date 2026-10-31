@@ -111,6 +111,17 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: A Concise Course in Algebraic Topology
+    authors:
+      - J. P. May
+    type: book
+    location: Chapter 2, section 6, group colimits
+    note: >-
+      The group-diagram construction uses Mathlib's indexed free product,
+      normal closure and quotient group. The universal property allows monoid
+      targets in independent universes. The categorical cocone explicitly lifts
+      all object groups into the quotient carrier universe; no preservation of
+      arbitrary large group colimits by universe lift is asserted.
   - title: Cohomology of Number Fields
     authors:
       - Jürgen Neukirch
@@ -467,6 +478,14 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: GrpCat.Colimits.homEquiv
+      file: GroupTheory/Category/Grp/Colimits.lean
+    - declaration: GrpCat.Colimits.iSup_range_ι
+      file: GroupTheory/Category/Grp/Colimits.lean
+    - declaration: GrpCat.Colimits.coconeIsColimit
+      file: GroupTheory/Category/Grp/Colimits.lean
+    - declaration: GrpCat.Colimits.colimitIso
+      file: GroupTheory/Category/Grp/Colimits.lean
     - declaration: Submodule.piEquiv
       file: GroupTheory/LinearAlgebra/Pi.lean
     - declaration: Submodule.subtype_piMap_comp_piEquiv

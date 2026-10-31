@@ -21,6 +21,9 @@ After forgetting invertibility and including finite sets into types, it agrees
 with `Action.FintypeCat.toEndHom` under the latter's normality and finiteness
 hypotheses. Neither hypothesis is needed for the general construction.
 
+`MonoidHom.range_normal_in_normalizer` supplies normality of a homomorphism range
+inside the normalizer of `Set.range f`, allowing the corresponding normalizer quotient.
+
 ## Multiplication convention
 
 Automorphisms multiply by ordinary function composition: `(a * b) y = a (b y)`.
@@ -46,6 +49,19 @@ not a categorical isomorphism between actions on types in different universes.
 open CategoryTheory
 
 universe u v
+
+namespace MonoidHom
+
+/-- The range of a group homomorphism is normal in the normalizer of its underlying set.
+This is `Subgroup.normal_in_normalizer` with the normalizer written using `Set.range f`. -/
+instance range_normal_in_normalizer
+    {G : Type u} {K : Type v} [Group G] [Group K] (f : G →* K) :
+    Subgroup.Normal (Subgroup.subgroupOf (MonoidHom.range f)
+      (Subgroup.normalizer (Set.range f))) := by
+  exact inferInstanceAs (Subgroup.Normal (Subgroup.subgroupOf (MonoidHom.range f)
+    (Subgroup.normalizer ((MonoidHom.range f : Subgroup K) : Set K))))
+
+end MonoidHom
 
 namespace Action
 
