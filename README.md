@@ -158,6 +158,17 @@ prior results reused from Mathlib.
   at most `1`; the same criterion holds for the raw range of a multiplicative map from
   a type with only multiplication. Selected sets may be empty and need not contain `1`.
 
+- **Finite-neighborhood joint continuity.** For `f : S × X → Y` between
+  topological spaces, fix `(s, x)` and a finite neighborhood `V` of `x`.
+  If `t ↦ f (t, y)` is continuous at `s` for every `y ∈ V` and
+  `y ↦ f (s, y)` is continuous at `x`, then `f` is continuous at `(s, x)`.
+  With all rows and columns continuous, finite neighborhoods at every point of
+  `X` give global continuity; this includes finite `X` with its given topology.
+  The scalar-operation corollaries require continuous fixed-scalar maps and
+  continuous orbit maps, not action laws. See
+  [the criteria and hypotheses](docs/Results.md#topological-refinements) and
+  [the continuity API](GroupTheory/Topology/SeparateContinuity.lean).
+
 The guide also covers [finite-index descent and property transport](docs/Results.md#finite-index-openness-and-automatic-continuity),
 [circle characters and other topology results](docs/Results.md#topological-refinements),
 [conditional cyclic norms and scalar indices](docs/Results.md#abelian-arithmetic),

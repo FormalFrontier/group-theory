@@ -431,6 +431,37 @@ See the overview for [index-two subgroups and explicit generators](../README.md#
 
 ## Topological refinements
 
+**Finite-neighborhood joint continuity.** Let `S`, `X` and `Y` be topological
+spaces in independent universes, and let `f : S × X → Y`. The pointwise criterion
+`ContinuousAt.of_finite_mem_nhds_right` gives continuity at `(s, x)` assuming:
+
+- `V` is a finite neighborhood of `x`;
+- for every `y ∈ V`, the row `t ↦ f (t, y)` is continuous at `s`;
+- the single column `y ↦ f (s, y)` is continuous at `x`.
+
+Only the selected rows need to be continuous at that point; this statement does
+not require global continuity of every row or every column. The neighborhood
+need not itself be open.
+
+For global continuity, `Continuous.of_finite_nhds_right` assumes that every point
+of `X` has some finite neighborhood, and that all rows and all columns are
+continuous. `Continuous.of_finite_right` supplies the same conclusion under
+`[Finite X]` and those two separate-continuity hypotheses. The finite space has
+its given topology: discreteness, T0 and a chosen finite enumeration are not
+additional requirements.
+
+For topological spaces `M` and `X` in independent universes, the same criteria
+apply to a primitive scalar operation `[SMul M X]`.
+`ContinuousSMul.of_finite_nhds_right` constructs `ContinuousSMul M X` from
+`[ContinuousConstSMul M X]`, continuity of each orbit map `m ↦ m • x`, and a
+finite neighborhood at every point of `X`. Thus both fixed-scalar maps and orbit
+maps are required to be continuous. `ContinuousSMul.of_finite_right` replaces
+the neighborhood hypothesis with `[Finite X]`. Neither constructor assumes
+monoid or group laws, and no finiteness condition is imposed on `M`. These
+criteria are distinct from the orbit/open-stabilizer criteria for group actions
+on discrete spaces below. See
+[the finite-neighborhood continuity API](../GroupTheory/Topology/SeparateContinuity.lean).
+
 **Fixed-action continuity.**
 
 - `Topology.IsCoinducing.continuousConstSMul` transports continuity of fixed
