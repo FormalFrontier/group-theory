@@ -6,6 +6,7 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Averaging crossed maps for finite groups
@@ -13,6 +14,12 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 For a finite group acting by additive automorphisms on an additive commutative
 group, bijective multiplication by the group order makes every crossed map
 principal. The witness is the negative inverse-order multiple of its sum.
+
+For a module over any semiring, a unit-valued group order is sufficient. The
+inverse-order operator is then inverse-unit scalar multiplication; the given
+additive group action need not be scalar-linear. The scalar bridges use Mathlib
+`IsUnit.smul_bijective` and `Nat.cast_smul_eq_nsmul`, retaining the more general
+bijective-nsmul averaging and additive-map naturality API.
 
 ## References
 
@@ -26,7 +33,26 @@ public section
 
 open scoped BigOperators
 
-universe u v w
+universe u v w r s
+
+private theorem bijective_nsmul_of_isUnit_natCast
+    {R : Type r} {A : Type v} [Semiring R] [AddCommMonoid A] [Module R A]
+    (n : ℕ) (hn : IsUnit (n : R)) :
+    Function.Bijective (fun a : A => n • a) := by
+  simpa only [Nat.cast_smul_eq_nsmul] using hn.smul_bijective (β := A)
+
+private theorem inverse_nsmul_eq_inv_smul
+    {R : Type r} {A : Type v} [Semiring R] [AddCommMonoid A] [Module R A]
+    (n : ℕ) (u : Rˣ) (hu : (u : R) = (n : R))
+    (hN : Function.Bijective (fun a : A => n • a)) (a : A) :
+    (Equiv.ofBijective _ hN).symm a = (↑(u⁻¹) : R) • a := by
+  have he : n • (Equiv.ofBijective _ hN).symm a = a :=
+    (Equiv.ofBijective _ hN).apply_symm_apply a
+  apply hN.1
+  change n • (Equiv.ofBijective _ hN).symm a = n • ((↑(u⁻¹) : R) • a)
+  rw [he, ← Nat.cast_smul_eq_nsmul R, ← hu, smul_smul]
+  simp
+
 
 namespace AddMonoidHom
 
@@ -46,6 +72,24 @@ theorem map_neg_inverse_nsmul_sum
   apply hB.1
   dsimp only
   rw [← map_nsmul, smul_neg, heA, map_neg, map_sum, smul_neg, heB]
+
+/-- Additive maps commute with negative inverse-unit multiples of finite sums when
+both units represent the same natural scalar, even over different semirings.
+No coefficient-ring map, scalar linearity, or actions are needed. -/
+theorem map_neg_inv_smul_sum
+    {ι : Type u} {R : Type r} {S : Type s} {A : Type v} {B : Type w}
+    [Fintype ι] [Semiring R] [Semiring S] [AddCommGroup A] [AddCommGroup B]
+    [Module R A] [Module S B] (f : A →+ B) (n : ℕ) (u : Rˣ) (v : Sˣ)
+    (hu : (u : R) = (n : R)) (hv : (v : S) = (n : S)) (z : ι → A) :
+    f (-((↑(u⁻¹) : R) • (∑ i, z i))) =
+      -((↑(v⁻¹) : S) • (∑ i, f (z i))) := by
+  have hnR : IsUnit (n : R) := hu ▸ u.isUnit
+  have hnS : IsUnit (n : S) := hv ▸ v.isUnit
+  have hA := bijective_nsmul_of_isUnit_natCast (A := A) n hnR
+  have hB := bijective_nsmul_of_isUnit_natCast (A := B) n hnS
+  simpa only [inverse_nsmul_eq_inv_smul n u hu hA,
+    inverse_nsmul_eq_inv_smul n v hv hB] using
+    f.map_neg_inverse_nsmul_sum n hA hB z
 
 end AddMonoidHom
 
@@ -94,6 +138,28 @@ theorem IsCocycle₁.exists_eq_smul_sub [Finite G] {z : G → A} (hz : IsCocycle
   let _ := Fintype.ofFinite G
   exact ⟨-((Equiv.ofBijective _ hN).symm (∑ g : G, z g)),
     hz.eq_smul_sub_inverse_nsmul_sum hN⟩
+
+/-- A unit-valued finite group order gives the explicit negative inverse-unit sum
+principalizing a crossed map. The given additive action need not be scalar-linear.
+This is the scalar-unit form of finite-group averaging (Brown, *Cohomology of Groups*). -/
+theorem IsCocycle₁.eq_smul_sub_inv_smul_sum [Fintype G]
+    {R : Type r} [Semiring R] [Module R A] {z : G → A}
+    (hz : IsCocycle₁ z) (u : Rˣ) (hu : (u : R) = (Nat.card G : R)) (g : G) :
+    z g = g • (-((↑(u⁻¹) : R) • (∑ h : G, z h))) -
+      (-((↑(u⁻¹) : R) • (∑ h : G, z h))) := by
+  have hn : IsUnit (Nat.card G : R) := hu ▸ u.isUnit
+  have hN := bijective_nsmul_of_isUnit_natCast (A := A) (Nat.card G) hn
+  simpa only [inverse_nsmul_eq_inv_smul (Nat.card G) u hu hN] using
+    hz.eq_smul_sub_inverse_nsmul_sum hN g
+
+/-- Every crossed map for a finite group is principal when its order is a unit
+in a semiring acting on the coefficient group. No scalar/action compatibility is needed. -/
+theorem IsCocycle₁.exists_eq_smul_sub_of_isUnit_card [Finite G]
+    {R : Type r} [Semiring R] [Module R A] {z : G → A}
+    (hz : IsCocycle₁ z) (hn : IsUnit (Nat.card G : R)) :
+    ∃ v : A, ∀ g : G, z g = g • v - v := by
+  exact hz.exists_eq_smul_sub
+    (bijective_nsmul_of_isUnit_natCast (A := A) (Nat.card G) hn)
 
 end Action
 

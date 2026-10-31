@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.CocycleAveraging
+public import GroupTheory.Cohomology.Artinian
 public import GroupTheory.Cohomology.Finite
 public import GroupTheory.Cohomology.Noetherian
 
@@ -40,6 +41,7 @@ public import GroupTheory.IndexNSmul
 public import GroupTheory.LinearAlgebra.Prod
 public import GroupTheory.LinearAlgebra.Pi
 public import GroupTheory.MonoidHom.Finite
+public import GroupTheory.MonoidHom.PositivePower
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Nilpotent

@@ -12,7 +12,7 @@ public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 
 A continuous open group homomorphism with preconnected kernel pulls the identity
 component back to the identity component. Its restriction to identity components
-is surjective, even when the original homomorphism is not surjective.
+is surjective and open, even when the original homomorphism is not surjective.
 
 Only continuity of fixed left translations is assumed. The proof uses the
 canonical induced topology on the range, whose identity component maps onto the
@@ -176,5 +176,37 @@ theorem connectedComponentOfOneMap_surjective_of_isOpenMap (q : G →* H)
   change (q.connectedComponentOfOneMap hq ⟨x, hxK⟩ : H) = y
   rw [connectedComponentOfOneMap_apply]
   exact hx
+
+/-- A continuous open homomorphism with preconnected kernel induces an open map
+between the identity components with their induced topologies. -/
+@[to_additive
+/-- A continuous open additive homomorphism with preconnected kernel induces an open map
+between the zero components with their induced topologies. -/]
+theorem isOpenMap_connectedComponentOfOneMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G)) :
+    IsOpenMap (q.connectedComponentOfOneMap hq) := by
+  intro U hU
+  obtain ⟨V, hV, rfl⟩ := isOpen_induced_iff.mp hU
+  have himage :
+      q.connectedComponentOfOneMap hq '' (Subtype.val ⁻¹' V) =
+        Subtype.val ⁻¹' (q '' V) := by
+    ext y
+    constructor
+    · rintro ⟨x, hx, rfl⟩
+      change (q.connectedComponentOfOneMap hq x : H) ∈ q '' V
+      rw [connectedComponentOfOneMap_apply]
+      exact ⟨(x : G), hx, rfl⟩
+    · rintro ⟨x, hxV, hxy⟩
+      have hxK : x ∈ Subgroup.connectedComponentOfOneOfContinuousConstSMul G := by
+        rw [← q.comap_connectedComponentOfOneOfContinuousConstSMul_eq hq ho hk]
+        change q x ∈ Subgroup.connectedComponentOfOneOfContinuousConstSMul H
+        rw [hxy]
+        exact y.property
+      refine ⟨⟨x, hxK⟩, hxV, ?_⟩
+      apply Subtype.ext
+      rw [connectedComponentOfOneMap_apply]
+      exact hxy
+  rw [himage]
+  exact (ho V hV).preimage continuous_subtype_val
 
 end MonoidHom

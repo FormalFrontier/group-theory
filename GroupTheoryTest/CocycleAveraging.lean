@@ -6,16 +6,20 @@ module
 
 import GroupTheory.CocycleAveraging
 
-/-! A finite affine action given by a crossed translation has a fixed point. -/
+/-! The inverse-unit average is the fixed point for the associated affine action. -/
 
-universe u v
+open scoped BigOperators
 
-example {G : Type u} {A : Type v} [Group G] [Finite G] [AddCommGroup A]
-    [DistribMulAction G A] {z : G → A} (hz : groupCohomology.IsCocycle₁ z)
-    (hN : Function.Bijective (fun a : A => Nat.card G • a)) :
-    ∃ a : A, ∀ g : G, g • a + z g = a := by
-  obtain ⟨v, hv⟩ := hz.exists_eq_smul_sub hN
-  refine ⟨-v, ?_⟩
+universe u v w
+
+example {G : Type u} {A : Type v} {R : Type w} [Group G] [Fintype G]
+    [Semiring R] [AddCommGroup A] [Module R A] [DistribMulAction G A]
+    {z : G → A} (hz : groupCohomology.IsCocycle₁ z)
+    (u : Rˣ) (hu : (u : R) = (Nat.card G : R)) :
+    ∀ g : G, g • ((↑(u⁻¹) : R) • (∑ h : G, z h)) + z g =
+      (↑(u⁻¹) : R) • (∑ h : G, z h) := by
   intro g
-  rw [smul_neg, hv]
+  have hg := hz.eq_smul_sub_inv_smul_sum u hu g
+  rw [smul_neg] at hg
+  rw [hg]
   abel

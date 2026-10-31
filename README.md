@@ -24,6 +24,14 @@ mathematical guides explain the proof ideas, examples and limits in more detail.
 
 ## Headline results
 
+- **Pointwise comparison from positive powers.** For monoids `M`, `N`, a monoid
+  homomorphism `f : M →* N` such that every `x : N` has some positive power in
+  `Set.range f`, and `g h : N →* Γ` with `Γ` a linearly ordered commutative monoid
+  with zero, `g (f a) ≤ h (f a)` for every `a : M` if and only if `g x ≤ h x` for
+  every `x : N`. Neither source monoid needs to be commutative or ordered, and the
+  exponent need not be uniform. See
+  [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
+
 A locally constructible subgroup is closed under separately continuous
 multiplication and continuous inversion, without separation or ambient
 Noetherian hypotheses; the additive analogue holds as well. See
@@ -216,6 +224,10 @@ constructions and prior results reused from Mathlib.
   multiple of its sum. Its formula commutes with additive maps between groups with
   bijective multiplication by the same order; transporting cocycles additionally
   needs equivariance. See the [averaging API](GroupTheory/CocycleAveraging/README.md).
+  For a module over any semiring, a unit-valued order suffices, with the
+  negative inverse-unit scalar sum as witness. The additive group action need
+  not be scalar-linear, and the scalar-form vector formula remains natural
+  under arbitrary additive maps.
 - **[Free-group ranks](GroupTheory/FreeGroup/Rank.lean).** For finite-index `H` in a finitely generated free
   group, `rank H + [G:H] = rank G * [G:H] + 1`, including ambient rank zero.
   Mathlib supplies subgroup freeness and finite generation.
