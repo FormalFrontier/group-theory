@@ -10,6 +10,12 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Subgroup membership through finite powers.** In any group, a power at the gcd of a
+  finite family of natural exponents belongs to a subgroup-like object if and only if
+  every selected power does. A family with gcd one therefore detects membership of the
+  element itself. The additive statements use natural multiples in an additive group.
+  No commutativity or normality is needed; empty families and zero exponents are included.
+  See [`GroupTheory/Algebra/Group/Subgroup/Power.lean`](GroupTheory/Algebra/Group/Subgroup/Power.lean).
 - **Finite power kernels.** In any monoid, let `a` be left-regular: left multiplication
   by `a` is injective. For arbitrary `b`, equality of their powers at the gcd of a finite
   family of natural exponents is equivalent to equality at every selected exponent.
@@ -271,6 +277,7 @@ claim is implied by this guidance.
 | Mathematics | Modules |
 | --- | --- |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
+| Subgroup membership through finite powers and gcd-one detection | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
 | Coinduced cofinite topologies and finite-versus-infinite fibers | [`Topology.Cofinite`](GroupTheory/Topology/Cofinite.lean), [paired integer projections](GroupTheoryTest/Topology/Cofinite.lean) |
 | Cofinite group operations and actions, coset quotients and homomorphisms | [`Group.Cofinite`](GroupTheory/Topology/Algebra/Group/Cofinite.lean) |
 | Coefficient-sum kernels and factorization over semirings | [`Finsupp.CoefficientSum`](GroupTheory/Finsupp/CoefficientSum.lean), [noncancellative-target client](GroupTheoryTest/Finsupp/CoefficientSum.lean) |

@@ -12,6 +12,7 @@ public import GroupTheory.Cohomology.Noetherian
 public import GroupTheory.Homology.Finite
 
 public import GroupTheory.Algebra.Group.Hom.Power
+public import GroupTheory.Algebra.Group.Subgroup.Power
 public import GroupTheory.Algebra.Order.MulHom
 public import GroupTheory.Algebra.Order.Ring.MulHom
 public import GroupTheory.Algebra.Order.Ring.Sign
