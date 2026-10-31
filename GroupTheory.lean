@@ -28,6 +28,8 @@ public import GroupTheory.Topology.Cofinite
 public import GroupTheory.Topology.Algebra.Group.Units
 public import GroupTheory.CyclicNorm
 public import GroupTheory.Category.Grp.Pushout
+public import GroupTheory.Category.Grp.ColimitMap
+public import GroupTheory.Category.Grp.ColimitMapKernel
 public import GroupTheory.Category.Grp.Colimits
 public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.Rank
