@@ -167,6 +167,42 @@ theorem forall_comp_le_iff_of_forall_pow_mem_range (f : M →* N)
 
 end Ordered
 
+section RegularValues
+
+/-- Equality of two monoid homomorphisms can be checked after precomposition with a
+homomorphism whose range contains two successive powers of every element, provided that
+every value of the first homomorphism is left-regular. The exponent may be zero. -/
+theorem cancel_right_of_successive_powers_mem_range
+    {A : Type u} {M : Type v} {N : Type w}
+    [MulOne A] [Monoid M] [Monoid N]
+    (h : A →* M)
+    (hpowers : ∀ x : M, ∃ n : ℕ,
+      x ^ n ∈ Set.range h ∧ x ^ (n + 1) ∈ Set.range h)
+    (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
+    f.comp h = g.comp h ↔ f = g := by
+  constructor
+  · intro hcomp
+    apply MonoidHom.ext
+    intro x
+    obtain ⟨n, hn, hn'⟩ := hpowers x
+    have hpow (k : ℕ) (hk : x ^ k ∈ Set.range h) : f x ^ k = g x ^ k := by
+      obtain ⟨a, ha⟩ := hk
+      calc
+        f x ^ k = f (x ^ k) := (f.map_pow x k).symm
+        _ = f (h a) := congrArg f ha.symm
+        _ = g (h a) := by
+          simpa only [MonoidHom.comp_apply] using
+            congrArg (fun q : A →* N => q a) hcomp
+        _ = g (x ^ k) := congrArg g ha
+        _ = g x ^ k := g.map_pow x k
+    have hgcd := (IsLeftRegular.pow_gcd_eq_pow_gcd_iff
+      (hf x) (g x) n (n + 1)).mpr ⟨hpow n hn, hpow (n + 1) hn'⟩
+    simpa only [Nat.gcd_self_add_right, Nat.gcd_one_right, pow_one] using hgcd
+  · intro hfg
+    exact congrArg (fun q : M →* N => q.comp h) hfg
+
+end RegularValues
+
 section SuccessivePowers
 
 universe uM uN uT
@@ -182,22 +218,8 @@ theorem comp_injective_of_successive_powers_mem_range
       x ^ n ∈ Set.range f ∧ x ^ (n + 1) ∈ Set.range f) :
     Function.Injective (fun g : N →* T => g.comp f) := by
   intro g₁ g₂ hcomp
-  apply MonoidHom.ext
-  intro x
-  obtain ⟨n, hn, hn'⟩ := h x
-  have hpow (k : ℕ) (hk : x ^ k ∈ Set.range f) : g₁ x ^ k = g₂ x ^ k := by
-    obtain ⟨a, ha⟩ := hk
-    calc
-      g₁ x ^ k = g₁ (x ^ k) := (g₁.map_pow x k).symm
-      _ = g₁ (f a) := congrArg g₁ ha.symm
-      _ = g₂ (f a) := by
-        simpa only [MonoidHom.comp_apply] using
-          congrArg (fun q : M →* T => q a) hcomp
-      _ = g₂ (x ^ k) := congrArg g₂ ha
-      _ = g₂ x ^ k := g₂.map_pow x k
-  have hnext := hpow (n + 1) hn'
-  rw [pow_succ, pow_succ, hpow n hn] at hnext
-  exact mul_left_cancel hnext
+  exact (cancel_right_of_successive_powers_mem_range f h g₁ g₂
+    (fun _ => fun _ _ h => mul_left_cancel h)).mp hcomp
 
 end SuccessivePowers
 
