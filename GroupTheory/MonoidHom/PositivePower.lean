@@ -29,6 +29,58 @@ not be commutative or ordered, and none of the targets need be groups.
 
 universe u v w
 
+section PowerKernels
+
+variable {T : Type w} [LeftCancelMonoid T]
+
+/-- Two elements of a left-cancellative monoid have equal powers at the gcd of two
+exponents if and only if they have equal powers at both exponents. -/
+@[to_additive
+  /-- Two elements of a left-cancellative additive monoid have equal multiples at the gcd
+  of two coefficients if and only if they have equal multiples at both coefficients. -/]
+theorem pow_gcd_eq_pow_gcd_iff (a b : T) (m n : ℕ) :
+    a ^ Nat.gcd m n = b ^ Nat.gcd m n ↔ a ^ m = b ^ m ∧ a ^ n = b ^ n := by
+  constructor
+  · intro h
+    constructor
+    · obtain ⟨k, hk⟩ := Nat.gcd_dvd_left m n
+      simpa only [← pow_mul, ← hk] using congrArg (fun x : T => x ^ k) h
+    · obtain ⟨k, hk⟩ := Nat.gcd_dvd_right m n
+      simpa only [← pow_mul, ← hk] using congrArg (fun x : T => x ^ k) h
+  · revert n
+    induction m using Nat.strong_induction_on with
+    | h m ih =>
+      rintro n ⟨hm, hn⟩
+      by_cases hm0 : m = 0
+      · simpa only [hm0, Nat.gcd_zero_left] using hn
+      · have hmul : a ^ (m * (n / m)) = b ^ (m * (n / m)) := by
+          simpa only [pow_mul] using congrArg (fun x : T => x ^ (n / m)) hm
+        have hrem : a ^ (n % m) = b ^ (n % m) := by
+          apply mul_left_cancel (a := a ^ (m * (n / m)))
+          calc
+            a ^ (m * (n / m)) * a ^ (n % m) = a ^ n := by
+              rw [← pow_add, Nat.add_comm, Nat.mod_add_div]
+            _ = b ^ n := hn
+            _ = b ^ (m * (n / m)) * b ^ (n % m) := by
+              rw [← pow_add, Nat.add_comm, Nat.mod_add_div]
+            _ = a ^ (m * (n / m)) * b ^ (n % m) := by rw [hmul]
+        rw [Nat.gcd_rec]
+        exact ih (n % m) (Nat.mod_lt n (Nat.pos_of_ne_zero hm0)) m ⟨hrem, hm⟩
+
+/-- Powers at two coprime exponents jointly distinguish elements of a left-cancellative
+monoid. -/
+@[to_additive
+  /-- Multiples at two coprime coefficients jointly distinguish elements of a
+  left-cancellative additive monoid. -/]
+theorem Nat.Coprime.pow_pair_injective {m n : ℕ} (h : Nat.Coprime m n) :
+    Function.Injective (fun x : T => (x ^ m, x ^ n)) := by
+  intro a b hab
+  have hgcd := (pow_gcd_eq_pow_gcd_iff a b m n).mpr
+    ⟨congrArg Prod.fst hab, congrArg Prod.snd hab⟩
+  simpa only [h.gcd_eq_one, pow_one] using hgcd
+
+end PowerKernels
+
 namespace MonoidHom
 
 variable {M : Type u} {N : Type v} [MulOne M] [Monoid N]
