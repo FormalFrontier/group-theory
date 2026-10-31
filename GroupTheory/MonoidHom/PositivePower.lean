@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Restriction of homomorphisms through powers
@@ -35,16 +36,19 @@ not be commutative or ordered, and none of the targets need be groups.
 
 universe u v w
 
-section PowerKernels
+section LeftRegularPowerKernels
 
-variable {T : Type w} [LeftCancelMonoid T]
+variable {T : Type w} [Monoid T]
 
-/-- Two elements of a left-cancellative monoid have equal powers at the gcd of two
-exponents if and only if they have equal powers at both exponents. -/
+namespace IsLeftRegular
+
+/-- If left multiplication by `a` is injective, the powers of `a` and `b` agree at the gcd
+of two exponents if and only if they agree at both exponents. The exponents may be zero. -/
 @[to_additive
-  /-- Two elements of a left-cancellative additive monoid have equal multiples at the gcd
-  of two coefficients if and only if they have equal multiples at both coefficients. -/]
-theorem pow_gcd_eq_pow_gcd_iff (a b : T) (m n : ℕ) :
+  /-- If left addition by `a` is injective, the multiples of `a` and `b` agree at the gcd
+  of two coefficients if and only if they agree at both coefficients. The coefficients may
+  be zero. -/]
+theorem pow_gcd_eq_pow_gcd_iff {a : T} (ha : IsLeftRegular a) (b : T) (m n : ℕ) :
     a ^ Nat.gcd m n = b ^ Nat.gcd m n ↔ a ^ m = b ^ m ∧ a ^ n = b ^ n := by
   constructor
   · intro h
@@ -62,7 +66,7 @@ theorem pow_gcd_eq_pow_gcd_iff (a b : T) (m n : ℕ) :
       · have hmul : a ^ (m * (n / m)) = b ^ (m * (n / m)) := by
           simpa only [pow_mul] using congrArg (fun x : T => x ^ (n / m)) hm
         have hrem : a ^ (n % m) = b ^ (n % m) := by
-          apply mul_left_cancel (a := a ^ (m * (n / m)))
+          apply IsLeftRegular.pow (m * (n / m)) ha
           calc
             a ^ (m * (n / m)) * a ^ (n % m) = a ^ n := by
               rw [← pow_add, Nat.add_comm, Nat.mod_add_div]
@@ -72,6 +76,24 @@ theorem pow_gcd_eq_pow_gcd_iff (a b : T) (m n : ℕ) :
             _ = a ^ (m * (n / m)) * b ^ (n % m) := by rw [hmul]
         rw [Nat.gcd_rec]
         exact ih (n % m) (Nat.mod_lt n (Nat.pos_of_ne_zero hm0)) m ⟨hrem, hm⟩
+
+end IsLeftRegular
+
+end LeftRegularPowerKernels
+
+section PowerKernels
+
+variable {T : Type w} [LeftCancelMonoid T]
+
+/-- Two elements of a left-cancellative monoid have equal powers at the gcd of two
+exponents if and only if they have equal powers at both exponents. -/
+@[to_additive
+  /-- Two elements of a left-cancellative additive monoid have equal multiples at the gcd
+  of two coefficients if and only if they have equal multiples at both coefficients. -/]
+theorem pow_gcd_eq_pow_gcd_iff (a b : T) (m n : ℕ) :
+    a ^ Nat.gcd m n = b ^ Nat.gcd m n ↔ a ^ m = b ^ m ∧ a ^ n = b ^ n := by
+  exact IsLeftRegular.pow_gcd_eq_pow_gcd_iff (a := a)
+    (fun _ _ h => mul_left_cancel h) b m n
 
 /-- Powers at two coprime exponents jointly distinguish elements of a left-cancellative
 monoid. -/
