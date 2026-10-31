@@ -17,6 +17,11 @@ prior results reused from Mathlib.
   monoid and injective left addition by `a`. No regularity of `b`, global cancellation,
   commutativity or group assumption is needed. Empty families and zero exponents are
   included; see [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
+- **Binary right-regular power kernels.** In any monoid, if right multiplication by `a`
+  is injective, equality of powers of `a` and arbitrary `b` at two natural exponents is
+  equivalent to equality at their gcd. Coprime exponents therefore give `a = b`.
+  The gcd equivalence includes zero exponents, even the pair `(0, 0)`.
+  Additive versions hold in any additive monoid.
 - **Restriction through powers.** Let `f : M →* N`, where `M` has the stock `MulOne`
   structure and `N` is a monoid. If every `x : N` has some positive power in `Set.range f`,
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive

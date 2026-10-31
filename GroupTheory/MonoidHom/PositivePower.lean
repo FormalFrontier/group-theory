@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Regular.Basic
@@ -29,6 +30,11 @@ the second element is unrestricted. This combines `IsLeftRegular.pow_gcd_eq_pow_
 with Mathlib's `Finset.gcd` API, including empty families and zero exponents. The additive
 images require only an additive monoid and injective left addition by the first element.
 The `Finset` statements retain the left-cancellative specialization.
+
+For two exponents, right regularity of the first element also suffices, with no
+regularity assumption on the second element. Coprime exponents then determine the
+element. The multiplicative and additive statements are transported from the
+corresponding left-regular binary kernels through Mathlib's opposite structures.
 
 The domain of the precomposed homomorphism needs only the stock `MulOne` structure:
 its associativity, identity laws and powers are not used. The intermediate monoid need
@@ -83,6 +89,34 @@ theorem pow_gcd_eq_pow_gcd_iff {a : T} (ha : IsLeftRegular a) (b : T) (m n : ℕ
 end IsLeftRegular
 
 end LeftRegularPowerKernels
+
+/-- If right multiplication by `a` is injective, the powers of `a` and `b` agree at the gcd
+of two exponents if and only if they agree at both exponents. The exponents may be zero. -/
+@[to_additive
+  /-- If right addition by `a` is injective, the multiples of `a` and `b` agree at the gcd
+  of two coefficients if and only if they agree at both coefficients. The coefficients may
+  be zero. -/]
+theorem IsRightRegular.pow_gcd_eq_pow_gcd_iff {T : Type w} [Monoid T] {a : T}
+    (ha : IsRightRegular a) (b : T) (m n : ℕ) :
+    a ^ Nat.gcd m n = b ^ Nat.gcd m n ↔ a ^ m = b ^ m ∧ a ^ n = b ^ n := by
+  have haop : IsLeftRegular (MulOpposite.op a) := by
+    intro x y h
+    exact congrArg MulOpposite.op (ha (congrArg MulOpposite.unop h))
+  have hop (x y : T) : MulOpposite.op x = MulOpposite.op y ↔ x = y :=
+    ⟨fun h => congrArg MulOpposite.unop h, fun h => congrArg MulOpposite.op h⟩
+  simpa only [← MulOpposite.op_pow, hop] using
+    (IsLeftRegular.pow_gcd_eq_pow_gcd_iff haop (MulOpposite.op b) m n)
+
+/-- Agreement at two coprime powers determines an element whose right multiplication
+is injective. -/
+@[to_additive
+  /-- Agreement at two coprime multiples determines an element whose right addition
+  is injective. -/]
+theorem IsRightRegular.eq_of_pow_eq_pow_of_coprime {T : Type w} [Monoid T]
+    {a b : T} {m n : ℕ} (ha : IsRightRegular a) (hcop : Nat.Coprime m n)
+    (hm : a ^ m = b ^ m) (hn : a ^ n = b ^ n) : a = b := by
+  have hgcd := (ha.pow_gcd_eq_pow_gcd_iff b m n).2 ⟨hm, hn⟩
+  simpa only [hcop.gcd_eq_one, pow_one] using hgcd
 
 section PowerKernels
 
