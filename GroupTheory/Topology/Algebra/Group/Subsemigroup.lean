@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.NoetherianSpace
+public import GroupTheory.Topology.ClosedEmbedding
 
 /-!
 # Inverse closure of closed subsemigroups
@@ -18,18 +19,18 @@ are continuous and either its induced topology is Noetherian, or it is preirredu
 and strict inclusion of ambient irreducible closed subsets is well-founded. The
 subsemigroup may be empty; no continuity of right translations or of inversion is needed.
 
-Both proofs choose a minimal closed left translate among the translates by natural
-powers of a fixed element. Multiplication closure makes consecutive translates nested,
-and minimality then allows cancellation. The Noetherian condition is required only on
-the original subsemigroup, not on the ambient group. In the preirreducible case, the
-translates are irreducible closed subsets of the ambient group.
+Both results follow by restricting a fixed left translation to the closed subsemigroup
+and applying surjectivity of closed self-embeddings with finitely many irreducible
+components. The Noetherian condition is required only on the original subsemigroup,
+not on the ambient group. In the preirreducible case, well-foundedness transfers to
+the subsemigroup through the map on irreducible closed sets induced by its inclusion.
 
 For a submonoid, the same result says that each of its elements is a unit in the
 submonoid.
 
 ## Acknowledgements
 
-The descending-translate argument is due to Flint.
+The inverse-closure argument by minimal left translates is due to Flint.
 -/
 
 @[expose] public section
@@ -41,6 +42,27 @@ open scoped Pointwise
 
 variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
 
+@[to_additive]
+private theorem Subsemigroup.inv_mem_of_isClosed_of_finite_irreducibleComponents
+    (S : Subsemigroup G) (hS : IsClosed (S : Set G))
+    (hfin : (irreducibleComponents S).Finite)
+    [WellFoundedLT (IrreducibleCloseds S)] {a : G} (ha : a ∈ S) : a⁻¹ ∈ S := by
+  let f : S → S := fun y => ⟨a * y, S.mul_mem ha y.property⟩
+  have hf : Topology.IsClosedEmbedding f :=
+    Topology.IsClosedEmbedding.of_comp Topology.IsEmbedding.subtypeVal
+      ((Homeomorph.smul (α := G) a).isClosedEmbedding.comp hS.isClosedEmbedding_subtypeVal)
+  have hsurj : Function.Surjective f :=
+    hf.surjective_of_finite_irreducibleComponents hfin
+  have hshift : (S : Set G) ⊆ a • (S : Set G) := by
+    intro y hy
+    obtain ⟨z, hz⟩ := hsurj ⟨y, hy⟩
+    exact ⟨(z : G), z.property, congrArg Subtype.val hz⟩
+  have hone : (1 : G) ∈ S := by
+    simpa only [smul_eq_mul, inv_mul_cancel, SetLike.mem_coe] using
+      (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift ha))
+  simpa only [smul_eq_mul, mul_one, SetLike.mem_coe] using
+    (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift hone))
+
 /-- A closed preirreducible subsemigroup is closed under inverses if strict inclusion
 of ambient irreducible closed subsets is well-founded and fixed left translations are
 continuous. -/
@@ -51,32 +73,12 @@ theorem Subsemigroup.inv_mem_of_isClosed_of_isPreirreducible
     [WellFoundedLT (TopologicalSpace.IrreducibleCloseds G)] (S : Subsemigroup G)
     (hS : IsClosed (S : Set G)) (hirr : IsPreirreducible (S : Set G))
     {a : G} (ha : a ∈ S) : a⁻¹ ∈ S := by
-  classical
-  let C : ℕ → IrreducibleCloseds G := fun n =>
-    ⟨(fun y : G => a ^ n * y) '' (S : Set G),
-      ⟨⟨a ^ n * a, a, ha, rfl⟩,
-        hirr.image _ (continuous_const_smul (a ^ n)).continuousOn⟩,
-      isClosedMap_smul (a ^ n) (S : Set G) hS⟩
-  have hstep (n : ℕ) : C (n + 1) ≤ C n := by
-    rintro y ⟨z, hz, hy⟩
-    exact ⟨a * z, S.mul_mem ha hz, by simpa only [pow_succ, mul_assoc] using hy⟩
-  obtain ⟨_, ⟨n, rfl⟩, hn⟩ :=
-    (wellFounded_lt : WellFounded ((· < ·) : IrreducibleCloseds G →
-      IrreducibleCloseds G → Prop)).has_min (Set.range C) (Set.range_nonempty C)
-  have heq : C (n + 1) = C n := by
-    apply le_antisymm (hstep n)
-    by_contra h
-    exact hn _ ⟨n + 1, rfl⟩ (lt_of_le_not_ge (hstep n) h)
-  have hshift : (S : Set G) ⊆ a • (S : Set G) := by
-    apply (Set.smul_set_subset_smul_set_iff (a := a ^ n)).mp
-    have hle : C n ≤ C (n + 1) := le_of_eq heq.symm
-    change a ^ n • (S : Set G) ⊆ a ^ (n + 1) • (S : Set G) at hle
-    simpa only [pow_succ, mul_smul] using hle
-  have hone : (1 : G) ∈ S := by
-    simpa only [smul_eq_mul, inv_mul_cancel, SetLike.mem_coe] using
-      (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift ha))
-  simpa only [smul_eq_mul, mul_one, SetLike.mem_coe] using
-    (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift hone))
+  let : IrreducibleSpace S := Subtype.irreducibleSpace ⟨⟨a, ha⟩, hirr⟩
+  let : WellFoundedLT (IrreducibleCloseds S) :=
+    (IrreducibleCloseds.map_strictMono_of_isInducing
+      hS.isClosedEmbedding_subtypeVal.isInducing).wellFoundedLT
+  exact S.inv_mem_of_isClosed_of_finite_irreducibleComponents hS
+    (by rw [irreducibleComponents_eq_singleton]; exact Set.finite_singleton _) ha
 
 /-- A closed subsemigroup with Noetherian induced topology is closed under inverses,
 provided fixed left translations in the ambient group are continuous. -/
@@ -84,37 +86,11 @@ provided fixed left translations in the ambient group are continuous. -/
 under negation, provided fixed left translations in the ambient group are continuous. -/]
 theorem Subsemigroup.inv_mem_of_isClosed_of_noetherianSpace (S : Subsemigroup G)
     (hS : IsClosed (S : Set G)) [NoetherianSpace S] {x : G} (hx : x ∈ S) : x⁻¹ ∈ S := by
-  classical
-  let C : ℕ → Closeds S := fun n =>
-    ⟨(Subtype.val : S → G) ⁻¹' ((fun y : G => x ^ n * y) '' (S : Set G)),
-      (isClosedMap_smul (x ^ n) (S : Set G) hS).preimage continuous_subtype_val⟩
-  have hstep (n : ℕ) : C (n + 1) ≤ C n := by
-    rintro y ⟨z, hz, hy⟩
-    exact ⟨x * z, S.mul_mem hx hz, by simpa only [pow_succ, mul_assoc] using hy⟩
-  obtain ⟨_, ⟨n, rfl⟩, hn⟩ :=
-    (wellFounded_lt : WellFounded ((· < ·) : Closeds S → Closeds S → Prop)).has_min
-      (Set.range C) (Set.range_nonempty C)
-  have heq : C (n + 1) = C n := by
-    apply le_antisymm (hstep n)
-    by_contra h
-    exact hn _ ⟨n + 1, rfl⟩ (lt_of_le_not_ge (hstep n) h)
-  have hmul (k : ℕ) {y : G} (hy : y ∈ S) : x ^ k * y ∈ S := by
-    induction k with
-    | zero => simpa only [pow_zero, one_mul] using hy
-    | succ k ih => simpa only [pow_succ', mul_assoc] using S.mul_mem hx ih
-  have hshift : (S : Set G) ⊆ x • (S : Set G) := by
-    intro y hy
-    have hyC : (⟨x ^ n * y, hmul n hy⟩ : S) ∈ C n := ⟨y, hy, rfl⟩
-    rw [← heq] at hyC
-    obtain ⟨z, hz, hz_eq⟩ := hyC
-    have hz_eq' : x ^ n * (x * z) = x ^ n * y := by
-      simpa only [pow_succ, mul_assoc] using hz_eq
-    exact ⟨z, hz, mul_left_cancel hz_eq'⟩
-  have hone : (1 : G) ∈ S := by
-    simpa only [smul_eq_mul, inv_mul_cancel, SetLike.mem_coe] using
-      (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift hx))
-  simpa only [smul_eq_mul, mul_one, SetLike.mem_coe] using
-    (Set.mem_smul_set_iff_inv_smul_mem.mp (hshift hone))
+  let : WellFoundedLT (IrreducibleCloseds S) :=
+    (show StrictMono (fun C : IrreducibleCloseds S =>
+      (⟨(C : Set S), C.isClosed⟩ : Closeds S)) from fun _ _ h => h).wellFoundedLT
+  exact S.inv_mem_of_isClosed_of_finite_irreducibleComponents hS
+    NoetherianSpace.finite_irreducibleComponents hx
 
 /-- Every element of a closed submonoid with Noetherian induced topology is a unit
 in that submonoid, provided fixed left translations in the ambient group are continuous. -/

@@ -14,6 +14,8 @@ The closure of a subsemigroup is stable under multiplication if fixed left
 multiplications are continuous and right multiplication by each member of the
 subsemigroup is continuous on its closure. If the closure has Noetherian induced
 topology, the closed-subsemigroup inverse theorem then makes it stable under inverses.
+The same holds for a preirreducible subsemigroup when irreducible closed subsets of the
+ambient group satisfy the descending chain condition.
 
 Only the original right factors in the subsemigroup need the stated continuity.
 Neither ambient Noetherianity nor continuity of inversion is required.
@@ -62,5 +64,20 @@ theorem inv_mem_closure_of_noetherianSpace (S : Subsemigroup G)
         mul_mem_closure_of_continuousOn_right S
           (fun x _ => (continuous_id.const_smul x).continuousOn) hR ha hb }
   exact T.inv_mem_of_isClosed_of_noetherianSpace isClosed_closure hx
+
+/-- The topological closure of a preirreducible subsemigroup is closed under inverses
+if irreducible closed subsets of the ambient group satisfy the descending chain condition
+and right multiplication by each original member is continuous on the closure. -/
+theorem inv_mem_closure_of_isPreirreducible (S : Subsemigroup G)
+    (hR : ∀ s ∈ S, ContinuousOn (fun x : G => x * s) (_root_.closure (S : Set G)))
+    (hS : IsPreirreducible (S : Set G))
+    [WellFoundedLT (TopologicalSpace.IrreducibleCloseds G)]
+    {x : G} (hx : x ∈ _root_.closure (S : Set G)) : x⁻¹ ∈ _root_.closure (S : Set G) := by
+  let T : Subsemigroup G :=
+    { carrier := _root_.closure (S : Set G)
+      mul_mem' := fun ha hb =>
+        mul_mem_closure_of_continuousOn_right S
+          (fun x _ => (continuous_id.const_smul x).continuousOn) hR ha hb }
+  exact T.inv_mem_of_isClosed_of_isPreirreducible isClosed_closure hS.closure hx
 
 end Subsemigroup
