@@ -22,10 +22,13 @@ be checked on that range. The positive exponent may depend on the element.
 If two consecutive powers of every element lie in the range, precomposition is injective
 for homomorphisms into any left-cancellative monoid. Here the exponent may be zero.
 
-Equality of a finite family of powers in a left-cancellative monoid is equivalent to
-equality at the gcd of their exponents. When this gcd is one, the family distinguishes
-elements. This combines `pow_gcd_eq_pow_gcd_iff` with Mathlib's `Finset.gcd` API,
-including empty families and zero exponents.
+In any monoid, if the first element is left-regular, equality at a finite family of powers
+is equivalent to equality at the gcd of their exponents. When this gcd is one, the family
+distinguishes the elements. Only left multiplication by the first element must be injective;
+the second element is unrestricted. This combines `IsLeftRegular.pow_gcd_eq_pow_gcd_iff`
+with Mathlib's `Finset.gcd` API, including empty families and zero exponents. The additive
+images require only an additive monoid and injective left addition by the first element.
+The `Finset` statements retain the left-cancellative specialization.
 
 The domain of the precomposed homomorphism needs only the stock `MulOne` structure:
 its associativity, identity laws and powers are not used. The intermediate monoid need
@@ -225,6 +228,40 @@ end SuccessivePowers
 
 end MonoidHom
 
+namespace IsLeftRegular
+
+variable {ι : Type u} {T : Type v} [Monoid T]
+
+/-- If left multiplication by `a` is injective, the powers of `a` and any `b` agree at
+the gcd of a finite family of exponents if and only if they agree at every selected
+exponent. Empty families and zero exponents are included. -/
+@[to_additive
+  /-- If left addition by `a` is injective, the multiples of `a` and any `b` agree at
+  the gcd of a finite family of coefficients if and only if they agree at every selected
+  coefficient. Empty families and zero coefficients are included. -/]
+theorem pow_finset_gcd_eq_pow_finset_gcd_iff {a : T} (ha : IsLeftRegular a)
+    (b : T) (s : Finset ι) (e : ι → ℕ) :
+    a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ ih =>
+      rw [Finset.gcd_insert, gcd_eq_nat_gcd, ha.pow_gcd_eq_pow_gcd_iff, ih,
+        Finset.forall_mem_insert]
+
+/-- A finite family of powers with gcd one distinguishes a left-regular element
+from any other element of a monoid. -/
+@[to_additive eq_of_forall_nsmul_eq_of_gcd_eq_one
+  /-- A finite family of natural multiples with gcd one distinguishes an add-left-regular
+  element from any other element of an additive monoid. -/]
+theorem eq_of_forall_pow_eq_of_gcd_eq_one {a : T} (ha : IsLeftRegular a)
+    {s : Finset ι} {e : ι → ℕ} {b : T}
+    (hg : s.gcd e = 1) (h : ∀ i ∈ s, a ^ (e i) = b ^ (e i)) : a = b := by
+  have hab := (ha.pow_finset_gcd_eq_pow_finset_gcd_iff b s e).2 h
+  simpa only [hg, pow_one] using hab
+
+end IsLeftRegular
+
 namespace Finset
 
 variable {ι : Type u} {T : Type v} [LeftCancelMonoid T]
@@ -232,19 +269,13 @@ variable {ι : Type u} {T : Type v} [LeftCancelMonoid T]
 /-- Two elements of a left-cancellative monoid have equal powers at the gcd of a finite
 family of exponents if and only if they have equal powers at every exponent in the family. -/
 theorem pow_gcd_eq_pow_gcd_iff (s : Finset ι) (e : ι → ℕ) (a b : T) :
-    a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s _ ih =>
-      rw [Finset.gcd_insert, gcd_eq_nat_gcd, _root_.pow_gcd_eq_pow_gcd_iff, ih,
-        Finset.forall_mem_insert]
+    a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i) :=
+  (IsLeftRegular.all a).pow_finset_gcd_eq_pow_finset_gcd_iff b s e
 
 /-- A finite family of powers whose exponents have gcd one distinguishes elements of a
 left-cancellative monoid. -/
 theorem eq_of_forall_pow_eq_of_gcd_eq_one {s : Finset ι} {e : ι → ℕ} {a b : T}
-    (hg : s.gcd e = 1) (h : ∀ i ∈ s, a ^ (e i) = b ^ (e i)) : a = b := by
-  have hab := (pow_gcd_eq_pow_gcd_iff s e a b).2 h
-  simpa only [hg, pow_one] using hab
+    (hg : s.gcd e = 1) (h : ∀ i ∈ s, a ^ (e i) = b ^ (e i)) : a = b :=
+  (IsLeftRegular.all a).eq_of_forall_pow_eq_of_gcd_eq_one hg h
 
 end Finset

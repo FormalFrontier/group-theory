@@ -3,6 +3,13 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    In any monoid, a left-regular element a and arbitrary b have equal powers at
+    the gcd of a finite family of natural exponents if and only if their powers
+    agree at every selected exponent. Gcd one gives a = b. The additive images
+    require only an additive monoid and injective left addition by a. Neither
+    statement requires regularity of b, global cancellation, commutativity,
+    nonempty families or positive exponents.
+
     Every topological group has a Hausdorff, totally disconnected quotient
     by its identity component, without separation or local compactness of
     the original group. Continuous homomorphisms to totally disconnected
@@ -478,6 +485,14 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: IsLeftRegular.pow_finset_gcd_eq_pow_finset_gcd_iff
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: IsAddLeftRegular.nsmul_finset_gcd_eq_nsmul_finset_gcd_iff
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: IsAddLeftRegular.eq_of_forall_nsmul_eq_of_gcd_eq_one
+      file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: GrpCat.Colimits.homEquiv
       file: GroupTheory/Category/Grp/Colimits.lean
     - declaration: GrpCat.Colimits.iSup_range_ι
