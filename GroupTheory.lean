@@ -74,6 +74,7 @@ public import GroupTheory.Topology.Algebra.Group.Subgroup
 public import GroupTheory.Topology.Algebra.Group.Subsemigroup
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.OpenMap
+public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.Product
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom

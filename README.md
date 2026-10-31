@@ -1,99 +1,55 @@
 # Group Theory
 
-Reusable Lean results on identity-component quotients of topological groups,
-compact open subgroups of totally disconnected locally compact groups,
-open kernels and finite images of continuous group homomorphisms,
-compact-open discreteness and finite-quotient factorization of discrete-valued maps,
-finite-coordinate quotient factorization on arbitrary powers of compact groups,
-structured finite-coordinate factorization of continuous group homomorphisms,
-finite-image and open-kernel rational-circle character subgroups,
-the rational-circle inclusion and comparison with continuous circle characters,
-open finite-index subgroups of compact commutative groups with dense finite generation,
-continuous compatible sections of monoid diagrams, open quotients of compact
-totally disconnected spaces, finite cyclic norms and natural scalar maps of
-finitely generated abelian groups, kernels of induced quotient maps, torsion in
-additive quotients, additive and biadditive Grothendieck extensions, ring structures
-and multiplicative universal properties on additive Grothendieck groups of semirings,
-canonical coset-action isomorphisms, product-coset orbits and double cosets,
-invariant equivalence relations, and automorphism groups of group actions.
+A Lean library for group actions and fixed vectors, topological groups and
+abstract automatic continuity, Grothendieck completions, and abelian arithmetic.
 The library depends directly on [Mathlib](https://github.com/leanprover-community/mathlib4)
-and [Homological Algebra](https://github.com/FormalFrontier/homological-algebra),
-not on a source repository or the incubator. Homological Algebra supplies the
-finite-homology interface used by the finite group-cohomology results. The
-mathematical guides explain the proof ideas, examples and limits in more detail.
+and [Homological Algebra](https://github.com/FormalFrontier/homological-algebra). Homological Algebra supplies the
+finite-homology interface used by the finite group-cohomology results. The [result guide](docs/Results.md) gives detailed
+statements, examples and API qualifications, and identifies constructions and
+prior results reused from Mathlib.
 
 ## Headline results
 
-- **Pointwise comparison from positive powers.** For monoids `M`, `N`, a monoid
-  homomorphism `f : M →* N` such that every `x : N` has some positive power in
-  `Set.range f`, and `g h : N →* Γ` with `Γ` a linearly ordered commutative monoid
-  with zero, `g (f a) ≤ h (f a)` for every `a : M` if and only if `g x ≤ h x` for
-  every `x : N`. Neither source monoid needs to be commutative or ordered, and the
-  exponent need not be uniform. See
+- **Restriction through powers.** Let `f : M →* N`, where `M` has the stock `MulOne`
+  structure and `N` is a monoid. If every `x : N` has some positive power in `Set.range f`,
+  precomposition by `f` is injective on homomorphisms into any monoid with unique positive
+  roots (`IsMulTorsionFree`); equality can therefore be checked after restriction. The
+  additive statements use positive multiples and torsion-free additive targets.
+- **Restriction through consecutive powers.** If for every `x : N` both `x ^ n` and
+  `x ^ (n + 1)` lie in `Set.range f` for some natural `n`, precomposition is injective on
+  homomorphisms into any left-cancellative monoid. The exponent may be zero; no unique-root,
+  commutativity, order or group hypothesis on the target is needed.
+- **Pointwise comparison from positive powers.** Under the positive-power range condition,
+  homomorphisms `g h : N →* Γ` to a linearly ordered commutative monoid with zero satisfy
+  `g (f a) ≤ h (f a)` for all `a : M` if and only if `g x ≤ h x` for all `x : N`.
+  Neither associativity nor identity laws on `M` are used, and `N` need not be commutative
+  or ordered. The positive exponent need not be uniform. These restriction results are in
   [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 
-A locally constructible subgroup is closed under separately continuous
-multiplication and continuous inversion, without separation or ambient
-Noetherian hypotheses; the additive analogue holds as well. See
-[`GroupTheory.Topology.Algebra.Group.LocallyClosed`](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean).
+- **Locally constructible subgroups.** A locally constructible subgroup is closed under separately continuous
+  multiplication and continuous inversion, without separation or ambient
+  Noetherian hypotheses; the additive analogue holds as well. See
+  [`GroupTheory.Topology.Algebra.Group.LocallyClosed`](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean).
 
-- **[Cofinite group topologies](GroupTheory/Topology/Algebra/Group/Cofinite.lean).**
-  On any group with the cofinite topology, inversion and every fixed left or right
-  translation are continuous. Joint multiplication is continuous exactly when the
-  group is finite, including the trivial group and finite noncommutative groups.
-  More generally, an action on an arbitrary cofinite space is jointly continuous
-  exactly when the acting cofinite group is finite or the action is pointwise trivial.
-  Both statements use the ordinary product topology, not the cofinite topology on
-  the set of pairs. No group structure on the action target, commutativity or
-  topological-group assumption is needed. A homomorphism from a group to a type with multiplication
-  and identity (`MulOneClass`), both carrying their cofinite topologies, is continuous
-  exactly when it is trivial or its kernel is finite. More generally, finite kernel
-  gives continuity from any group with a T1 topology to a cofinite target. A nontrivial
-  continuous homomorphism from a cofinite group to any T0 target has finite kernel;
-  consequently, a continuous finite-range homomorphism from an infinite cofinite group
-  to a T0 target is trivial. The ambient target need not be finite. The additive
-  statements use possibly noncommutative additive groups and `AddZeroClass` targets.
-  The underlying [finite-kernel/fiber bridge](GroupTheory/MonoidHom/Finite.lean) needs
-  no topology or target associativity or inverses.
-  For any subgroup `H`, the usual left-coset quotient of a cofinite group has the
-  cofinite topology when `H` is finite and the indiscrete topology when `H` is infinite.
-  It is cofinite exactly when `H` is finite **or the quotient is subsingleton**; in
-  particular, the whole subgroup of an infinite group is an essential exception to
-  the finite-subgroup converse. No normality, separation or continuity of group
-  operations is required. The canonical left action on this quotient is jointly
-  continuous exactly when the acting group is finite or `H` is infinite, with no
-  normality assumption. For every `H` it is continuous separately in each variable.
-  The same results hold for arbitrary additive groups. The
-  [integer action on its quotient by twice the integers](GroupTheoryTest/Topology/Cofinite.lean)
-  has distinct inseparable orbit points in the canonical indiscrete topology.
-  More generally, a [surjection with finite fibers](GroupTheory/Topology/Cofinite.lean)
-  coinduces the cofinite topology from a cofinite source, while a map with every fiber
-  infinite coinduces the indiscrete topology. A surjective homomorphism with finite
-  kernel gives the first case with only `MulOneClass` on the target, or `AddZeroClass`
-  additively, without a target topology hypothesis. A
-  [paired integer-projection example](GroupTheoryTest/Topology/Cofinite.lean) compares
-  finite and infinite kernels, using cofinite topology on each whole product carrier,
-  not product topology.
+- **[Cofinite groups and actions](GroupTheory/Topology/Algebra/Group/Cofinite.lean).**
+  Inversion and fixed translations are continuous on every cofinite group;
+  joint multiplication is continuous exactly when the group is finite. An action
+  of a cofinite group on any cofinite space is jointly continuous exactly when
+  the actor is finite or the action is pointwise trivial. These use the ordinary
+  product topology, not the cofinite topology on the whole set of pairs.
 
-- **[Finite-index openness under quotients and sections](GroupTheory/Topology/FiniteIndex/Descent.lean).**
-  For groups with arbitrary given topologies, openness of every finite-index subgroup
-  descends along homomorphisms that reflect open preimages of all subsets. In particular,
-  this applies to a homomorphism with a continuous right-inverse function (not necessarily
-  a homomorphism), a quotient-map homomorphism, a surjective open homomorphism, and the
-  canonical quotient by any normal subgroup. No topological-group or separation
-  hypothesis is needed. Multiplicative homeomorphisms preserve the condition in both
-  directions, and the same results hold additively. A
-  [nonlinear section of the integer projection](GroupTheoryTest/Topology/FiniteIndex/Descent.lean)
-  illustrates the function-level section theorem.
+- **[Coset actions and conjugacy](GroupTheory/GroupAction/Quotient.lean).**
+  For arbitrary subgroups `H, K` of a group `G`, equivariant maps `G/H → G/K`
+  exist exactly when `H ≤ gKg⁻¹` for some `g`; the coset actions are isomorphic
+  exactly when `H, K` are conjugate. Maps both ways alone do not suffice.
 
 - **[Coefficient-sum relations](GroupTheory/Finsupp/CoefficientSum.lean).**
-  Over any semiring `R`, for an additive commutative group `M` with an `R`-module
-  structure and any specified `i₀ : ι`, the kernel of the coefficient sum on
-  `ι →₀ M` is the `R`-span of `single i m - single i₀ m`. An `R`-linear map into
-  an additive commutative monoid with an `R`-module structure factors uniquely
-  through this sum exactly when its singleton components agree, equivalently when
-  it vanishes on the kernel. The factor is composition with `single i₀`. The index type
-  may be infinite; the target need not be cancellative or an additive group.
+  Over a semiring `R`, for an additive commutative group `M` with an `R`-module
+  structure and a chosen `i₀ : ι`, the coefficient-sum kernel on `ι →₀ M` is
+  the `R`-span of `single i m - single i₀ m`. Linear maps into additive
+  commutative monoid modules factor uniquely through the sum exactly when their
+  singleton components agree; neither finite indices nor cancellative targets
+  are required.
 
 - **[Group diagrams by arrow relations](GroupTheory/Category/Grp/Colimits.lean).**
   For any group-valued diagram, the free product of its object groups modulo the
@@ -107,109 +63,19 @@ Noetherian hypotheses; the additive analogue holds as well. See
   [nonabelian example](GroupTheoryTest/Category/Grp/Colimits.lean) combines an
   identity arrow with an isolated component and detects noncommuting generators.
 
-- **[Group pushouts over a trivial vertex](GroupTheory/Category/Grp/Pushout.lean).**
-  For a group homomorphism `f : A →* B` and any trivial group `T`, the canonical
-  quotient `B / normalClosure (range f)` with its quotient leg from `B` and
-  trivial leg from `T` is the pushout. In every group pushout of this span,
-  the leg from `B` is surjective with kernel exactly `normalClosure (range f)`.
-  The unbundled universal property allows independent source, vertex and target
-  universes and monoid targets; the categorical square uses `GrpCat`'s ambient
-  universe. No commutativity, injectivity or exactness hypothesis is required.
+- **[Pushouts over a trivial group](GroupTheory/Category/Grp/Pushout.lean).**
+  For a group homomorphism `f : A →* B` and a trivial group `T`, the pushout is
+  `B / normalClosure (range f)`. In every such group pushout the `B`-leg is
+  surjective with exactly that kernel, without injectivity or commutativity
+  assumptions. The guide distinguishes the unbundled and `GrpCat` universes.
 
-- **[Ultrafilter-limit homomorphisms](GroupTheory/Topology/Ultrafilter.lean).** For any
-  compact Hausdorff monoid with continuous multiplication, taking the limit along a
-  fixed ultrafilter defines a surjective abstract homomorphism from its power. When
-  the ultrafilter contains all cofinite sets, every fiber is dense; for a nontrivial
-  target the map is not continuous at the constant identity family. The direct
-  additive API uses an additive monoid with continuous addition. A
-  [countable-power example](GroupTheoryTest/Topology/Ultrafilter.lean) uses the original
-  addition and Mathlib discrete topology on `ZMod 3` to give a surjective finite-image
-  noncontinuous homomorphism with dense proper zero fiber.
-  For any infinite index type `ι` and finite group `H` with its given discrete topology,
-  `MonoidHom.exists_surjective_dense_ker_pi` gives a surjective abstract homomorphism
-  `(ι → H) →* H` whose normal kernel is dense and has index `Nat.card H`.
-  The group need not be commutative, and the two types may lie in independent universes.
-  If `H` is nontrivial, the kernel is proper and neither open nor closed; for trivial `H`
-  the basic result instead has whole kernel and index one. There is a direct additive
-  counterpart, and the original `ℕ → ZMod 3` example has kernel index exactly three,
-  neither open nor closed. The homomorphisms are abstract, not assumed continuous.
+- **[Fixed vectors over semirings](GroupTheory/RepresentationInvariants.lean).**
+  For monoid representations on additive commutative monoid modules over a
+  semiring, intertwiners `f, g` with injective `f` and `Function.Exact f g` give
+  exactness on fixed submodules, not arbitrary surjectivity. Fixed submodules also commute with
+  [arbitrary products](GroupTheory/RepresentationPi.lean), including empty ones,
+  and [algebraic direct sums](GroupTheory/RepresentationDirectSum.lean).
 
-- **[Dense subgroups and quotient topologies](GroupTheory/Topology/QuotientGroup.lean).**
-  In a group with separately continuous multiplication, the usual left-coset space
-  `G/H` has the indiscrete topology exactly when `H` is dense. No normality or
-  separation hypothesis is needed. The additive counterpart gives an
-  [indiscrete, nondiscrete quotient of index three](GroupTheoryTest/Topology/QuotientGroup.lean)
-  of the original product `ℕ → ZMod 3`. More generally, an open continuous surjection
-  has an indiscrete target exactly when all its fibers are dense.
-
-- **Circle equivalences and codomain transport.** `AddCircle.continuousAddEquivCircle`
-  identifies every nonzero-period additive circle with `Additive Circle`, using the
-  exponential `x ↦ exp (2 * π / T * x)`. Codomain transport gives homeomorphisms of
-  continuous homomorphism spaces for monoids with arbitrary topologies, and continuous
-  multiplicative equivalences for commutative codomains with continuous multiplication.
-  The period-one specialization transports continuous additive characters pointwise.
-
-These results are available in the library. The [result guide](docs/Results.md)
-gives detailed statements, examples and API qualifications, including the
-constructions and prior results reused from Mathlib.
-
-### Actions, cosets and fixed vectors
-
-- **[Coset maps and conjugacy](GroupTheory/GroupAction/Quotient.lean).** For any group and arbitrary subgroups
-  `H, K`, equivariant maps `G/H → G/K` exist exactly when `H ≤ gKg⁻¹` for some
-  `g`. The coset actions are isomorphic exactly when the subgroups are conjugate;
-  maps both ways alone are not enough.
-  For any `G`-set `X`, equivariant maps `G/H → X` correspond to `H`-fixed
-  points as a plain equivalence, not as a `G`-stable fixed subaction.
-  Diagonal orbits on `G/H × G/K`, and restricted `H`-orbits on `G/K`, are
-  described by [double-coset classes](GroupTheory/GroupAction/DoubleCoset.lean),
-  without selecting representatives.
-  For a pretransitive action with a chosen point, invariant equivalence
-  relations correspond to overgroups of its stabilizer; see the
-  [invariant-setoid API](GroupTheory/GroupAction/InvariantSetoid.lean).
-- **[Action automorphisms](GroupTheory/GroupAction/Centralizer.lean).** For an action of a group in any category, its
-  automorphisms identify with a centralizer. For a transitive `G`-set with
-  chosen `x`, the [normalizer quotient](GroupTheory/GroupAction/Automorphism.lean)
-  `N_G(G_x)/G_x` identifies with the automorphism group. Under ordinary composition,
-  `[n]` sends `g • x` to `(g * n⁻¹) • x`: the inverse parameter matters.
-- **[Left exactness of fixed vectors](GroupTheory/RepresentationInvariants.lean).** For monoid representations on modules
-  over a semiring, additive commutative monoids suffice. Intertwining maps
-  `f, g` with injective `f` and `Function.Exact f g` give injectivity and
-  exactness on fixed submodules, not preservation of surjectivity without further
-  hypotheses.
-  For an injective intertwiner, a fixed target vector is in the image of the
-  fixed-submodule map exactly when it is in the ambient image. In particular,
-  an ambient bijection restricts to a bijection between fixed submodules.
-- **[Functoriality of fixed submodules](GroupTheory/RepresentationFixedFunctoriality.lean).**
-  An equivariant semilinear map over an arbitrary semiring homomorphism carries fixed
-  vectors to fixed vectors. The source fixed submodule lies in the comap of the target
-  fixed submodule, with equality when the given map is injective. Both original scalar
-  and module structures are retained; no scalar-surjectivity assumption is needed.
-  Precomposing a representation with a monoid homomorphism enlarges its fixed submodule,
-  with equality for a surjective homomorphism and, in particular, a multiplicative equivalence.
-- **Products of fixed submodules.** For monoid representations over a semiring on
-  their given additive commutative monoid modules, fixed vectors commute with both
-  [binary products](GroupTheory/RepresentationInvariants.lean) and
-  [arbitrary indexed products](GroupTheory/RepresentationPi.lean), including infinite
-  and empty index types. The canonical linear equivalences preserve ambient coordinates
-  and are natural in supplied intertwining maps. They reuse generic submodule
-  splittings for [pairs](GroupTheory/LinearAlgebra/Prod.lean) and
-  [indexed families](GroupTheory/LinearAlgebra/Pi.lean); no group or additive-inverse
-  assumptions are needed.
-- **[Direct sums of fixed submodules](GroupTheory/RepresentationDirectSum.lean).** For arbitrary
-  families of monoid representations over a semiring on additive commutative monoids,
-  the fixed submodule of the algebraic direct sum is canonically linearly equivalent
-  to the direct sum of the fixed submodules, preserving every ambient coefficient.
-  Arbitrary linear maps from these fixed fibers extend uniquely to the fixed submodule
-  of the direct sum, without ambient extensions or an action on the target.
-- **[Norms and fixed-vector surjections](GroupTheory/RepresentationNorm.lean).** For finite-group
-  representations over a semiring on additive commutative monoids, a surjective
-  intertwining map is surjective on fixed submodules if every fixed target vector
-  is a value of the target norm. It suffices that multiplication by the group order
-  is surjective on the target fixed submodule, or bijective on the ambient target.
-  No divisibility or cancellation in the source is required. The
-  [norm naturality API](GroupTheory/RepresentationNormNaturality.lean) allows the
-  two coefficient carriers to lie in independent universes.
 - **[Finite-group intertwining lifts](GroupTheory/RepresentationLifting.lean).** If the
   order of a finite group is a unit in a possibly noncommutative semiring, any ordinary
   linear lift of one intertwining map through another intertwining map can be replaced
@@ -228,28 +94,33 @@ constructions and prior results reused from Mathlib.
   negative inverse-unit scalar sum as witness. The additive group action need
   not be scalar-linear, and the scalar-form vector formula remains natural
   under arbitrary additive maps.
-- **[Free-group ranks](GroupTheory/FreeGroup/Rank.lean).** For finite-index `H` in a finitely generated free
-  group, `rank H + [G:H] = rank G * [G:H] + 1`, including ambient rank zero.
-  Mathlib supplies subgroup freeness and finite generation.
+- **[Finite-index free-group ranks](GroupTheory/FreeGroup/Rank.lean).**
+  For finite-index `H` in a finitely generated free group,
+  `rank H + [G:H] = rank G * [G:H] + 1`, including ambient rank zero.
+  Mathlib supplies subgroup freeness and finite generation. The
+  [index-two guide](docs/Results.md#index-two-subgroups-and-explicit-generators)
+  gives all three explicit generating triples in rank two, not triple freeness.
 
-[Detailed action results](docs/Results.md#actions-cosets-and-fixed-vectors)
-also include right transversals, subgroup towers and nested coset maps.
+- **[Ultrafilter-limit homomorphisms](GroupTheory/Topology/Ultrafilter.lean).**
+  For a compact Hausdorff monoid with continuous multiplication, limits along
+  any fixed ultrafilter give a surjective abstract homomorphism from its power.
+  If the ultrafilter contains all cofinite sets, all fibers are dense; for a
+  nontrivial target it is not continuous at the constant identity family.
+  The guide includes finite-group targets and the original `ℕ → ZMod 3` example.
 
-### Topological refinements
+- **[Finite-index openness and automatic continuity](GroupTheory/Topology/AutomaticContinuity.lean).**
+  Every abstract finite-index subgroup of a compact Hausdorff commutative
+  topological group with a dense algebraically finitely generated subgroup is
+  open. Every abstract homomorphism from such a source into a compact
+  nonarchimedean group is continuous; the target need not be Hausdorff or
+  commutative, and the image may be infinite. This does not assert local constancy.
 
-- **[Actions of preirreducible groups](GroupTheory/Topology/Algebra/MulAction/Irreducible.lean).**
-  For any group with a preirreducible topology and continuous inversion, an action
-  on an arbitrary topological space is jointly continuous exactly when each orbit
-  point is inseparable from the point acted on. No separation assumption on the
-  target or continuity of multiplication in the actor is required. For a T0 target,
-  this makes the action pointwise trivial. The additive result requires continuous
-  negation. These results use the given action and the ordinary product topology.
-
-- **[Type-tag transport](GroupTheory/Topology/TypeTags.lean).** Continuous monoid
-  homomorphisms `Multiplicative A →ₜ* B` and continuous additive homomorphisms
-  `A →ₜ+ Additive B` are identified by a compact-open homeomorphism, for any additive
-  monoid `A` and monoid `B` with arbitrary topologies. For a commutative `B` with continuous
-  multiplication this is also an additive equivalence on the pointwise hom spaces.
+- **[Finite-coordinate homomorphism factorization](GroupTheory/Topology/Algebra/Group/PiDiscreteFactor.lean).**
+  A continuous homomorphism from any dependent product of groups with given
+  topologies into a discrete group factors continuously through quotients of
+  finitely many coordinates by open normal subgroups. No continuity of source
+  operations is required. The selected stage is finite if all factors are compact,
+  but need not be finite otherwise.
 
 - **[Finite-index identity components](GroupTheory/Topology/Algebra/Group/Subgroup.lean).**
   For a group with a topology and continuous fixed left translations, the identity
@@ -257,182 +128,40 @@ also include right transversals, subgroup towers and nested coset maps.
   connected components. No local connectedness, separation, continuous inversion
   or normality assumption is needed. The additive version applies to the zero
   component.
-- **[Locally closed subgroups](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean).**
-  In a group with separately continuous multiplication and continuous inversion,
-  a subgroup is closed exactly when it is a neighborhood of the identity within
-  its closure, equivalently locally closed at the identity, at any specified
-  member, or globally locally closed. The additive API assumes separately
-  continuous addition and continuous negation. No joint continuity, separation,
-  normality or commutativity is required.
-- **[Discrete actions](GroupTheory/Topology/Algebra/MulAction.lean) and subgroup quotients.** Assume continuous fixed
-  **left** translations in a group with a topology. For an action on a
-  discrete space, orbit-map continuity is equivalent to an open stabilizer;
-  joint action continuity is equivalent to all stabilizers being open.
-  For arbitrary `H`, the [canonical quotient](GroupTheory/Topology/Algebra/Group/Quotient.lean)
-  `G/H` is discrete iff `H` is open, and
-  T1 iff `H` is closed; open subgroups are clopen. Finite index makes closed
-  imply open; compactness of `G` makes open imply finite index.
-- **[Continuous coset maps](GroupTheory/Topology/Algebra/Group/Quotient.lean).** With continuous **right** translations in `G`
-  and a jointly continuous action on `X`, evaluation at `[1]` identifies
-  continuous equivariant maps `G/H → X` homeomorphically with the `H`-fixed
-  subspace. The map-space topology is induced from compact-open continuous
-  maps, and `H` is arbitrary.
-- **[Dense unit maps](GroupTheory/Topology/Algebra/Group/Units.lean).** A dense monoid homomorphism that reflects units induces
-  a dense map on unit groups when the target's unit coercion is an open
-  embedding. No continuity of the homomorphism or source topology is needed.
-- **[Subgroup bases](GroupTheory/Topology/Algebra/Group/TotalBounded.lean).** In a left-uniform group with an identity-neighborhood
-  basis of subgroups, total boundedness is equivalent to finite index of
-  every predicate-qualified basis member, without completeness or separation.
-  Every locally compact totally disconnected topological group has a basis
-  of [compact open subgroups](GroupTheory/Topology/CompactOpenSubgroup.lean),
-  without a separate Hausdorff premise.
-- **[Power ranges](GroupTheory/Topology/FiniteIndex.lean) and abstract homomorphisms.** In a compact Hausdorff commutative
-  topological group with a dense algebraically finitely generated subgroup, the range
-  of `x ↦ x ^ n` has finite index and is open for every positive natural `n`.
-  More generally, closedness of that range suffices without compactness or ambient
-  separation. Every abstract finite-index subgroup in the compact Hausdorff case is
-  open, without assuming it closed.
-  An [abstract homomorphism](GroupTheory/Topology/OpenKernel.lean) from such a compact
-  group with finite range is locally constant for any target with multiplication and
-  identity (`MulOneClass`; additively `AddZeroClass`). No target topology is needed;
-  local constancy gives continuity for any subsequently given target topology.
-  Separately, a homomorphism into any monoid has open kernel and is locally constant
-  if one fixed positive exponent annihilates its whole image, with no target topology
-  or continuity assumed. The additive counterparts use the range of `x ↦ n • x` and,
-  for the fixed-positive-scalar condition, additive monoid targets.
-- **[Finite-index openness and automatic continuity](GroupTheory/Topology/AutomaticContinuity.lean).**
-  For a group with a topology and continuous fixed left translations, the following are
-  equivalent: every finite-index subgroup is open; every abstract homomorphism to a finite
-  discrete group is continuous; and every action on an arbitrary discrete space with finite
-  individual orbits is jointly continuous. The source, finite-target and action-carrier
-  universes are independent. Each converse to subgroup openness holds even for an arbitrary
-  source topology, without continuity of translations or group operations. Subgroups need
-  not be normal. The additive counterparts apply to possibly noncommutative additive groups
-  and require no additive structure on action carriers.
+- **[Compact open subgroups](GroupTheory/Topology/CompactOpenSubgroup.lean) and
+  [identity-component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).**
+  Every locally compact totally disconnected topological group has a compact
+  open subgroup basis, without a separate Hausdorff premise. Every topological
+  group's ordinary quotient by its identity component is Hausdorff and totally
+  disconnected, without separation or local compactness of the original group.
 
-  Every abstract homomorphism from a compact Hausdorff commutative topological group with a specified
-  dense abstractly finitely generated subgroup into a compact nonarchimedean group is
-  continuous. The target need not be commutative or Hausdorff, and the image may be
-  infinite. The additive homomorphism counterpart has the same scope; this result does
-  not assert local constancy. Every abstract action of the same source on an arbitrary
-  discrete space with finite individual orbits is jointly continuous, without requiring
-  a finite total action image. Its additive action counterpart also uses an arbitrary
-  carrier, with no additive structure required on it.
-- **[Component quotients](GroupTheory/Topology/ConnectedComponentQuotient.lean).** Every topological group's ordinary quotient by
-  its identity component is Hausdorff and totally disconnected, without a
-  separation or local-compactness premise on the original group.
+- **[Grothendieck extensions](GroupTheory/MonoidLocalization/GrothendieckGroup.lean).**
+  Biadditive maps from two additive commutative monoids into an additive
+  commutative group extend uniquely to both completions. A semiring's additive
+  completion has a [canonical ring structure](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean)
+  and universal ring lifts, without cancellation. For an additive unit in any
+  semiring, [nilpotence is reflected](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean)
+  by the canonical map to that ring; the scalar step is not a polynomial criterion.
 
-[Detailed topology results](docs/Results.md#topological-refinements) also cover
-open kernels, characters, discrete-valued maps, finite-coordinate factorizations
-and compatible sections, with their individual hypotheses.
+- **[Torsion in additive quotients](GroupTheory/QuotientTorsion.lean).**
+  For an additive commutative group `V`, any additive subgroup `L`, and any
+  natural `n` whose multiplication map is bijective on `V`, `(V/L)[n] ≃+ L/nL`
+  by `[x] ↦ [n • x]`. If `L` is finitely generated, the kernel is
+  [finite of cardinality](GroupTheory/QuotientTorsion/Cardinality.lean)
+  `n ^ Module.finrank ℤ L`; freeness and ambient finite generation are not needed.
 
-### Finite-index openness
+- **Archimedean multiplicative boundedness** ([module](GroupTheory/Algebra/Order/Subsemigroup.lean);
+  [statements and API](docs/Results.md#archimedean-multiplicative-boundedness)).
+  For a commutative monoid equipped with a linear order and a chosen `0` with `0 ≤ 1`,
+  assume multiplicative Archimedeanness and strictly monotone multiplication by positive
+  elements. A multiplication-closed selected set is bounded above iff every member is
+  at most `1`; the same criterion holds for the raw range of a multiplicative map from
+  a type with only multiplication. Selected sets may be empty and need not contain `1`.
 
-The property that every finite-index subgroup is open descends to finite-index subgroups
-with their induced topology, and from arbitrary dependent products to each factor, without
-continuity assumptions on group operations. This property also pulls back along a continuous
-injective group homomorphism with finite-index range, without requiring a topological
-embedding; see [`Injective`](GroupTheory/Topology/FiniteIndex/Injective.lean).
-With continuous fixed left translations, the property ascends from any open subgroup and is
-preserved by binary and finite dependent products. Under the same assumption, for any given
-finite-index subgroup the ambient property is equivalent to that subgroup being open and all
-of its finite-index subgroups
-being open in the induced topology.
-
-The subgroup identity-neighborhood and identity-interior criteria also require only
-continuous fixed left translations. All these results have additive versions without a
-commutativity assumption. See
-[`AutomaticContinuity`](GroupTheory/Topology/AutomaticContinuity.lean) and
-[`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean).
-
-### Grothendieck extensions
-
-**[Nilpotence reflection on additive units](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean).**
-For any semiring `A` and `a : A` with `IsAddUnit a`, the image
-`Algebra.GrothendieckAddGroup.ofRingHom A a` is nilpotent if and only if `a` is
-nilpotent. If the image has vanishing `n`th power, then `a ^ (n + 1) = 0`,
-including `n = 0`. The supporting
-[absorption API](GroupTheory/Algebra/IsAddUnit.lean) proves that an additive unit
-annihilates any element `b` satisfying `b + c = c`; it already works in a
-nonunital, nonassociative semiring. These results require neither additive
-cancellation nor commutative multiplication.
-
-For polynomial-unit arguments over a commutative semiring, this supplies the
-scalar step from nilpotence of a coefficient's image in the completion to
-nilpotence of the coefficient itself, once its additive invertibility is known.
-The polynomial coefficient criterion and its converse are separate results, not
-asserted by this scalar theorem.
-
-Biadditive maps from two additive commutative monoids into an additive
-commutative group extend uniquely to their
-[Grothendieck completions](GroupTheory/MonoidLocalization/GrothendieckGroup.lean).
-Completion commutes canonically with arbitrary dependent products of additive
-commutative monoids, including infinite and empty index types. The equivalence
-preserves all tuple units, has induced evaluations as its coordinates and is
-natural in families of additive homomorphisms. The completed product map is
-bijective exactly when every completed coordinate map is bijective; no cancellation
-or nontriviality is assumed. A semiring's additive completion carries a
-[canonical ring](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean),
-commutative for commutative input;
-homomorphisms from the semiring into any ring extend uniquely as ring
-homomorphisms. No cancellation, nontriviality or commutative-target assumption
-is needed. The additive lift equivalence packages Mathlib's existing universal
-property. [Detailed extension results](docs/Results.md#grothendieck-extensions).
-
-For a family `ι : I → B` in an additive commutative monoid with
-`∀ b, ∃ i c, b + c = ι i`, every element of the completion is `of b - of (ι i)`.
-If an additive subgroup contains all `of (ι i)`, the quotient has representatives
-from `B`, without cancellation or injectivity assumptions. Applied to a cofinal
-additive homomorphism, this gives monoid representatives modulo the group range
-of the induced completion map.
-
-### Abelian arithmetic
-
-- **[Conditional cyclic norm exactness](GroupTheory/CyclicNorm.lean).** For an endomorphism `sigma` of an
-  additive commutative group and `m > 0` with `sigma ^ m = 1`, the norm kernel
-  equals `range (1 - sigma)` if multiplication by that same `m` is injective
-  and fixed classes modulo `mA` have fixed lifts: whenever
-  `sigma a - a ∈ mA`, some fixed `z` satisfies `a - z ∈ mA`.
-- **[Scalar maps](GroupTheory/FGScalarSurjectivity.lean) and indices.** For a finitely generated abelian group `A` and
-  natural `n ≥ 2`, surjectivity of `n • ·` is equivalent to finiteness and
-  coprimality of `n` with the group order. A single integer scalar gives its
-  inverse. The separate [index formula](GroupTheory/IndexNSmul.lean) is
-  `[A : nA] = n ^ Module.finrank ℤ A * Nat.card (ker [n])` for every natural
-  scalar, with index and `Nat.card` zero for infinite quotients and kernels.
-- **[Quotient kernels](GroupTheory/QuotientGroup/Kernel.lean) and torsion.** For normal `N ≤ G`, `M ≤ H` and an ambient
-  equivalence `f : G ≃* H` with `f(N) ≤ M`, the kernel of `G/N → H/M` is
-  identified with `M/f(N)`; these groups need not be commutative. For any
-  natural `n`, if `n • ·` is bijective on an additive commutative `V`, the
-  [`n`-torsion of `V/L`](GroupTheory/QuotientTorsion.lean), for arbitrary additive
-  subgroup `L`, is `L/nL` by the positive-sign map `[x] ↦ [n • x]`.
-  If `L` is finitely generated, that kernel is finite with
-  [natural cardinality](GroupTheory/QuotientTorsion/Cardinality.lean)
-  `n ^ Module.finrank ℤ L`; freeness and ambient finite generation are not
-  needed. All natural scalars are included; at zero the premise forces `V`
-  trivial.
-
-[Detailed arithmetic results](docs/Results.md#abelian-arithmetic) retain the
-representative formulas, scalar-transition naturality and zero-scalar boundaries.
-
-### Index-two subgroups and explicit generators
-
-For an arbitrary group, index-two subgroups correspond to nontrivial homomorphisms
-into `Multiplicative (ZMod 2)`. The API includes kernel uniqueness, characteristic
-values, and pullback along surjective homomorphisms. Normality follows from index
-two and is not an additional hypothesis.
-
-For a free group basis `β` indexed by `Fin 2`, write `a = β 0` and `b = β 1`.
-The three nontrivial generator-value patterns have the following kernel generators:
-
-| Values on `a,b` | Explicit generators |
-| --- | --- |
-| `10` | `a²`, `b`, `a * b * a⁻¹` |
-| `01` | `b²`, `a`, `b * a * b⁻¹` |
-| `11` | `a²`, `b * a⁻¹`, `a * b` |
-
-The three kernels are distinct and exhaust the index-two subgroups. The word
-spanning formulas themselves apply to any two-generated group with an index-two
-subgroup; they assert generation, not freeness of the displayed triples.
+The guide also covers [finite-index descent and property transport](docs/Results.md#finite-index-openness-and-automatic-continuity),
+[circle characters and other topology results](docs/Results.md#topological-refinements),
+[conditional cyclic norms and scalar indices](docs/Results.md#abelian-arithmetic),
+and the material hypotheses, formulas and examples behind these headlines.
 
 ## Using the library
 
@@ -451,7 +180,7 @@ that resolution until another update. Use the release's matching Lean toolchain
 and mathlib revision; Lake resolves only one revision of each package in a build.
 For a fixed reproducible version, replace `main` with the full commit of a
 published release. Dependencies from another Formal Frontier library
-or the incubator use the GitHub URL and full published release commit, not moving
+use the GitHub URL and full published release commit, not moving
 `main`, development commits or PR heads.
 
 Import the full library with:
@@ -553,25 +282,3 @@ cofinite-topology APIs, together with the dense-fiber formalization in
 
 Authors: Formal Frontier Agents. The Lean proofs and clients were developed by
 Formal Frontier AI agents. Licensed under [Apache-2.0](LICENSE).
-
-## Clopen subgroups and finite index
-
-If every fixed left translation is continuous, an arbitrary subgroup is clopen exactly when
-it is open. For a finite-index subgroup, closedness is also equivalent to openness. These
-criteria keep the original subgroup and topology and require neither normality nor
-separation, right continuity or joint continuity.
-
-- `Subgroup.isClopen_iff_isOpen` and `Subgroup.isOpen_iff_isClosed` give the two criteria.
-- `AddSubgroup.isClopen_iff_isOpen` and `AddSubgroup.isOpen_iff_isClosed` give their
-  noncommutative additive counterparts under continuity of fixed left additions.
-- The criteria compose with the identity-neighborhood and interior APIs: a closed
-  finite-index subgroup is a neighborhood of the identity, or of zero additively.
-
-## Closed Noetherian subsemigroups
-
-Import `GroupTheory.Topology.Algebra.Group.Subsemigroup` for inverse closure of a
-closed subsemigroup whose induced topology is Noetherian. Only continuity of
-fixed left translations in the ambient group is required; the ambient space need
-not be Noetherian, and the subsemigroup may be empty. The additive counterpart
-gives closure under negation. For a submonoid, every element is a unit in the
-original submonoid.

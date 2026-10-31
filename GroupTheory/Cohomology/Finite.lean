@@ -17,10 +17,16 @@ and zeroth group cohomology has finite underlying carrier. For a finite group,
 ordinary group cohomology has finite underlying carrier in every nonnegative degree.
 The coefficient ring need not be finite.
 
+In every nonnegative degree `n`, the cardinality is at most
+`Cardinal.mk A ^ (Cardinal.mk G ^ n)`, without any finiteness assumption on the
+group or coefficient carrier. This follows from the cardinality of the canonical
+inhomogeneous cochains and the cardinal bound for module homology.
+For finite groups and coefficients, the same estimate holds for `Nat.card`.
+
 The degree-zero results use Mathlib's identification with the invariant coefficient
-submodule, whose carrier embeds in the coefficient carrier. The all-degree result uses
-finite inhomogeneous cochains and the finiteness of homology for a short complex of
-modules with finite middle carrier.
+submodule, whose carrier embeds in the coefficient carrier. The all-degree finiteness
+result uses finite inhomogeneous cochains and the finiteness of homology for a short
+complex of modules with finite middle carrier.
 -/
 
 @[expose] public section
@@ -53,6 +59,17 @@ theorem card_zero_le (A : Rep R G) [Finite A] :
   exact Nat.card_le_card_of_injective (fun x => (e x).val)
     (Subtype.val_injective.comp e.injective)
 
+/-- Ordinary group cohomology is bounded in cardinality by its inhomogeneous cochains. -/
+theorem mk_le (A : Rep R G) (n : ℕ) :
+    Cardinal.mk (groupCohomology A n) ≤
+      (Cardinal.mk A) ^ ((Cardinal.mk G) ^ n) := by
+  calc
+    Cardinal.mk (groupCohomology A n) ≤
+        Cardinal.mk ((inhomogeneousCochains A).X n) :=
+      ShortComplex.mk_homology_le ((inhomogeneousCochains A).sc n)
+    _ = (Cardinal.mk A) ^ ((Cardinal.mk G) ^ n) := by
+      simp
+
 /-- Ordinary cohomology has finite carrier for a finite group and finite coefficient carrier. -/
 instance finite {R G : Type u} [CommRing R] [Group G]
     (A : Rep.{u} R G) [Finite G] [Finite A] (n : ℕ) : Finite (groupCohomology A n) := by
@@ -61,5 +78,13 @@ instance finite {R G : Type u} [CommRing R] [Group G]
     dsimp [inhomogeneousCochains]
     infer_instance
   exact @ShortComplex.finite_homology_moduleCat R _ ((inhomogeneousCochains A).sc n) this
+
+/-- For finite groups and coefficients, the cardinality of group cohomology is bounded by
+that of the inhomogeneous cochains in the same degree. -/
+theorem card_le (A : Rep R G) [Finite G] [Finite A] (n : ℕ) :
+    Nat.card (groupCohomology A n) ≤ Nat.card A ^ (Nat.card G ^ n) := by
+  have h := mk_le A n
+  simp only [← Nat.cast_card] at h
+  exact_mod_cast h
 
 end groupCohomology

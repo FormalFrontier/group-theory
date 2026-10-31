@@ -13,6 +13,12 @@ public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 A continuous open group homomorphism with preconnected kernel pulls the identity
 component back to the identity component. Its restriction to identity components
 is surjective and open, even when the original homomorphism is not surjective.
+Consequently, a map from the target component to any topological space is
+continuous exactly when its composite with the restriction is continuous.
+
+Such a homomorphism also reflects equality of connected components of
+representatives: two source representatives have equal target components exactly
+when their source components are equal.
 
 Only continuity of fixed left translations is assumed. The proof uses the
 canonical induced topology on the range, whose identity component maps onto the
@@ -151,6 +157,37 @@ theorem comap_connectedComponentOfOneOfContinuousConstSMul_eq (q : G →* H)
   exact (Subgroup.map_connectedComponentOfOneOfContinuousConstSMul_le
     q.rangeRestrict hcont) ⟨x, hx, rfl⟩
 
+/-- A continuous open homomorphism with preconnected kernel reflects equality
+of connected components of representatives. -/
+@[to_additive
+/-- A continuous open additive homomorphism with preconnected kernel reflects equality
+of connected components of representatives. -/]
+theorem connectedComponents_eq_reflection_of_isOpenMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G)) :
+    ∀ x y : G, (q x : ConnectedComponents H) = (q y : ConnectedComponents H) →
+      (x : ConnectedComponents G) = (y : ConnectedComponents G) := by
+  exact (q.connectedComponents_eq_reflection_iff hq).mpr
+    (q.comap_connectedComponentOfOneOfContinuousConstSMul_eq hq ho hk)
+
+/-- Under a continuous open homomorphism with preconnected kernel, two source
+representatives have equal target components exactly when their source components
+are equal. -/
+@[to_additive
+/-- Under a continuous open additive homomorphism with preconnected kernel, two source
+representatives have equal target components exactly when their source components
+are equal. -/]
+theorem connectedComponents_eq_iff_of_isOpenMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G))
+    (x y : G) :
+    (q x : ConnectedComponents H) = (q y : ConnectedComponents H) ↔
+      (x : ConnectedComponents G) = (y : ConnectedComponents G) := by
+  constructor
+  · exact q.connectedComponents_eq_reflection_of_isOpenMap hq ho hk x y
+  · intro hxy
+    apply ConnectedComponents.coe_eq_coe'.mpr
+    exact hq.image_connectedComponent_subset y
+      ⟨x, ConnectedComponents.coe_eq_coe'.mp hxy, rfl⟩
+
 /-- A continuous open homomorphism with preconnected kernel induces a surjection
 on identity components; the homomorphism itself need not be surjective. -/
 @[to_additive
@@ -208,5 +245,32 @@ theorem isOpenMap_connectedComponentOfOneMap (q : G →* H)
       exact hxy
   rw [himage]
   exact (ho V hV).preimage continuous_subtype_val
+
+/-- A continuous open homomorphism with preconnected kernel induces a quotient map
+between the identity components with their induced topologies. -/
+@[to_additive
+/-- A continuous open additive homomorphism with preconnected kernel induces a quotient map
+between the zero components with their induced topologies. -/]
+theorem isQuotientMap_connectedComponentOfOneMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G)) :
+    Topology.IsQuotientMap (q.connectedComponentOfOneMap hq) := by
+  apply (q.isOpenMap_connectedComponentOfOneMap hq ho hk).isQuotientMap
+  all_goals first
+    | exact q.connectedComponentOfOneMap_surjective_of_isOpenMap hq ho hk
+    | exact (hq.comp continuous_subtype_val).subtype_mk _
+
+universe w
+
+/-- A function out of the target identity component is continuous exactly when its
+composite with the component restriction is continuous. -/
+@[to_additive
+/-- A function out of the target zero component is continuous exactly when its
+composite with the component restriction is continuous. -/]
+theorem continuous_iff_comp_connectedComponentOfOneMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G))
+    {X : Type w} [TopologicalSpace X]
+    (f : Subgroup.connectedComponentOfOneOfContinuousConstSMul H → X) :
+    Continuous f ↔ Continuous (f ∘ q.connectedComponentOfOneMap hq) := by
+  exact (q.isQuotientMap_connectedComponentOfOneMap hq ho hk).continuous_iff
 
 end MonoidHom

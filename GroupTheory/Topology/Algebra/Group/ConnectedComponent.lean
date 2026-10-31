@@ -15,6 +15,10 @@ an intermediate subgroup containing the ambient identity component maps onto
 that component under the original subgroup inclusion. In particular, the
 identity-component subgroup has itself as its identity component.
 
+For continuous homomorphisms, equality of connected components of representatives
+is reflected exactly when the inverse image of the target identity component is
+the source identity component.
+
 All subgroup groups and topologies are the canonical ones inherited from the
 ambient group. No normality or separation assumptions are needed. The analogous
 statements for additive groups are provided as well.
@@ -168,7 +172,65 @@ theorem coe_iInf_openSubgroup_eq_closure_one
       simpa only [Set.mem_ofPred_eq, hy_eq, mul_one] using hy
     simpa only [inv_inv] using H.toSubgroup.inv_mem hinv
 
+/-- When open subgroups form a neighborhood basis at the identity, the identity-component
+subgroup is their infimum. -/
+@[to_additive
+/-- When open additive subgroups form a neighborhood basis at zero, the zero-component
+subgroup is their infimum. -/]
+theorem connectedComponentOfOneOfContinuousConstSMul_eq_iInf_openSubgroup
+    (hB : (nhds (1 : G)).HasBasis (fun _ : OpenSubgroup G => True)
+      (fun H => (H : Set G))) :
+    connectedComponentOfOneOfContinuousConstSMul G =
+      ⨅ H : OpenSubgroup G, H.toSubgroup := by
+  apply le_antisymm
+  · refine le_iInf fun H ↦ ?_
+    exact connectedComponentOfOneOfContinuousConstSMul_le_of_isOpen H.toSubgroup H.isOpen
+  · apply le_connectedComponentOfOneOfContinuousConstSMul
+    rw [coe_iInf_openSubgroup_eq_closure_one hB]
+    exact isPreconnected_singleton.closure
+
+/-- When open subgroups form a neighborhood basis at the identity, the identity component
+is the closure of the identity singleton. -/
+@[to_additive
+/-- When open additive subgroups form a neighborhood basis at zero, the zero component
+is the closure of the zero singleton. -/]
+theorem coe_connectedComponentOfOneOfContinuousConstSMul_eq_closure_one
+    (hB : (nhds (1 : G)).HasBasis (fun _ : OpenSubgroup G => True)
+      (fun H => (H : Set G))) :
+    (connectedComponentOfOneOfContinuousConstSMul G : Set G) =
+      _root_.closure ({1} : Set G) := by
+  rw [connectedComponentOfOneOfContinuousConstSMul_eq_iInf_openSubgroup hB,
+    coe_iInf_openSubgroup_eq_closure_one hB]
+
 end Subgroup
+
+namespace ConnectedComponents
+
+variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+
+/-- Representatives have the same connected component exactly when their left
+difference belongs to the identity-component subgroup. -/
+@[to_additive
+/-- Representatives have the same connected component exactly when their left
+difference belongs to the zero-component additive subgroup. -/]
+theorem coe_eq_coe_iff_inv_mul_mem (x y : G) :
+    (x : ConnectedComponents G) = (y : ConnectedComponents G) ↔
+      x⁻¹ * y ∈ Subgroup.connectedComponentOfOneOfContinuousConstSMul G := by
+  constructor
+  · intro hxy
+    have hy : y ∈ connectedComponent x := coe_eq_coe'.mp hxy.symm
+    rw [← Subgroup.image_mul_connectedComponentOfOneOfContinuousConstSMul x] at hy
+    obtain ⟨z, hz, hzy⟩ := hy
+    apply (Subgroup.mem_connectedComponentOfOneOfContinuousConstSMul _).mpr
+    simpa only [← hzy, inv_mul_cancel_left,
+      Subgroup.coe_connectedComponentOfOneOfContinuousConstSMul] using hz
+  · intro hxy
+    apply Eq.symm
+    apply coe_eq_coe'.mpr
+    rw [← Subgroup.image_mul_connectedComponentOfOneOfContinuousConstSMul x]
+    exact ⟨x⁻¹ * y, hxy, by simp only [mul_inv_cancel_left]⟩
+
+end ConnectedComponents
 
 namespace MonoidHom
 
@@ -178,6 +240,41 @@ variable {G : Type u} {H : Type v} {K : Type w}
   [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
   [Group H] [TopologicalSpace H] [ContinuousConstSMul H H]
   [Group K] [TopologicalSpace K] [ContinuousConstSMul K K]
+
+/-- A continuous homomorphism reflects equality of connected components of
+representatives exactly when it pulls back the identity-component subgroup to
+the identity-component subgroup. -/
+@[to_additive
+/-- A continuous additive homomorphism reflects equality of connected components of
+representatives exactly when it pulls back the zero-component subgroup to
+the zero-component subgroup. -/]
+theorem connectedComponents_eq_reflection_iff (q : G →* H) (hq : Continuous q) :
+    (∀ x y : G, (q x : ConnectedComponents H) = (q y : ConnectedComponents H) →
+      (x : ConnectedComponents G) = (y : ConnectedComponents G)) ↔
+      (Subgroup.connectedComponentOfOneOfContinuousConstSMul H).comap q =
+        Subgroup.connectedComponentOfOneOfContinuousConstSMul G := by
+  constructor
+  · intro href
+    apply le_antisymm
+    · intro x hx
+      apply (Subgroup.mem_connectedComponentOfOneOfContinuousConstSMul x).mpr
+      apply ConnectedComponents.coe_eq_coe'.mp
+      apply href x 1
+      rw [map_one]
+      exact ConnectedComponents.coe_eq_coe'.mpr
+        ((Subgroup.mem_connectedComponentOfOneOfContinuousConstSMul (q x)).mp hx)
+    · intro x hx
+      exact Subgroup.map_connectedComponentOfOneOfContinuousConstSMul_le q hq
+        ⟨x, hx, rfl⟩
+  · intro hcomap x y hxy
+    have hqxy : q (x⁻¹ * y) ∈
+        Subgroup.connectedComponentOfOneOfContinuousConstSMul H := by
+      simpa only [map_mul, map_inv] using
+        (ConnectedComponents.coe_eq_coe_iff_inv_mul_mem (q x) (q y)).mp hxy
+    have hxy' : x⁻¹ * y ∈
+        (Subgroup.connectedComponentOfOneOfContinuousConstSMul H).comap q := hqxy
+    rw [hcomap] at hxy'
+    exact (ConnectedComponents.coe_eq_coe_iff_inv_mul_mem x y).mpr hxy'
 
 /-- Restricting the identity homomorphism to the identity component gives the identity. -/
 @[to_additive (attr := simp)
