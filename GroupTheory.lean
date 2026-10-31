@@ -9,6 +9,7 @@ public import GroupTheory.CocycleAveraging
 public import GroupTheory.Cohomology.Artinian
 public import GroupTheory.Cohomology.Finite
 public import GroupTheory.Cohomology.Noetherian
+public import GroupTheory.Homology.Finite
 
 public import GroupTheory.Algebra.Group.Hom.Power
 public import GroupTheory.Algebra.Order.MulHom
