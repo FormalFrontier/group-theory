@@ -53,6 +53,7 @@ public import GroupTheory.MonoidHom.Finite
 public import GroupTheory.MonoidHom.PositivePower
 public import GroupTheory.Ring.Hom.FiniteSum
 public import GroupTheory.Ring.Ideal.Power
+public import GroupTheory.Ring.Idempotents
 public import GroupTheory.Ring.Power
 public import GroupTheory.Ring.Reduced
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
