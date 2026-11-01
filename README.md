@@ -48,6 +48,31 @@ prior results reused from Mathlib.
   Exponents may vary per occurrence, including repeated bases; empty lists are allowed.
   This preserves the product-zero condition, not product values.
 
+- **Nilpotency-class bounds.** In any monoid with zero, diagonal semiconjugacy
+  `SemiconjBy a x a` and nilpotence of `x` give
+  `nilpotencyClass a ≤ nilpotencyClass x + 1`
+  (`SemiconjBy.nilpotencyClass_le_add_one`;
+  [`GroupTheory.Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean)).
+  In any semiring, a finite pairwise orthogonal family satisfies
+  `nilpotencyClass (∑ i ∈ s, f i) ≤
+  max (nilpotencyClass (0 : R)) (s.sup (fun i => nilpotencyClass (f i)))`
+  (`Finset.nilpotencyClass_sum_le_of_pairwise_mul_eq_zero`;
+  [`GroupTheory.Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean)).
+  The class of zero accounts for empty support. Neither bound requires
+  commutativity or nontriviality; the upper bound has no nilpotence hypothesis
+  and uses Mathlib's convention that nonnilpotent elements have class zero.
+
+- **Vanishing powers of finite commuting sums.** In any semiring, let `s : Finset ι`,
+  `f : ι → R` and `n : ι → ℕ`. If `f i ^ n i = 0` for every `i ∈ s`, and
+  `f i` commutes with `f j` for distinct `i, j ∈ s`, then
+  `(∑ i ∈ s, f i) ^ (1 + ∑ i ∈ s, (n i - 1)) = 0`
+  (`Finset.sum_pow_eq_zero_of_pairwise_commute`;
+  [`GroupTheory.Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean)).
+  Subtraction is natural-number subtraction. The individual exponents need not be
+  equal or positive; no commutativity or nontriviality of the semiring is assumed.
+  Empty support gives exponent one, while a supported zero exponent forces the zero
+  semiring. The index type need not be finite or nonempty.
+
 - **Zero-sum pairs and unit images.** In a nonunital, nonassociative semiring,
   `a + b = 0` implies `a * a = b * b`. A function-like multiplication-preserving
   map to a monoid sends such a pair to values that are units simultaneously;
@@ -380,13 +405,33 @@ For the occurrence-sensitive positive-power product criterion, import its theory
 import GroupTheory.Algebra.GroupWithZero.Reduced.List
 ```
 
-For nilpotence of finite sums of pairwise orthogonal elements in an arbitrary
-semiring, use the criterion that the sum is nilpotent if and only if every
-supported summand is nilpotent:
+For nilpotence and nilpotency-class bounds of finite orthogonal sums, and vanishing
+powers of finite commuting sums in an arbitrary semiring, import:
 
 ```lean
 import GroupTheory.Ring.Nilpotent.Finset
 ```
+
+`Finset.isNilpotent_sum_iff_of_pairwise_mul_eq_zero` says that the sum is
+nilpotent if and only if every supported summand is nilpotent.
+`Finset.nilpotencyClass_sum_le_of_pairwise_mul_eq_zero` bounds its class by
+`max (nilpotencyClass (0 : R)) (s.sup (fun i => nilpotencyClass (f i)))`.
+The generic `SemiconjBy.nilpotencyClass_le_add_one` is also available through
+this import. For `i ∈ s`, a left row
+`∀ j ∈ s, j ≠ i → f i * f j = 0` gives
+`SemiconjBy (f i) (∑ j ∈ s, f j) (f i)` using `Finset.mul_sum` and
+`Finset.sum_eq_single`. When the sum is nilpotent, the generic bound gives
+`nilpotencyClass (f i) ≤ nilpotencyClass (∑ j ∈ s, f j) + 1`.
+For semiconjugacy alone, import `GroupTheory.Algebra.GroupWithZero.Nilpotent`.
+
+For the quantitative commuting bound, use
+`Finset.sum_pow_eq_zero_of_pairwise_commute s f n hpow hcomm`, where
+`hpow : ∀ i ∈ s, (f i) ^ n i = 0` and
+`hcomm : (s : Set ι).Pairwise (fun i j => Commute (f i) (f j))`.
+It yields the vanishing power at `1 + ∑ i ∈ s, (n i - 1)` without a common
+exponent, positivity, or an externally supplied decidable equality instance.
+The coefficient and index universes are independent. The hypotheses constrain only
+indices in `s`; empty support and the zero semiring are included.
 
 ## Use and verification
 
@@ -430,6 +475,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Nilpotency-class bounds from semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
 | Equality of multiplicative or additive maps from finite gcd-one power-sampling sets | [`MonoidHom.PositivePower`](GroupTheory/MonoidHom/PositivePower.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
 | Subgroup membership through finite powers, gcd-one detection and finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
@@ -488,6 +534,9 @@ cofinite-topology APIs, together with the dense-fiber formalization in
 The cohomology constructions follow Mathlib's group-cohomology formalization by
 Amelia Livingston; the square-zero argument follows the alternating-face-map
 formalization by Joël Riou, Adam Topaz and Johan Commelin.
+
+The finite commuting-sum power bound reuses Mathlib's binary quantitative nilpotence
+bound from Oliver Nash's nilpotent theory.
 
 Authors: Formal Frontier Agents. The Lean proofs and clients were developed by
 Formal Frontier AI agents. Licensed under [Apache-2.0](LICENSE).
