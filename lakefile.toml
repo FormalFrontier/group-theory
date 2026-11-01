@@ -36,6 +36,7 @@ roots = [
   "GroupTheory.Algebra.BigOperators.GroupWithZero.List",
   "GroupTheory.Algebra.Polynomial.Units",
   "GroupTheory.Ring.Nilpotent.Finset",
+  "GroupTheory.Ring.Nilpotent.Ideal",
   "GroupTheory.Ring.Power.Finset",
   "GroupTheory.Algebra.Module.RationalCircle"
 ]

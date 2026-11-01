@@ -72,6 +72,15 @@ exponents, or finite index type is assumed. The
 empty-support cases and the class-zero convention for nonnilpotent elements;
 these results use [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean).
 
+Over a commutative semiring `R`, the finitely generated ideal criterion
+`Ideal.FG.isNilpotent_iff_le_nilradical` characterizes nilpotence by containment
+in the nilradical. For a finite set `s`, `Ideal.nilpotencyClass_span_finset_le` gives
+`nilpotencyClass (Ideal.span (↑s : Set R)) ≤ 1 + ∑ x ∈ s, (nilpotencyClass x - 1)`.
+No generator-nilpotence hypothesis is required: nonnilpotent ideals have total
+class zero, so this upper bound alone is not a nilpotence criterion. The empty
+set and trivial semirings are included. See the
+[finite-ideal API](GroupTheory/Ring/Nilpotent/Ideal.lean).
+
 For commuting elements `a, c` in any monoid, `a ∣ c` implies
 `a ^ n ∣ c ^ n` for every natural `n`, including zero. In a monoid with zero,
 if `a` is nilpotent, the commuting multiple has nilpotency class at most that of
@@ -396,6 +405,7 @@ claim is implied by this guidance.
 | Powers of commuting divisors | [`Algebra.Divisibility.Basic`](GroupTheory/Algebra/Divisibility/Basic.lean) |
 | Nilpotency-class bound from a chosen commuting list entry | [`Algebra.BigOperators.GroupWithZero.List`](GroupTheory/Algebra/BigOperators/GroupWithZero/List.lean) |
 | Nilpotency classes of powers and zero-reflecting maps; bounds from commuting divisors and products, semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
+| Nilpotence criterion for finitely generated ideals and total nilpotency-class bounds for finite spans over commutative semirings | [`Ring.Nilpotent.Ideal`](GroupTheory/Ring/Nilpotent/Ideal.lean) |
 | Equality of multiplicative or additive maps from finite gcd-one power-sampling sets | [`MonoidHom.PositivePower`](GroupTheory/MonoidHom/PositivePower.lean) |
 | Fixed vectors of transitive permutation representations on finite or infinite carriers | [`RepresentationOfMulAction`](GroupTheory/RepresentationOfMulAction.lean) |
 | Normalized norms, natural idempotent self-intertwiners and comparison with Mathlib's averaging map | [`RepresentationAveragingProjector`](GroupTheory/RepresentationAveragingProjector.lean), [`RepresentationAveragingProjectorComparison`](GroupTheory/RepresentationAveragingProjectorComparison.lean) |
