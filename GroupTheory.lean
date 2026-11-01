@@ -49,6 +49,7 @@ public import GroupTheory.MonoidHom.Finite
 public import GroupTheory.MonoidHom.PositivePower
 public import GroupTheory.Ring.Ideal.Power
 public import GroupTheory.Ring.Power
+public import GroupTheory.Ring.Reduced
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Nilpotent
