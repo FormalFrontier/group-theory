@@ -31,7 +31,8 @@ roots = [
   "GroupTheory.Algebra.GroupWithZero.Reduced.List",
   "GroupTheory.Algebra.Polynomial.Units",
   "GroupTheory.Ring.Nilpotent.Finset",
-  "GroupTheory.Ring.Power.Finset"
+  "GroupTheory.Ring.Power.Finset",
+  "GroupTheory.Algebra.Module.RationalCircle"
 ]
 
 [[lean_lib]]
