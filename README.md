@@ -10,6 +10,14 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Equality of powers in reduced rings.** In any reduced ring, two elements whose
+  powers agree at two coprime natural exponents are equal. More generally,
+  `x ^ Nat.gcd m n = y ^ Nat.gcd m n` if and only if both `x ^ m = y ^ m` and
+  `x ^ n = y ^ n`. These criteria require neither commutativity nor regularity,
+  and include zero exponents and the zero ring. Use
+  `IsReduced.eq_of_pow_eq_pow_of_coprime` and `IsReduced.pow_gcd_eq_pow_gcd_iff`
+  from [`GroupTheory.Ring.Power`](GroupTheory/Ring/Power.lean).
+
 - **Positive-power annihilators.** In any reduced monoid with zero, for every
   nonzero natural exponent `m`, `a ^ m * b = 0 ↔ a * b = 0` and
   `a * b ^ m = 0 ↔ a * b = 0`. No commutativity, cancellation, absence of zero
