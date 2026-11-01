@@ -27,7 +27,8 @@ roots = [
   "GroupTheory.Topology.Separation.Finite",
   "GroupTheory.Topology.Algebra.Group.Subsemigroup",
   "GroupTheory.Algebra.IsAddUnit",
-  "GroupTheory.Algebra.Polynomial.Units"
+  "GroupTheory.Algebra.Polynomial.Units",
+  "GroupTheory.Ring.Power.Finset"
 ]
 
 [[lean_lib]]
