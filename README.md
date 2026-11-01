@@ -42,6 +42,10 @@ commutativity of the target. See the
 
 ### Reduced powers and nilpotence
 
+- Cyclic products in a monoid with zero satisfy
+  `nilpotencyClass (a * b) ≤ nilpotencyClass (b * a) + 1`, and symmetrically; see
+  [nilpotency classes](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean).
+
 In a reduced ring, not necessarily commutative, equality at two coprime natural
 powers determines an element; equality at two exponents is equivalent to equality
 at their gcd. In a reduced monoid with zero, positive powers preserve left and

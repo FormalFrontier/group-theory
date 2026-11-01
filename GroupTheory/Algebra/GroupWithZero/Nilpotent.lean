@@ -26,6 +26,9 @@ A nilpotent element bounds the nilpotency class of any commuting multiple of it.
 In particular, multiplication by a commuting element does not increase its class.
 
 This module uses Mathlib's semiconjugacy and nilpotency-class APIs.
+
+* `SemiconjBy.nilpotencyClass_mul_le_add_one`: a bound for a factored target.
+* `nilpotencyClass_mul_le_add_one`: the total cyclic-product bound.
 -/
 
 @[expose] public section
@@ -34,30 +37,43 @@ universe u v w
 
 namespace SemiconjBy
 
+/-- Transfer nilpotence and its bound along an intertwining relation. -/
+private theorem nilpotencyClass_mul_aux {M : Type u} [MonoidWithZero M] {a b x : M}
+    (h : SemiconjBy a x (a * b)) (hx : IsNilpotent x) :
+    IsNilpotent (a * b) ∧ nilpotencyClass (a * b) ≤ nilpotencyClass x + 1 := by
+  have hp := h.pow_right (nilpotencyClass x)
+  change a * x ^ nilpotencyClass x = (a * b) ^ nilpotencyClass x * a at hp
+  have hz : (a * b) ^ (nilpotencyClass x + 1) = 0 := by
+    calc
+      (a * b) ^ (nilpotencyClass x + 1) =
+          (a * b) ^ nilpotencyClass x * a * b := by
+            rw [pow_succ, mul_assoc]
+      _ = a * x ^ nilpotencyClass x * b := by rw [← hp]
+      _ = 0 := by rw [pow_nilpotencyClass hx, mul_zero, zero_mul]
+  refine ⟨IsNilpotent.mk _ _ hz, ?_⟩
+  by_contra hb
+  cases hc : nilpotencyClass (a * b) with
+  | zero => omega
+  | succ k =>
+    have hk : (a * b) ^ k ≠ 0 :=
+      (nilpotencyClass_eq_succ_iff.mp hc).2
+    exact hk (pow_eq_zero_of_le (by omega) hz)
+
+/-- An intertwining relation bounds the nilpotency class of a product. -/
+theorem nilpotencyClass_mul_le_add_one {M : Type u} [MonoidWithZero M] {a b x : M}
+    (h : SemiconjBy a x (a * b)) (hx : IsNilpotent x) :
+    nilpotencyClass (a * b) ≤ nilpotencyClass x + 1 :=
+  (nilpotencyClass_mul_aux h hx).2
+
+
 /-- Diagonal semiconjugacy bounds nilpotency class by one more than that of the other element. -/
 theorem nilpotencyClass_le_add_one {M : Type u} [MonoidWithZero M] {a x : M}
     (h : SemiconjBy a x a) (hx : IsNilpotent x) :
     nilpotencyClass a ≤ nilpotencyClass x + 1 := by
-  rcases subsingleton_or_nontrivial M with hM | hM
-  · let : Subsingleton M := hM
-    simp only [nilpotencyClass_eq_zero_of_subsingleton, Nat.zero_le]
-  · let : Nontrivial M := hM
-    have hpow : a * x ^ nilpotencyClass x = a ^ nilpotencyClass x * a :=
-      h.pow_right (nilpotencyClass x)
-    have ha_pow : a ^ (nilpotencyClass x + 1) = 0 := by
-      calc
-        a ^ (nilpotencyClass x + 1) = a ^ nilpotencyClass x * a := pow_succ a _
-        _ = a * x ^ nilpotencyClass x := hpow.symm
-        _ = 0 := by rw [pow_nilpotencyClass hx, mul_zero]
-    by_contra hle
-    have ha : IsNilpotent a :=
-      isNilpotent_of_pos_nilpotencyClass (by omega)
-    -- The predecessor power would inherit vanishing from the smaller exponent.
-    obtain ⟨k, hk⟩ : ∃ k : ℕ, nilpotencyClass a - 1 = nilpotencyClass x + 1 + k := by
-      refine ⟨nilpotencyClass a - 1 - (nilpotencyClass x + 1), ?_⟩
-      omega
-    apply pow_pred_nilpotencyClass ha
-    rw [hk, pow_add, ha_pow, zero_mul]
+  have h' : SemiconjBy a x (a * (1 : M)) := by
+    simpa only [mul_one] using h
+  simpa only [mul_one] using nilpotencyClass_mul_le_add_one h' hx
+
 
 end SemiconjBy
 
@@ -185,3 +201,25 @@ public theorem nilpotencyClass_mul_le_left
   exact ((Commute.refl a).mul_right hcomm).nilpotencyClass_le_of_dvd ⟨b, rfl⟩ hnil
 
 end Commute
+
+/-- The nilpotency class of a cyclic product is bounded by that of its swap plus one. -/
+theorem nilpotencyClass_mul_le_add_one {M : Type u} [MonoidWithZero M] (a b : M) :
+    nilpotencyClass (a * b) ≤ nilpotencyClass (b * a) + 1 := by
+  by_cases h : IsNilpotent (b * a)
+  · exact SemiconjBy.nilpotencyClass_mul_le_add_one
+      (show SemiconjBy a (b * a) (a * b) from (mul_assoc a b a).symm) h
+  · have hn : ¬ IsNilpotent (a * b) := by
+      intro hab
+      apply h
+      exact (SemiconjBy.nilpotencyClass_mul_aux
+        (show SemiconjBy b (a * b) (b * a) from (mul_assoc b a b).symm) hab).1
+    have hz : nilpotencyClass (a * b) = 0 := by
+      by_contra hne
+      exact hn (isNilpotent_of_pos_nilpotencyClass (by omega))
+    rw [hz]
+    exact Nat.zero_le _
+
+example {M : Type u} [MonoidWithZero M] (a b : M) :
+    nilpotencyClass (a * b) ≤ nilpotencyClass (b * a) + 1 ∧
+      nilpotencyClass (b * a) ≤ nilpotencyClass (a * b) + 1 :=
+  ⟨nilpotencyClass_mul_le_add_one a b, nilpotencyClass_mul_le_add_one b a⟩
