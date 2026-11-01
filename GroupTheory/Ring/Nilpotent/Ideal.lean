@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Noetherian.Nilpotent
-public import GroupTheory.Ring.Nilpotent.Finset
+public import GroupTheory.Ring.Nilpotent.Submodule
 
 /-!
 # Nilpotence bounds for finitely generated ideals
@@ -21,6 +21,9 @@ to be nilpotent. Natural-number subtraction accounts for zero generator classes.
 
 The empty generating set gives the zero ideal and an upper bound of one. The theorem
 also includes trivial semirings, where the total nilpotency classes are zero.
+
+The bound specializes `Submodule.nilpotencyClass_span_finset_le` to the regular
+algebra of a commutative semiring.
 
 This module re-exports `Ideal.FG.isNilpotent_iff_le_nilradical`, the qualitative
 criterion for nilpotence of a finitely generated ideal over a commutative semiring.
@@ -53,67 +56,9 @@ public theorem nilpotencyClass_span_finset_le
     {R : Type u} [CommSemiring R] (s : Finset R) :
     nilpotencyClass (Ideal.span (↑s : Set R)) ≤
       1 + ∑ x ∈ s, (nilpotencyClass x - 1) := by
-  classical
-  by_cases hI : IsNilpotent (Ideal.span (↑s : Set R))
-  · rcases subsingleton_or_nontrivial (Ideal R) with hsub | hnontriv
-    · let : Subsingleton (Ideal R) := hsub
-      rw [nilpotencyClass_eq_zero_of_subsingleton]
-      exact Nat.zero_le _
-    · let : Nontrivial (Ideal R) := hnontriv
-      have hgen : ∀ x ∈ s, IsNilpotent x := by
-        intro x hx
-        have hxI : x ∈ Ideal.span (↑s : Set R) := by
-          rw [← Ideal.submodule_span_eq]
-          exact Submodule.subset_span (show x ∈ (↑s : Set R) from hx)
-        have hxpow :
-            x ^ nilpotencyClass (Ideal.span (↑s : Set R)) ∈
-              (Ideal.span (↑s : Set R)) ^
-                nilpotencyClass (Ideal.span (↑s : Set R)) :=
-          Submodule.pow_mem_pow (M := Ideal.span (↑s : Set R)) hxI _
-        rw [pow_nilpotencyClass hI, Ideal.zero_eq_bot] at hxpow
-        exact IsNilpotent.mk x _ ((Submodule.mem_bot R).mp hxpow)
-      have hprincipal : ∀ x ∈ s,
-          (Submodule.spanSingleton R x : Ideal R) ^ nilpotencyClass x = 0 := by
-        intro x hx
-        simpa only [map_pow, map_zero] using
-          congrArg (Submodule.spanSingleton R) (pow_nilpotencyClass (hgen x hx))
-      have hspan :
-          (∑ x ∈ s, (Submodule.spanSingleton R x : Ideal R)) =
-            Ideal.span (↑s : Set R) := by
-        calc
-          (∑ x ∈ s, (Submodule.spanSingleton R x : Ideal R)) =
-              s.sup (fun x => (Submodule.spanSingleton R x : Ideal R)) :=
-            Ideal.sum_eq_sup s _
-          _ = ⨆ x ∈ s, (Submodule.spanSingleton R x : Ideal R) :=
-            Finset.sup_eq_iSup s _
-          _ = Submodule.span R (↑s : Set R) := by
-            simpa only [Submodule.spanSingleton_apply, Finset.mem_coe] using
-              (Submodule.span_eq_iSup_of_singleton_spans (R := R)
-                (↑s : Set R)).symm
-          _ = Ideal.span (↑s : Set R) :=
-            Ideal.submodule_span_eq
-      have hpow := Finset.sum_pow_eq_zero_of_pairwise_commute
-        (R := Ideal R) (ι := R) s
-        (fun x : R => (Submodule.spanSingleton R x : Ideal R))
-        (fun x : R => nilpotencyClass x) hprincipal (by
-          intro x _ y _ _
-          exact Commute.all _ _)
-      rw [hspan] at hpow
-      have hclass := nilpotencyClass_pow (Ideal.span (↑s : Set R))
-        (1 + ∑ x ∈ s, (nilpotencyClass x - 1))
-      rw [hpow, nilpotencyClass_zero] at hclass
-      have hN : 0 < 1 + ∑ x ∈ s, (nilpotencyClass x - 1) := by omega
-      have hlt :
-          (nilpotencyClass (Ideal.span (↑s : Set R)) +
-              (1 + ∑ x ∈ s, (nilpotencyClass x - 1)) - 1) /
-            (1 + ∑ x ∈ s, (nilpotencyClass x - 1)) < 2 := by
-        omega
-      have hmul := (Nat.div_lt_iff_lt_mul hN).mp hlt
-      omega
-  · have hzero : nilpotencyClass (Ideal.span (↑s : Set R)) = 0 := by
-      by_contra hne
-      exact hI (isNilpotent_of_pos_nilpotencyClass (Nat.pos_of_ne_zero hne))
-    rw [hzero]
-    exact Nat.zero_le _
+  rw [← Ideal.submodule_span_eq]
+  exact Submodule.nilpotencyClass_span_finset_le (R := R) s (by
+    intro x _ y _ _
+    exact Commute.all _ _)
 
 end Ideal
