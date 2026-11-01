@@ -320,6 +320,12 @@ prior results reused from Mathlib.
   negative inverse-unit scalar sum as witness. The additive group action need
   not be scalar-linear, and the scalar-form vector formula remains natural
   under arbitrary additive maps.
+- **[Kernels of free-group relabelings](GroupTheory/FreeGroup/Map.lean).**
+  For any function `σ : I → J`, `FreeGroup.ker_map` identifies the kernel of
+  `FreeGroup.map σ` with the normal closure of all `of i * (of k)⁻¹` for which
+  `σ i = σ k`. The label types lie in independent universes and may be empty;
+  no injectivity, surjectivity or finiteness is assumed. The same module gives
+  injectivity and surjectivity criteria for the induced homomorphism.
 - **[Finite-index free-group ranks](GroupTheory/FreeGroup/Rank.lean).**
   For finite-index `H` in a finitely generated free group,
   `rank H + [G:H] = rank G * [G:H] + 1`, including ambient rank zero.
@@ -542,6 +548,7 @@ claim is implied by this guidance.
 | Invariant equivalence relations and overgroups of point stabilizers | [`GroupAction.InvariantSetoid`](GroupTheory/GroupAction/InvariantSetoid.lean), [nonnormal model](GroupTheoryTest/GroupAction/InvariantSetoid.lean) |
 | Action automorphisms, centralizers and normal stabilizers | [`Centralizer`](GroupTheory/GroupAction/Centralizer.lean) |
 | Transitive-action automorphisms and normalizer quotients | [`Automorphism`](GroupTheory/GroupAction/Automorphism.lean) |
+| Free-group relabeling kernels, injectivity and surjectivity | [`FreeGroup.Map`](GroupTheory/FreeGroup/Map.lean) |
 | Finite free bases and finite-index free-group ranks | [`FreeGroup.Rank`](GroupTheory/FreeGroup/Rank.lean) |
 | Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
 | Orbit inseparability for actions of preirreducible groups | [`MulAction.Irreducible`](GroupTheory/Topology/Algebra/MulAction/Irreducible.lean) |
