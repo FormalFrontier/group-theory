@@ -1,21 +1,201 @@
 # Results
 
-[Back to the overview](../README.md).
+[Back to the overview](../README.md) ·
+[Complete headline catalogue](HeadlineResults.md) · [Usage guide](Usage.md).
 
 The following results are available in this library.
 
 ## Guide navigation
 
+- [Zero-sum pairs and multiplicative images](#zero-sum-pairs-and-multiplicative-images)
+- [Subgroup membership through finite powers](#subgroup-membership-through-finite-powers)
+- [Power kernels and finite image detection](#power-kernels-and-finite-image-detection)
 - [Cofinite topologies](#cofinite-topologies)
 - [Dense fibers and quotient topologies](#dense-fibers-and-quotient-topologies)
 - [Actions, cosets and fixed vectors](#actions-cosets-and-fixed-vectors)
+- [Monoid cochains and Noetherian cohomology](#monoid-cochains-and-noetherian-cohomology)
 - [Coefficient sums and pushouts](#coefficient-sums-and-pushouts)
 - [Topological refinements](#topological-refinements)
 - [Finite-index openness and automatic continuity](#finite-index-openness-and-automatic-continuity)
 - [Further topological constructions](#further-topological-constructions)
 - [Grothendieck extensions](#grothendieck-extensions)
 - [Abelian arithmetic](#abelian-arithmetic)
+- [Closed self-embeddings and irreducible components](#closed-self-embeddings-and-irreducible-components)
 - [Closed Noetherian subsemigroups](#closed-noetherian-subsemigroups)
+
+## Zero-sum pairs and multiplicative images
+
+For `[NonUnitalNonAssocSemiring S]` and `h : a + b = 0`,
+`mul_self_eq_mul_self_of_add_eq_zero h` gives `a * a = b * b`.
+No associative multiplication or multiplicative identity is assumed.
+For `[Monoid T]`, `[FunLike F S T]`, `[MulHomClass F S T]` and `μ : F`,
+`MulHomClass.isUnit_apply_iff_of_add_eq_zero μ h` then gives
+`IsUnit (μ a) ↔ IsUnit (μ b)`. The source, target and family universes are
+independent. Neither preservation of addition, zero or one nor commutativity
+of `T` is required. This is simultaneous unit detection, not an assertion
+that either image must be a unit.
+
+The self-product proof compares `a * a + a * b = 0` and
+`a * b + b * b = 0`, then uses uniqueness of additive inverses. It generalizes
+the zero-sum argument in [Valuation Integers](https://github.com/FormalFrontier/valuation-integers).
+Applying `μ`, preserving multiplication and using Mathlib's
+`isUnit_mul_self_iff` gives the unit-image equivalence, even in a
+noncommutative target monoid. See the
+[additive-unit module](../GroupTheory/Algebra/IsAddUnit.lean) and
+[usage guide](Usage.md#zero-sum-pairs-and-multiplicative-images).
+
+## Subgroup membership through finite powers
+
+The [subgroup-power API](../GroupTheory/Algebra/Group/Subgroup/Power.lean) works in
+any group `G`, for `H : S` with `[SetLike S G] [SubgroupClass S G]`.
+For `a : G`, `s : Finset ι` and `e : ι → ℕ`,
+`SubgroupClass.pow_finset_gcd_mem_iff H a s e` states
+
+`a ^ (s.gcd e) ∈ H ↔ ∀ i ∈ s, a ^ (e i) ∈ H`.
+
+Thus `SubgroupClass.mem_of_forall_pow_mem_of_gcd_eq_one` detects membership of
+`a` when the selected powers belong to `H` and `s.gcd e = 1`. The carrier,
+subgroup-like object type and index type may occupy independent universes.
+No commutativity or normality is assumed. The additive statements use an
+`AddGroup`, an additive subgroup-like object and natural multiples.
+
+The generated-subgroup theorem
+`Subgroup.closure_pow_image_eq_zpowers_finset_gcd a s e` gives the exact equality
+
+`Subgroup.closure ((fun i => a ^ (e i)) '' (s : Set ι)) =
+Subgroup.zpowers (a ^ (s.gcd e))`.
+
+Its additive counterpart is
+`AddSubgroup.closure ((fun i => (e i) • a) '' (s : Set ι)) =
+AddSubgroup.zmultiples ((s.gcd e) • a)`.
+These are algebraically generated subgroups, not topological closures.
+No finite or nonempty index type, or positivity condition on exponents, is
+required. Empty and all-zero families have gcd zero and generate the bottom
+subgroup; zero exponents in other families are also allowed. A gcd-one family
+need not contain a coprime pair. The proof uses Mathlib's
+`Int.closure_eq_zmultiples_finsetGcd` and transports integer linear combinations
+to powers through subgroup closure induction. See the
+[usage guide](Usage.md#subgroup-membership-through-finite-powers).
+
+The binary intersection theorem `Subgroup.zpowers_pow_inf a m n` gives
+
+`Subgroup.zpowers (a ^ m) ⊓ Subgroup.zpowers (a ^ n) =
+Subgroup.zpowers (a ^ (Nat.lcm m n))`.
+
+Here `a` is an element of any group and `m n : ℕ` are arbitrary, including zero.
+The additive theorem `AddSubgroup.zmultiples_nsmul_inf` replaces the cyclic
+subgroups by the integer-multiple subgroups of `m • a`, `n • a` and
+`(Nat.lcm m n) • a`. Neither theorem assumes commutativity or an order.
+The proof reuses the finite gcd-one membership criterion with the normalized
+exponents `m / Nat.gcd m n` and `n / Nat.gcd m n`, treating zero separately.
+This is a binary intersection formula, not a claim about arbitrary intersections.
+
+For a finite family `s : Finset ι`, `e : ι → ℕ`, the theorem
+`Subgroup.zpowers_inf_finsetInf_pow a s e` states
+
+`Subgroup.zpowers a ⊓ (s.inf fun i => Subgroup.zpowers (a ^ (e i))) =
+Subgroup.zpowers (a ^ (s.lcm e))`.
+
+If `hs : s.Nonempty`, `Subgroup.finsetInf_zpowers_pow a s e hs` removes
+the initial `Subgroup.zpowers a` factor. It cannot be removed for arbitrary
+empty families: their plain finite infimum is top, whereas `s.lcm e = 1`
+gives the cyclic subgroup `Subgroup.zpowers a` on the right.
+The additive names are `AddSubgroup.zmultiples_inf_finsetInf_nsmul` and
+`AddSubgroup.finsetInf_zmultiples_nsmul`, with natural multiples in an
+`AddGroup`. These formulas need only `Group` or `AddGroup`, respectively,
+in independent carrier and index universes, and allow zero and repeated
+coefficients. No finite or nonempty index type, commutativity, order or
+nonzero-exponent premise is needed. The finite-family proof reuses the
+binary intersection formula by finite-set induction; no infinite-family
+intersection formula is asserted.
+
+<a id="power-kernels-and-coprime-image-detection"></a>
+## Power kernels and finite image detection
+
+The [power API](../GroupTheory/MonoidHom/PositivePower.lean) has two separate
+finite-family routes in any monoid: left regularity of `a`, or right regularity
+of `a`. In either route, for arbitrary `b`, `s : Finset ι` and `e : ι → ℕ`,
+
+`a ^ (s.gcd e) = b ^ (s.gcd e) ↔ ∀ i ∈ s, a ^ (e i) = b ^ (e i)`.
+
+The index and carrier universes are independent. A family with gcd one determines
+`a = b`; it need not contain a coprime pair (for example, exponents 6, 10 and 15).
+The empty-family gcd is zero, so that case gives the vacuous equivalence, not
+equality of arbitrary elements. Zero exponents, including the binary pair `(0, 0)`,
+are allowed. No regularity of `b`, global cancellation, commutativity or group
+structure is needed. The additive results use an additive monoid, natural
+multiples and injective left or right addition by `a`, respectively. The
+`Finset` specializations retain the left-cancellative interface.
+
+For left-regular image detection, let `f : A →* M` with only `[MulOne A]`,
+and let `M` and `N` be monoids. For each `x : M`, suppose there are
+`s : Finset ι` and `e : ι → ℕ` with `s.gcd e = 1` and
+`x ^ (e i) ∈ Set.range f` for every `i ∈ s`. For fixed `g h : M →* N`,
+`MonoidHom.cancel_right_of_finite_powers_mem_range_of_isLeftRegular` gives
+
+`g.comp f = h.comp f ↔ g = h`
+
+provided every `g x` is left-regular, meaning `y ↦ g x * y` is injective.
+The source, intermediate, target and index universes are independent, and both
+`s` and `e` may depend on `x`. Equality after restriction gives equality at
+all selected powers of `g x` and `h x`; the indexed left-regular power kernel
+then gives `g x = h x`. No regularity of `h`, global target cancellation,
+commutativity, group, surjectivity, finite or nonempty index type, decidable
+equality or positivity premise is needed.
+
+The generated additive peer is
+`AddMonoidHom.cancel_right_of_finite_multiples_mem_range_of_isAddLeftRegular`.
+It uses only `AddZero A`, additive monoids, natural multiples and
+add-left-regular values of the first map. These source classes supply a
+distinguished one or zero without associativity or identity laws. Zero and
+repeated exponents and coefficients are allowed; singleton exponent one is
+valid, whereas empty or all-zero families cannot have gcd one.
+
+The retained `MonoidHom.cancel_right_of_finite_powers_mem_range` is the thin
+`ι = ℕ`, `e = id` specialization, with its existing call
+`MonoidHom.cancel_right_of_finite_powers_mem_range h hpowers f g hf` and inputs
+`h : A →* M`, `hpowers : ∀ x : M, ∃ s : Finset ℕ, s.gcd id = 1 ∧
+∀ n ∈ s, x ^ n ∈ Set.range h`, and `hf : ∀ x : M, IsLeftRegular (f x)`.
+Its conclusion remains `f.comp h = g.comp h ↔ f = g`, in three independent
+carrier universes. Its additive peer is
+`AddMonoidHom.cancel_right_of_finite_multiples_mem_range`.
+
+There is a separate indexed right-regular image criterion in the same module.
+Let `f : A →* M`, with `[MulOne A] [Monoid M] [Monoid N]`, and fix an index
+type `ι` in a fourth independent universe. For each `x : M`, assume there are
+`s : Finset ι` and `e : ι → ℕ` with `s.gcd e = 1` and
+`x ^ (e i) ∈ Set.range f` for every `i ∈ s`. For fixed `g h : M →* N`,
+`MonoidHom.cancel_right_of_finite_powers_mem_range_of_isRightRegular` gives
+
+`g.comp f = h.comp f ↔ g = h`
+
+provided every `g x` is right-regular, meaning `y ↦ y * g x` is injective.
+The second comparison map `h` is arbitrary; both `s` and `e` may depend on `x`.
+No global cancellation, commutativity, group, surjectivity, finite or nonempty
+index type, decidable equality or positivity assumption is required. The generated
+additive peer is
+`AddMonoidHom.cancel_right_of_finite_multiples_mem_range_of_isAddRightRegular`;
+it uses `AddZero A`, additive monoids, natural multiples and add-right-regular
+values of the first map. Zero and repeated exponents and singleton exponent one
+are allowed, while empty or all-zero families cannot meet the gcd-one premise.
+The left- and right-regular image criteria have the same indexed input shape,
+but different regularity orientations. Unlike the power-equality kernels for
+two elements, their premises concern powers in the range of a supplied homomorphism.
+
+These fixed-pair criteria must be distinguished from injectivity on **all**
+homomorphisms. The unchanged coprime-image signatures
+`MonoidHom.cancel_right_of_coprime_powers_mem_range` and
+`AddMonoidHom.cancel_right_of_coprime_multiples_mem_range` specialize the finite
+left-regular criterion to two coprime exponents. Consecutive powers are coprime,
+so the successive-power equality criterion specializes it again. For a
+left-cancellative monoid target every value is left-regular, yielding
+precomposition injectivity under the consecutive-power image condition,
+including a zero first exponent. Separately, a positive-power image condition
+detects equality in unique-positive-root monoid targets, and pointwise
+inequalities in linearly ordered commutative monoids with zero. Those latter
+two statements retain their positive-exponent premise; neither replaces the
+finite gcd-one image criteria. See the
+[usage guide](Usage.md#power-kernels-and-restriction) for theorem names and inputs.
 
 ## Cofinite topologies
 
@@ -408,6 +588,56 @@ spanning formulas themselves apply to any two-generated group with an index-two
 subgroup; they assert generation, not freeness of the displayed triples.
 
 See the overview for [index-two subgroups and explicit generators](../README.md#headline-results).
+
+## Monoid cochains and Noetherian cohomology
+
+The [cochain construction](../GroupTheory/Cohomology/Basic.lean) works for
+`R : Type u`, `G : Type v`, `[Ring R]`, `[Monoid G]` and `A : Rep.{w} R G`,
+with `u`, `v` and `w` independent. `Rep.inhomogeneousCochains A` is a cochain
+complex in `ModuleCat.{max v w} R`, indexed by `ℕ`, whose degree `n` object is
+`ModuleCat.of R ((Fin n → G) → A)`. This function module has the pointwise
+structure induced by the original coefficient module.
+
+`Rep.inhomogeneousCochains_d_apply` gives the differential: the first term
+applies `A.ρ (g 0)` to the cochain evaluated on the tail of the tuple;
+the remaining terms are indexed by `j : Fin (n + 1)`, with integer sign
+`(-1 : ℤ) ^ ((j : ℕ) + 1)` and tuple `Fin.contractNth j (· * ·) g`.
+The coface identities give square zero by alternating finite-sum cancellation.
+`Rep.cohomology A n` is the homology of this complex, as recorded by
+`Rep.cohomology_eq_homology`.
+
+The canonical equivalence `Rep.cohomologyZeroEquiv A` identifies degree-zero
+cohomology `R`-linearly with the fixed submodule `A.ρ.fixedSubmodule` of the
+original module. Its inverse sends a fixed vector to its constant cochain
+class, by `Rep.cohomologyZeroEquiv_symm_apply` and `Rep.cohomologyZeroClass`.
+This construction needs no finiteness hypothesis on the monoid or coefficients.
+
+The [Noetherian instances](../GroupTheory/Cohomology/Noetherian.lean) assume
+`IsNoetherian R A`. For arbitrary `G`, `Rep.isNoetherian_cohomology_zero`
+transports Noetherianity of the fixed submodule to degree zero. If also
+`Finite G`, `Rep.isNoetherian_cohomology A n` applies for every `n : ℕ`:
+`Fin n → G` is finite, so cochains are finite products of `A`; cycles embed
+in those cochains and cohomology is a quotient of cycles. The ring need not
+be commutative or Noetherian, the action need not be trivial, and the
+underlying coefficient type need not be finite. No separate finite-generation
+hypothesis is required; Noetherianity of `A` already implies finite generation.
+
+There are two distinct comparison scopes. With `[CommRing R] [Group G]`,
+`Rep.cohomologyZeroEquivInvariants A` identifies degree zero with `A.ρ.invariants`
+in independent universes. Its `_apply` lemma says that its value in `A` is the
+same as `Rep.cohomologyZeroEquiv A`. The full Mathlib bridge instead requires
+`{R G : Type u}` and `A : Rep.{u} R G`, all in the **same** universe.
+`Rep.inhomogeneousCochains_eq A` and `Rep.cohomology_eq A n` identify the
+complexes and cohomology with Mathlib's `groupCohomology` constructions.
+`Rep.cohomologyZeroEquivInvariants_eq_H0Iso A x` states equality of the values
+in `A` after transporting `x` along `Rep.cohomology_eq A 0` and applying the
+canonical `groupCohomology.H0Iso A`. The same-universe instance
+`groupCohomology.isNoetherian_zero` also uses that canonical identification.
+These laws do not extend the full Mathlib comparison to noncommutative rings,
+monoids that are not groups or independent carrier universes. These are
+Noetherianity statements, not cohomology-vanishing claims; the separate
+[crossed-map averaging API](../GroupTheory/CocycleAveraging/README.md) allows
+additive group actions that need not be scalar-linear.
 
 ## Coefficient sums and pushouts
 
@@ -1069,6 +1299,30 @@ the finite-level count `n ^ (2 * g)`; the free case already admits the stock
 free-index route. No uniformization, lattice-rank calculation, tensor comparison,
 inverse limit, Tate-module theorem or scheme-point correspondence follows here.
 
+## Closed self-embeddings and irreducible components
+
+For any `{X : Type v} [TopologicalSpace X]` and self-map `f : X → X`,
+[`Topology.IsClosedEmbedding.surjective_of_finite_irreducibleComponents`](../GroupTheory/Topology/ClosedEmbedding.lean)
+proves surjectivity from a closed embedding, finiteness of `irreducibleComponents X`,
+and `[WellFoundedLT (TopologicalSpace.IrreducibleCloseds X)]`. Here the ordered
+objects are **nonempty** irreducible closed subsets, ordered by inclusion, and
+well-foundedness is for strict inclusion (`LT`). The space may be empty, need
+not be Noetherian and has no separation or algebraic-structure requirement.
+Finiteness concerns irreducible components, not points, connected components or
+path components; no finite-dimension premise is substituted.
+
+For the proof, an invariant nonempty irreducible closed set `C` satisfies
+`f '' C = C`: otherwise its image is strictly smaller, well-founded induction
+makes that image invariant, and injectivity of `f` cancels an image. Choose for
+each irreducible component a component containing its image. This chosen map on
+the finite component family is **not assumed injective or a permutation**.
+Finiteness first gives eventual cycles. On a positive cycle the invariant-set
+argument applied to an iterate makes component-image containment exact.
+Injectivity of iterates and maximality of irreducible components then show every
+component lies on a cycle. The resulting exact images cover `X`, proving
+surjectivity. This is a theorem about arbitrary topological spaces, not a
+consequence of a group structure. See the [input shapes](Usage.md#closed-self-embeddings).
+
 ## Closed Noetherian subsemigroups
 
 Import `GroupTheory.Topology.Algebra.Group.Subsemigroup` for inverse closure of a
@@ -1077,6 +1331,60 @@ fixed left translations in the ambient group is required; the ambient space need
 not be Noetherian, and the subsemigroup may be empty. The additive counterpart
 gives closure under negation. For a submonoid, every element is a unit in the
 original submonoid.
+
+For a subsemigroup that is not assumed closed, import
+[`GroupTheory.Topology.Algebra.Group.Subsemigroup.Closure`](../GroupTheory/Topology/Algebra/Group/Subsemigroup/Closure.lean).
+With `{G : Type u} [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]`
+for the canonical regular left action,
+`Subsemigroup.inv_mem_closure_of_noetherianSpace` proves
+`x ∈ closure (S : Set G) → x⁻¹ ∈ closure (S : Set G)` from:
+
+- `∀ s ∈ S, ContinuousOn (fun x : G => x * s) (closure (S : Set G))`;
+- `NoetherianSpace {x : G // x ∈ closure (S : Set G)}`.
+
+The topology on the closure subtype is induced by the original topology on `G`.
+No ambient Noetherianity, global right-translation continuity, joint multiplication,
+continuous inversion, separation, compactness or commutativity is assumed.
+Right continuity is requested only on the closure and only for original members
+of `S`, not for every right factor in the closure.
+
+The multiplication-closure argument first applies `ContinuousOn.image_closure`
+to right multiplication by original members of `S`, then applies it to left
+multiplication by elements of the closure. This makes the closure itself a closed
+subsemigroup. The existing closed-subsemigroup inverse theorem above then applies
+using Noetherianity of that actual closure subtype. It constructs no bundled
+subgroup. Both modules are re-exported by `GroupTheory`; see the
+[usage guide](Usage.md#inverses-in-a-subsemigroups-closure) for the exact inputs.
+
+There is a separate preirreducible variant on the same original closure.
+`Subsemigroup.inv_mem_closure_of_isPreirreducible` has the same ambient group,
+topology, canonical regular left-continuity instance and local right-continuity
+premise, but replaces Noetherianity of the closure subtype by:
+
+- `IsPreirreducible (S : Set G)`;
+- `[WellFoundedLT (TopologicalSpace.IrreducibleCloseds G)]`.
+
+This is the descending chain condition for nonempty irreducible closed subsets
+of the **ambient group** with its given topology, using strict inclusion (`LT`,
+not `GT`). For every `x ∈ closure (S : Set G)`, not just `x ∈ S`, the conclusion
+is `x⁻¹ ∈ closure (S : Set G)`. Right continuity is still needed to construct the
+closure subsemigroup; preirreducibility passes to its closure. The closed
+preirreducible inverse theorem then applies. No ambient Noetherianity, global
+right continuity, joint multiplication, continuous inversion, T1, compactness,
+commutativity or nonempty-`S` premise is imposed. For empty `S`, the membership
+premise cannot hold.
+
+The closed-subsemigroup inverse results restrict fixed left translation by a
+member to a closed self-embedding of the original subsemigroup. The generic
+finite-irreducible-components theorem above makes that map surjective. In the
+Noetherian case both required topological properties follow on the subsemigroup;
+in the preirreducible case a chosen member supplies nonemptiness, there is one
+irreducible component, and ambient well-foundedness transfers along the closed
+inclusion. Surjectivity supplies the identity and inverse within the same carrier.
+These proofs retain the inverse-closure idea by minimal left translates credited
+to Flint in the [subsemigroup module](../GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
+The public closed Noetherian and closed preirreducible interfaces, their additive
+negation counterparts, and the submonoid unit consequence use the original data.
 
 ## Archimedean multiplicative boundedness
 
