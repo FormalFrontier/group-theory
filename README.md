@@ -2,6 +2,9 @@
 
 A Lean library for group actions and fixed vectors, topological groups and
 abstract automatic continuity, Grothendieck completions, and abelian arithmetic.
+
+It also provides gcd detection of power congruences modulo radical ideals.
+
 The library depends directly on [Mathlib](https://github.com/leanprover-community/mathlib4)
 and [Homological Algebra](https://github.com/FormalFrontier/homological-algebra). Homological Algebra supplies the
 finite-homology interface used by the finite group-cohomology results. The [result guide](docs/Results.md) gives detailed

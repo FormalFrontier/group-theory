@@ -47,6 +47,7 @@ public import GroupTheory.LinearAlgebra.Prod
 public import GroupTheory.LinearAlgebra.Pi
 public import GroupTheory.MonoidHom.Finite
 public import GroupTheory.MonoidHom.PositivePower
+public import GroupTheory.Ring.Ideal.Power
 public import GroupTheory.Ring.Power
 public import GroupTheory.MonoidLocalization.GrothendieckGroup
 public import GroupTheory.MonoidLocalization.GrothendieckGroup.Ring
