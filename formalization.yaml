@@ -3,6 +3,16 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    For f : A →* M with only MulOne A and monoids M and N, suppose each
+    x : M admits s : Finset ι and e : ι → ℕ with s.gcd e = 1 and
+    x ^ (e i) in Set.range f for every i in s. For fixed g, h : M →* N,
+    right-regularity of every g x gives g.comp f = h.comp f iff g = h.
+    The four universes are independent, and both s and e may depend on x.
+    No regularity of h, global cancellation, commutativity, surjectivity,
+    finite or nonempty index type, or positivity assumption is required.
+    The same proof gives the additive form with AddZero A, additive monoids
+    and natural multiples.
+
     If the image of h : A →* M contains powers of each element at a supplied
     finite set of natural exponents with gcd one, equality after precomposition
     with h detects equality of fixed homomorphisms f, g : M →* N whenever every
@@ -496,6 +506,10 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: MonoidHom.cancel_right_of_finite_powers_mem_range_of_isRightRegular
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: AddMonoidHom.cancel_right_of_finite_multiples_mem_range_of_isAddRightRegular
+      file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: MonoidHom.cancel_right_of_finite_powers_mem_range
       file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: AddMonoidHom.cancel_right_of_finite_multiples_mem_range

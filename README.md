@@ -46,6 +46,16 @@ prior results reused from Mathlib.
   consecutive-power images specialize this result; for left-cancellative targets the
   latter make precomposition injective. See
   [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
+- **Right-regular equality detection through finite power images.** Let `f : A →* M`,
+  with only `MulOne A`, and let `M` and `N` be monoids. For each `x : M`, suppose there
+  are `s : Finset ι` and `e : ι → ℕ` with `s.gcd e = 1` and
+  `x ^ (e i) ∈ Set.range f` for every `i ∈ s`. For fixed `g h : M →* N`,
+  right-regularity of every `g x` gives `g.comp f = h.comp f ↔ g = h`.
+  The four carrier and index universes are independent; both `s` and `e` may depend
+  on `x`. No regularity of `h`, global cancellation, commutativity, surjectivity,
+  finite or nonempty index type, or positivity assumption is needed. The same proof
+  gives the additive form with `AddZero A`, additive monoids and natural multiples.
+  See [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 - **Pointwise comparison from positive powers.** Under the positive-power range condition,
   homomorphisms `g h : N →* Γ` to a linearly ordered commutative monoid with zero satisfy
   `g (f a) ≤ h (f a)` for all `a : M` if and only if `g x ≤ h x` for all `x : N`.

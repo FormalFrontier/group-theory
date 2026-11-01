@@ -408,3 +408,46 @@ theorem comp_injective_of_successive_powers_mem_range
 end SuccessivePowers
 
 end MonoidHom
+
+namespace MonoidHom
+
+section RightRegularValues
+
+universe uA uM uN uι
+
+/-- Equality of fixed homomorphisms can be tested on an image containing a finite indexed
+family of powers of each element with gcd one, provided the values of the first map are
+right-regular. Both the finite set and the exponent function may depend on the element. -/
+@[to_additive
+  /-- Equality of fixed additive homomorphisms can be tested on an image containing a finite
+  indexed family of natural multiples of each element with gcd one, provided the values of
+  the first map are add-right-regular. Both the finite set and the coefficient function may
+  depend on the element. -/]
+theorem cancel_right_of_finite_powers_mem_range_of_isRightRegular
+    {A : Type uA} {M : Type uM} {N : Type uN} {ι : Type uι}
+    [MulOne A] [Monoid M] [Monoid N]
+    (f : A →* M)
+    (hfamily : ∀ x : M, ∃ s : Finset ι, ∃ e : ι → ℕ,
+      s.gcd e = 1 ∧ ∀ i ∈ s, x ^ (e i) ∈ Set.range f)
+    (g h : M →* N) (hg : ∀ x : M, IsRightRegular (g x)) :
+    g.comp f = h.comp f ↔ g = h := by
+  constructor
+  · intro hcomp
+    apply MonoidHom.ext
+    intro x
+    obtain ⟨s, e, hgcd, hs⟩ := hfamily x
+    apply IsRightRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hg x) hgcd
+    intro i hi
+    obtain ⟨a, ha⟩ := hs i hi
+    calc
+      (g x) ^ (e i) = g (x ^ (e i)) := (g.map_pow x (e i)).symm
+      _ = h (x ^ (e i)) := by
+        simpa only [MonoidHom.comp_apply, ha] using
+          congrArg (fun k : A →* N => k a) hcomp
+      _ = (h x) ^ (e i) := h.map_pow x (e i)
+  · rintro rfl
+    rfl
+
+end RightRegularValues
+
+end MonoidHom
