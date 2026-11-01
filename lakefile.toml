@@ -24,6 +24,7 @@ name = "GroupTheory"
 roots = [
   "GroupTheory",
   "GroupTheory.Topology.LocallyConstant",
+  "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
   "GroupTheory.Topology.Algebra.Group.Subsemigroup",
   "GroupTheory.Algebra.IsAddUnit",
