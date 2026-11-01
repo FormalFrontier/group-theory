@@ -75,6 +75,25 @@ prior results reused from Mathlib.
   commutativity or nontriviality; the upper bound has no nilpotence hypothesis
   and uses Mathlib's convention that nonnilpotent elements have class zero.
 
+- **Commuting divisors and products.** In a monoid, `a ∣ c` and `Commute a c`
+  imply `a ^ n ∣ c ^ n` for every natural exponent `n`, including zero
+  (`Commute.pow_dvd_pow_of_dvd`;
+  [`GroupTheory.Algebra.Divisibility.Basic`](GroupTheory/Algebra/Divisibility/Basic.lean)).
+  In a monoid with zero, if `a` is also nilpotent, then
+  `nilpotencyClass c ≤ nilpotencyClass a`
+  (`Commute.nilpotencyClass_le_of_dvd`). Thus a nilpotent `a` commuting with
+  `b` gives `nilpotencyClass (a * b) ≤ nilpotencyClass a`
+  (`Commute.nilpotencyClass_mul_le_left`;
+  [`GroupTheory.Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean)).
+  If a nilpotent element `a` occurs in a list `l` and commutes with every entry,
+  then `nilpotencyClass l.prod ≤ nilpotencyClass a`
+  (`List.nilpotencyClass_prod_le_of_mem`;
+  [`GroupTheory.Algebra.BigOperators.GroupWithZero.List`](GroupTheory/Algebra/BigOperators/GroupWithZero/List.lean)).
+  No other factor or list entry need be nilpotent, and other list entries
+  need not commute with one another. Trivial monoids with zero are allowed.
+  The bounds require nilpotence of `a`: the total class is zero for
+  nonnilpotent elements, so a class inequality alone does not imply nilpotence.
+
 - **Vanishing powers of finite commuting sums.** In any semiring, let `s : Finset ι`,
   `f : ι → R` and `n : ι → ℕ`. If `f i ^ n i = 0` for every `i ∈ s`, and
   `f i` commutes with `f j` for distinct `i, j ∈ s`, then
@@ -493,7 +512,9 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
-| Nilpotency classes of powers and zero-reflecting maps; bounds from semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
+| Powers of commuting divisors | [`Algebra.Divisibility.Basic`](GroupTheory/Algebra/Divisibility/Basic.lean) |
+| Nilpotency classes of powers and zero-reflecting maps; bounds from commuting divisors and products, semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
+| Nilpotency-class bound from a chosen commuting list entry | [`Algebra.BigOperators.GroupWithZero.List`](GroupTheory/Algebra/BigOperators/GroupWithZero/List.lean) |
 | Equality of multiplicative or additive maps from finite gcd-one power-sampling sets | [`MonoidHom.PositivePower`](GroupTheory/MonoidHom/PositivePower.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
 | Subgroup membership through finite powers, gcd-one detection and finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |

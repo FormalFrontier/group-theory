@@ -6,10 +6,11 @@ module
 
 public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.RingTheory.Nilpotent.Defs
+public import GroupTheory.Algebra.Divisibility.Basic
 import Mathlib.Tactic
 
 /-!
-# Nilpotency classes under semiconjugacy, powers and maps
+# Nilpotency class bounds and transport
 
 A diagonal semiconjugacy `SemiconjBy a x a` turns the vanishing of a power of `x`
 into the vanishing of the next power of `a`. Consequently, the nilpotency class of
@@ -20,6 +21,9 @@ exponent `n`. For positive exponents this is the round-up quotient; at exponent
 zero the formula uses total natural-number division, not a ceiling at zero.
 Unital monoid maps that preserve and reflect zero preserve the nilpotency class.
 Zero reflection, rather than injectivity, is sufficient.
+
+A nilpotent element bounds the nilpotency class of any commuting multiple of it.
+In particular, multiplication by a commuting element does not increase its class.
 
 This module uses Mathlib's semiconjugacy and nilpotency-class APIs.
 -/
@@ -151,3 +155,33 @@ theorem nilpotencyClass_map
           simp [ha] at h
   | succ k =>
       exact (hsucc k).mpr ha
+
+namespace Commute
+
+/-- A commuting multiple of a nilpotent element has no larger nilpotency class. -/
+public theorem nilpotencyClass_le_of_dvd
+    {M : Type u} [MonoidWithZero M] {a c : M}
+    (hcomm : Commute a c) (hdvd : a ∣ c) (hnil : IsNilpotent a) :
+    nilpotencyClass c ≤ nilpotencyClass a := by
+  have hkill : c ^ nilpotencyClass a = 0 := by
+    obtain ⟨d, hd⟩ := hcomm.pow_dvd_pow_of_dvd hdvd (nilpotencyClass a)
+    simpa only [pow_nilpotencyClass hnil, zero_mul] using hd
+  cases hc : nilpotencyClass c with
+  | zero => exact Nat.zero_le _
+  | succ k =>
+    have hpred : c ^ k ≠ 0 :=
+      ((nilpotencyClass_eq_succ_iff (x := c) (k := k)).mp hc).2
+    by_contra hle
+    have hk : nilpotencyClass a ≤ k := by omega
+    obtain ⟨r, hr⟩ := Nat.exists_eq_add_of_le hk
+    apply hpred
+    rw [hr, pow_add, hkill, zero_mul]
+
+/-- Multiplication by a commuting element does not increase a nilpotent element's class. -/
+public theorem nilpotencyClass_mul_le_left
+    {M : Type u} [MonoidWithZero M] {a b : M}
+    (hcomm : Commute a b) (hnil : IsNilpotent a) :
+    nilpotencyClass (a * b) ≤ nilpotencyClass a := by
+  exact ((Commute.refl a).mul_right hcomm).nilpotencyClass_le_of_dvd ⟨b, rfl⟩ hnil
+
+end Commute
