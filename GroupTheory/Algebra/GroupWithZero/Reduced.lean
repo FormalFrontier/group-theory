@@ -24,6 +24,16 @@ When the other factor is one, these specialize to Mathlib's `pow_eq_zero_iff`.
 
 universe u
 
+/-- In a reduced monoid with zero, reversing the factors preserves a zero product. -/
+theorem IsReduced.mul_eq_zero_comm {M : Type u} [MonoidWithZero M] [IsReduced M]
+    {a b : M} : a * b = 0 ↔ b * a = 0 := by
+  have reverse (a b : M) (hab : a * b = 0) : b * a = 0 := by
+    apply sq_eq_zero_iff.mp
+    calc
+      (b * a) ^ 2 = b * (a * b) * a := by simp only [pow_two, mul_assoc]
+      _ = 0 := by rw [hab, mul_zero, zero_mul]
+  exact ⟨reverse a b, reverse b a⟩
+
 /-- A positive power has the same right annihilators as the element itself in a
 reduced monoid with zero. Positivity is essential: the zeroth power is one.
 Reducedness is essential already with `b = 1` and a nonzero square-zero element. -/
