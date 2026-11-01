@@ -175,6 +175,17 @@ prior results reused from Mathlib.
   [arbitrary products](GroupTheory/RepresentationPi.lean), including empty ones,
   and [algebraic direct sums](GroupTheory/RepresentationDirectSum.lean).
 
+- **[Normalized finite-group norms](GroupTheory/RepresentationAveragingProjector.lean).**
+  If the order of a finite group is a unit in a possibly noncommutative semiring,
+  the normalized norm is an idempotent self-intertwiner whose range is exactly
+  the existing fixed submodule. Modules need only be additive commutative monoids;
+  the construction uses `Finite`, and its sum formula works with any finite
+  enumeration and any unit representing the group order. It commutes with
+  intertwiners and is the unique equivariant retraction onto the fixed vectors.
+  Under Mathlib's commutative-ring, additive-commutative-group, `Fintype` and
+  invertible-order hypotheses, its underlying linear map
+  [agrees with Mathlib's `Representation.averageMap`](GroupTheory/RepresentationAveragingProjectorComparison.lean).
+
 - **[Noetherian monoid cohomology](GroupTheory/Cohomology/Noetherian.lean).**
   Let `R` be any ring, `G` any monoid, and `A : Rep R G` a linear representation,
   with independent ring, monoid and coefficient universes. The
@@ -383,6 +394,7 @@ claim is implied by this guidance.
 | Fixed-submodule transport across coefficient and acting-monoid maps | [`RepresentationFixedFunctoriality`](GroupTheory/RepresentationFixedFunctoriality.lean) |
 | Given linear lifts of finite-group intertwining maps | [`RepresentationLifting`](GroupTheory/RepresentationLifting.lean), [`RepresentationLinHomAdd`](GroupTheory/RepresentationLinHomAdd.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
+| Normalized norms, natural idempotent self-intertwiners and comparison with Mathlib's averaging map | [`RepresentationAveragingProjector`](GroupTheory/RepresentationAveragingProjector.lean), [`RepresentationAveragingProjectorComparison`](GroupTheory/RepresentationAveragingProjectorComparison.lean) |
 | Additive universal property, biadditive Grothendieck extensions, arbitrary products, cofinal denominator forms and quotient representatives | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Additive-unit absorption and nilpotence reflection in Grothendieck rings | [`Algebra.IsAddUnit`](GroupTheory/Algebra/IsAddUnit.lean), [`MonoidLocalization.GrothendieckGroup.Nilpotent`](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean) |

@@ -64,6 +64,8 @@ public import GroupTheory.RepresentationFixedUniversalProperty
 public import GroupTheory.RepresentationFixedKernels
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
+public import GroupTheory.RepresentationAveragingProjector
+public import GroupTheory.RepresentationAveragingProjectorComparison
 public import GroupTheory.Topology.CompactOpenSubgroup
 public import GroupTheory.Topology.Sections
 public import GroupTheory.Topology.Separation.Finite

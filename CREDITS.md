@@ -58,6 +58,16 @@
   Hudon and Patrick Massot. The indexed naturality result reuses the same
   fixed-submodule restrictions and the pointwise intertwiner constructor.
 
+- The normalized finite-group norm reuses Mathlib's representation norm and
+  invariant-space averaging map, formalized by Antoine Labelle, and its
+  intertwining-map API by Stepan Nesterov and Edison Xie. It composes those
+  constructions with this library's fixed submodule and norm naturality, using
+  the inverse numerical endomorphism to allow noncommutative semirings and
+  additive commutative monoids. The comparison theorem identifies its underlying
+  linear map with Mathlib's `Representation.averageMap` under the latter's
+  commutative-ring hypotheses. The normalized-norm formalization follows the
+  construction in Group Rings by Formal Frontier Agents.
+
 - Finite-group intertwining lifts use the additive conjugation representation on
   linear maps, Mathlib's norm by Antoine Labelle, and this library's norm
   naturality API. Normalization uses `LinearEquiv.ofBijective` for the natural-scalar
