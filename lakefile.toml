@@ -25,7 +25,8 @@ roots = [
   "GroupTheory",
   "GroupTheory.Topology.LocallyConstant",
   "GroupTheory.Topology.Separation.Finite",
-  "GroupTheory.Topology.Algebra.Group.Subsemigroup"
+  "GroupTheory.Topology.Algebra.Group.Subsemigroup",
+  "GroupTheory.Algebra.IsAddUnit"
 ]
 
 [[lean_lib]]

@@ -10,6 +10,14 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Zero-sum pairs and unit images.** In a nonunital, nonassociative semiring,
+  `a + b = 0` implies `a * a = b * b`. A function-like multiplication-preserving
+  map to a monoid sends such a pair to values that are units simultaneously;
+  preservation of addition, zero or one and target commutativity are not required
+  (`mul_self_eq_mul_self_of_add_eq_zero`,
+  `MulHomClass.isUnit_apply_iff_of_add_eq_zero`;
+  [`GroupTheory.Algebra.IsAddUnit`](GroupTheory/Algebra/IsAddUnit.lean)).
+
 - **Subgroup membership through finite powers.** In any group, a power at the gcd of a
   finite family of natural exponents belongs to a subgroup-like object if and only if
   every selected power does. A family with gcd one therefore detects membership of the
