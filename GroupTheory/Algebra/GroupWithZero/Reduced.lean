@@ -4,11 +4,13 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
-# Positive-power annihilators in reduced monoids with zero
+# Zero products in reduced monoids with zero
 
 In a reduced monoid with zero, replacing either factor of a product by a positive
 natural power does not change whether the product is zero. The simp lemmas
@@ -18,6 +20,9 @@ commutativity and absence of zero divisors are not required.
 The proofs use Mathlib's square-zero criterion `sq_eq_zero_iff`, upward propagation
 `pow_mul_eq_zero_of_le`, and the reducedness and power APIs for `MulOpposite`.
 When the other factor is one, these specialize to Mathlib's `pow_eq_zero_iff`.
+
+`List.Perm.prod_eq_zero_iff` shows that permuting a list preserves whether its
+product is zero, without asserting equality of the products.
 -/
 
 @[expose] public section
@@ -80,3 +85,52 @@ theorem mul_pow_eq_zero_iff {M : Type u} [MonoidWithZero M] [IsReduced M]
     {a b : M} {m : ℕ} (hm : m ≠ 0) : a * b ^ m = 0 ↔ a * b = 0 := by
   simpa only [← MulOpposite.op_pow, ← MulOpposite.op_mul, MulOpposite.op_eq_zero_iff] using
     (pow_mul_eq_zero_iff (a := MulOpposite.op b) (b := MulOpposite.op a) hm)
+
+/-- Permuting a list in a reduced monoid with zero preserves whether its product is zero. -/
+theorem List.Perm.prod_eq_zero_iff {M : Type u} [MonoidWithZero M] [IsReduced M]
+    {l₁ l₂ : List M} (h : l₁.Perm l₂) : l₁.prod = 0 ↔ l₂.prod = 0 := by
+  have insert_factor (x c y : M) (hxy : x * y = 0) : x * c * y = 0 := by
+    have hyxc : y * (x * c) = 0 := by
+      rw [← mul_assoc, IsReduced.mul_eq_zero_comm.mp hxy, zero_mul]
+    exact IsReduced.mul_eq_zero_comm.mp hyxc
+  -- Insert factors until the interchanged product has square zero.
+  have interchange (x y z : M) (hxyz : x * y * z = 0) : x * z * y = 0 := by
+    have hxzyz : x * z * (y * z) = 0 :=
+      insert_factor x z (y * z) (by simpa only [mul_assoc] using hxyz)
+    have hxzyxz : (x * z * y) * x * z = 0 :=
+      insert_factor (x * z * y) x z (by simpa only [mul_assoc] using hxzyz)
+    apply sq_eq_zero_iff.mp
+    calc
+      (x * z * y) ^ 2 = ((x * z * y) * x * z) * y := by
+        simp only [pow_two, mul_assoc]
+      _ = 0 := by rw [hxzyxz, zero_mul]
+  have interchange_iff (x y z : M) : x * y * z = 0 ↔ x * z * y = 0 :=
+    ⟨interchange x y z, interchange x z y⟩
+  have swap_factors (p a b t : M) :
+      p * (a * (b * t)) = 0 ↔ p * (b * (a * t)) = 0 := by
+    calc
+      p * (a * (b * t)) = 0 ↔ t * (p * a * b) = 0 := by
+        simpa only [mul_assoc] using
+          (IsReduced.mul_eq_zero_comm (a := p * a * b) (b := t))
+      _ ↔ t * (p * b * a) = 0 := by
+        simpa only [mul_assoc] using interchange_iff (t * p) a b
+      _ ↔ p * (b * (a * t)) = 0 := by
+        simpa only [mul_assoc] using
+          (IsReduced.mul_eq_zero_comm (a := t) (b := p * b * a))
+  -- Keep a prefix in the induction: a zero product need not have a zero tail.
+  have prefixed : ∀ p : M, p * l₁.prod = 0 ↔ p * l₂.prod = 0 := by
+    induction h with
+    | nil =>
+        intro p
+        rfl
+    | cons a h ih =>
+        intro p
+        simpa only [List.prod_cons, mul_assoc] using ih (p * a)
+    | swap a b l =>
+        intro p
+        simp only [List.prod_cons]
+        exact swap_factors _ _ _ _
+    | trans h₁ h₂ ih₁ ih₂ =>
+        intro p
+        exact (ih₁ p).trans (ih₂ p)
+  simpa only [one_mul] using prefixed 1
