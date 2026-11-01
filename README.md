@@ -41,6 +41,16 @@ prior results reused from Mathlib.
   Both formulas include zero exponents and require no commutativity or order assumptions.
   Import [`GroupTheory.Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean)
   to use these equalities.
+  For `s : Finset ι` and `e : ι → ℕ`, `Subgroup.zpowers_inf_finsetInf_pow` identifies
+  the intersection of `Subgroup.zpowers a` with
+  `s.inf (fun i => Subgroup.zpowers (a ^ (e i)))` as
+  `Subgroup.zpowers (a ^ (s.lcm e))`. If `s.Nonempty`,
+  `Subgroup.finsetInf_zpowers_pow` removes the initial `Subgroup.zpowers a` factor.
+  For an empty family the finite infimum is top, so this initial cyclic subgroup is
+  essential. The additive companions are `AddSubgroup.zmultiples_inf_finsetInf_nsmul`
+  and `AddSubgroup.finsetInf_zmultiples_nsmul`, using natural multiples in an additive
+  group. These finite-family formulas require only `Group` or `AddGroup`, with independent
+  carrier and index universes, and allow zero and repeated coefficients.
 - **Finite power kernels.** In any monoid, let `a` be left-regular: left multiplication
   by `a` is injective. For arbitrary `b`, equality of their powers at the gcd of a finite
   family of natural exponents is equivalent to equality at every selected exponent.
@@ -336,7 +346,7 @@ claim is implied by this guidance.
 | Mathematics | Modules |
 | --- | --- |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
-| Subgroup membership through finite powers and gcd-one detection | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
+| Subgroup membership through finite powers, gcd-one detection and finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
 | Coinduced cofinite topologies and finite-versus-infinite fibers | [`Topology.Cofinite`](GroupTheory/Topology/Cofinite.lean), [paired integer projections](GroupTheoryTest/Topology/Cofinite.lean) |
 | Cofinite group operations and actions, coset quotients and homomorphisms | [`Group.Cofinite`](GroupTheory/Topology/Algebra/Group/Cofinite.lean) |
 | Coefficient-sum kernels and factorization over semirings | [`Finsupp.CoefficientSum`](GroupTheory/Finsupp/CoefficientSum.lean), [noncancellative-target client](GroupTheoryTest/Finsupp/CoefficientSum.lean) |
