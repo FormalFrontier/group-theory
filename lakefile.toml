@@ -29,6 +29,7 @@ roots = [
   "GroupTheory.Algebra.IsAddUnit",
   "GroupTheory.Algebra.GroupWithZero.Reduced.List",
   "GroupTheory.Algebra.Polynomial.Units",
+  "GroupTheory.Ring.Nilpotent.Finset",
   "GroupTheory.Ring.Power.Finset"
 ]
 

@@ -360,6 +360,14 @@ For the occurrence-sensitive positive-power product criterion, import its theory
 import GroupTheory.Algebra.GroupWithZero.Reduced.List
 ```
 
+For nilpotence of finite sums of pairwise orthogonal elements in an arbitrary
+semiring, use the criterion that the sum is nilpotent if and only if every
+supported summand is nilpotent:
+
+```lean
+import GroupTheory.Ring.Nilpotent.Finset
+```
+
 ## Use and verification
 
 Detailed imports, applications, client boundaries and compatibility notes are in
