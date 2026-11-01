@@ -43,17 +43,21 @@ prior results reused from Mathlib.
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive
   roots (`IsMulTorsionFree`); equality can therefore be checked after restriction. The
   additive statements use positive multiples and torsion-free additive targets.
-- **Equality detection through finite power images.** Let `h : A →* M`, with only
-  `MulOne A`, and let `M` and `N` be monoids in independent universes. Suppose for every
-  `x : M` there is a finite set `s : Finset ℕ` with `s.gcd id = 1` and
-  `x ^ n ∈ Set.range h` for every `n ∈ s`. For fixed `f g : M →* N`, if every `f x` is
-  left-regular, then `f.comp h = g.comp h ↔ f = g`. The finite set may depend on `x`.
-  No regularity of `g`, target cancellation, commutativity, group or surjectivity
-  assumption is needed. The additive form uses `AddZero A`, additive monoids and natural
-  multiples with gcd one. Zero exponents and coefficients are allowed; singleton `{1}`
-  is legal, while empty or all-zero sets cannot have gcd one. Coprime pairs and
-  consecutive-power images specialize this result; for left-cancellative targets the
-  latter make precomposition injective. See
+- **Equality detection through finite power images.** Let `f : A →* M`, with only
+  `MulOne A`, and let `M` and `N` be monoids. Suppose each `x : M` admits a finite
+  indexed family `s : Finset ι`, `e : ι → ℕ` with `s.gcd e = 1` and
+  `x ^ (e i) ∈ Set.range f` for every `i ∈ s`. For fixed `g h : M →* N`, if every
+  `g x` is left-regular, then `g.comp f = h.comp f ↔ g = h`. The four universes are
+  independent, and both `s` and `e` may depend on `x`. No regularity of `h`, target
+  cancellation, commutativity, group, surjectivity, finite or nonempty index type,
+  or decidable equality assumption is needed. The additive form uses `AddZero A`,
+  additive monoids and natural multiples with gcd one. Zero and repeated exponents
+  and coefficients are allowed; singleton exponent one is legal, while empty or
+  all-zero families cannot have gcd one. The indexed left-regular power kernel
+  proves the criterion directly. The existing finite-set-of-natural-exponents API
+  is its `ι = ℕ`, `e = id` specialization, with unchanged signatures. Coprime pairs
+  and consecutive-power images specialize this result; for left-cancellative targets
+  the latter make precomposition injective. See
   [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 - **Right-regular equality detection through finite power images.** Let `f : A →* M`,
   with only `MulOne A`, and let `M` and `N` be monoids. For each `x : M`, suppose there

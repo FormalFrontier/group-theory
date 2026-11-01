@@ -306,6 +306,44 @@ namespace MonoidHom
 
 section RegularValues
 
+universe uA uM uN uι
+
+/-- Equality of homomorphisms can be tested on an image containing a finite indexed
+family of powers of every element with gcd one, provided the values of the first
+homomorphism are left-regular. The finite index set and exponent function may both
+depend on the element; exponents may be zero or repeated. -/
+@[to_additive
+  /-- Equality of additive homomorphisms can be tested on an image containing a finite
+  indexed family of natural multiples of every element with gcd one, provided the values
+  of the first homomorphism are add-left-regular. The finite index set and coefficient
+  function may both depend on the element; coefficients may be zero or repeated. -/]
+theorem cancel_right_of_finite_powers_mem_range_of_isLeftRegular
+    {A : Type uA} {M : Type uM} {N : Type uN} {ι : Type uι}
+    [MulOne A] [Monoid M] [Monoid N]
+    (f : A →* M)
+    (hfamily : ∀ x : M, ∃ s : Finset ι, ∃ e : ι → ℕ,
+      s.gcd e = 1 ∧ ∀ i ∈ s, x ^ (e i) ∈ Set.range f)
+    (g h : M →* N) (hg : ∀ x : M, IsLeftRegular (g x)) :
+    g.comp f = h.comp f ↔ g = h := by
+  constructor
+  · intro hcomp
+    apply MonoidHom.ext
+    intro x
+    obtain ⟨s, e, hgcd, hs⟩ := hfamily x
+    apply IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hg x) (e := e) hgcd
+    intro i hi
+    obtain ⟨a, ha⟩ := hs i hi
+    calc
+      g x ^ (e i) = g (x ^ (e i)) := (g.map_pow x (e i)).symm
+      _ = g (f a) := congrArg g ha.symm
+      _ = h (f a) := by
+        simpa only [MonoidHom.comp_apply] using
+          congrArg (fun q : A →* N => q a) hcomp
+      _ = h (x ^ (e i)) := congrArg h ha
+      _ = h x ^ (e i) := h.map_pow x (e i)
+  · intro hgh
+    exact congrArg (fun q : M →* N => q.comp f) hgh
+
 /-- Equality of homomorphisms can be tested on an image containing a finite set of
 powers of every element with gcd one, provided the values of the first homomorphism
 are left-regular. The finite set may depend on the element, and exponents may be zero. -/
@@ -322,24 +360,11 @@ theorem cancel_right_of_finite_powers_mem_range
       s.gcd _root_.id = 1 ∧ ∀ n ∈ s, x ^ n ∈ Set.range h)
     (f g : M →* N) (hf : ∀ x : M, IsLeftRegular (f x)) :
     f.comp h = g.comp h ↔ f = g := by
-  constructor
-  · intro hcomp
-    apply MonoidHom.ext
-    intro x
-    obtain ⟨s, hg, hs⟩ := hpowers x
-    apply IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hf x) (e := _root_.id) hg
-    intro n hn
-    obtain ⟨a, ha⟩ := hs n hn
-    calc
-      f x ^ n = f (x ^ n) := (f.map_pow x n).symm
-      _ = f (h a) := congrArg f ha.symm
-      _ = g (h a) := by
-        simpa only [MonoidHom.comp_apply] using
-          congrArg (fun q : A →* N => q a) hcomp
-      _ = g (x ^ n) := congrArg g ha
-      _ = g x ^ n := g.map_pow x n
-  · intro hfg
-    exact congrArg (fun q : M →* N => q.comp h) hfg
+  apply cancel_right_of_finite_powers_mem_range_of_isLeftRegular
+    (ι := ℕ) h ?_ f g hf
+  intro x
+  obtain ⟨s, hg, hs⟩ := hpowers x
+  exact ⟨s, _root_.id, hg, hs⟩
 
 /-- Equality of homomorphisms can be tested on an image containing two coprime
 powers of every element, provided the values of the first homomorphism are
