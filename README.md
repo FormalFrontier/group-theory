@@ -360,6 +360,15 @@ The catalogue includes the local finite-neighborhood criterion for arbitrary map
 
 ### Pontryagin characters and bidual evaluation
 
+- **Saturation of uniformly spanning character sets.** Let `K` be a compact
+  monoid with measurable opens and measurable fixed translations, and let `μ`
+  be a finite nonzero left-invariant measure. If the complex span of the scalar
+  characters from a set `S` is uniformly dense in `C(K, ℂ)`, then `S` is the
+  entire Pontryagin dual. In particular, every point-separating subgroup of
+  characters is the whole dual. The measure need not be a probability measure;
+  no group, Hausdorffness or countability assumption on `K` is required. See
+  [`PontryaginDual.Saturation`](GroupTheory/Topology/PontryaginDual/Saturation.lean).
+
 - **Uniform density of scalar characters.** Let `K` be a compact monoid with a
   topology, and let `S` be a subgroup of its continuous `Circle`-valued
   characters that separates points of `K`. The complex linear span of

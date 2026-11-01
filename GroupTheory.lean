@@ -119,6 +119,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
 public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.PontryaginDual.Prod
 public import GroupTheory.Topology.PontryaginDual.Real
+public import GroupTheory.Topology.PontryaginDual.Saturation
 public import GroupTheory.Topology.PontryaginDual.StoneWeierstrass
 public import GroupTheory.Subgroup.IndexTwo
 public import GroupTheory.Transversal
