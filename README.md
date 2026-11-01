@@ -126,6 +126,26 @@ prior results reused from Mathlib.
   [arbitrary products](GroupTheory/RepresentationPi.lean), including empty ones,
   and [algebraic direct sums](GroupTheory/RepresentationDirectSum.lean).
 
+- **[Noetherian monoid cohomology](GroupTheory/Cohomology/Noetherian.lean).**
+  Let `R` be any ring, `G` any monoid, and `A : Rep R G` a linear representation,
+  with independent ring, monoid and coefficient universes. The
+  [inhomogeneous cochains](GroupTheory/Cohomology/Basic.lean)
+  `Rep.inhomogeneousCochains A` have degree `n` term `(Fin n → G) → A`, with
+  the pointwise module structure and the alternating differential using `A.ρ`.
+  Their cohomology is `Rep.cohomology A n`. The linear equivalence
+  `Rep.cohomologyZeroEquiv A` identifies degree zero with `A.ρ.fixedSubmodule`
+  in the original coefficient module. Assuming only `IsNoetherian R A`,
+  `Rep.isNoetherian_cohomology_zero` gives Noetherian degree-zero cohomology
+  for arbitrary `G`. With the additional hypothesis `Finite G`,
+  `Rep.isNoetherian_cohomology` gives Noetherian cohomology in every degree:
+  cochains are finite products of `A`, cycles are submodules, and cohomology
+  is a quotient of cycles. Neither commutativity nor Noetherianity of `R`,
+  finiteness of `A`, nor a trivial action is required. The comparison with
+  Mathlib's group cohomology assumes a commutative ring and a group, with
+  ring, group and coefficient carrier in one universe; it identifies the
+  complexes and cohomology and agrees with the canonical `groupCohomology.H0Iso`
+  in degree zero.
+
 - **[Finite-group intertwining lifts](GroupTheory/RepresentationLifting.lean).** If the
   order of a finite group is a unit in a possibly noncommutative semiring, any ordinary
   linear lift of one intertwining map through another intertwining map can be replaced
@@ -309,6 +329,7 @@ claim is implied by this guidance.
 | Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
+| Inhomogeneous monoid cochains over rings, fixed vectors in degree zero and Noetherian cohomology | [`Cohomology.Basic`](GroupTheory/Cohomology/Basic.lean), [`Cohomology.Noetherian`](GroupTheory/Cohomology/Noetherian.lean) |
 | Fixed-submodule transport across coefficient and acting-monoid maps | [`RepresentationFixedFunctoriality`](GroupTheory/RepresentationFixedFunctoriality.lean) |
 | Given linear lifts of finite-group intertwining maps | [`RepresentationLifting`](GroupTheory/RepresentationLifting.lean), [`RepresentationLinHomAdd`](GroupTheory/RepresentationLinHomAdd.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |
@@ -348,6 +369,10 @@ prior formalizations and detailed attribution.
 The cofinite quotient results use Mathlib's coset, quotient-topology, finite-set and
 cofinite-topology APIs, together with the dense-fiber formalization in
 [`Topology.DenseFibers`](GroupTheory/Topology/DenseFibers.lean).
+
+The cohomology constructions follow Mathlib's group-cohomology formalization by
+Amelia Livingston; the square-zero argument follows the alternating-face-map
+formalization by Joël Riou, Adam Topaz and Johan Commelin.
 
 Authors: Formal Frontier Agents. The Lean proofs and clients were developed by
 Formal Frontier AI agents. Licensed under [Apache-2.0](LICENSE).
