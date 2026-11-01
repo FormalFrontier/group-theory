@@ -13,6 +13,15 @@ project:
     and canonical real bidual evaluation is a continuous multiplicative equivalence.
     No general locally compact abelian reflexivity theorem is asserted.
 
+    Restriction identifies the compact-open circle dual of a binary product
+    with the product of the factor duals, for arbitrary monoids with topologies.
+    The inverse multiplies the factor character values; the equivalence is
+    natural under product maps and needs no source-operation continuity,
+    local compactness or separation. The generic continuous-hom coproduct
+    equivalence uses a commutative topological-group target; its algebraic
+    restriction universal property only needs a commutative monoid target
+    with continuous multiplication.
+
     In a reduced monoid with zero, every nonzero natural exponent m satisfies
     a ^ m * b = 0 iff a * b = 0 and a * b ^ m = 0 iff a * b = 0.
     The lemmas pow_mul_eq_zero_iff and mul_pow_eq_zero_iff require only
@@ -436,6 +445,17 @@ status:
     entire compact-open dual. realEvalEquiv has the canonical evaluation as its
     forward map and the iterated compact-open topology on its target. These
     real-case results assume no general locally compact abelian reflexivity.
+
+    PontryaginDual.prodEquiv identifies all continuous circle characters of
+    A × B with pairs of factor characters, using the original compact-open
+    topologies. It restricts along the factor inclusions; its inverse has value
+    chi a * psi b. Independent source universes, arbitrary monoids and arbitrary
+    topologies are allowed, with no operation-continuity, local-compactness,
+    separation or locally-compact-pair hypothesis. This binary universal
+    property and its contravariant naturality assert neither infinite-product
+    duality nor bidual reflexivity. The generic continuous-hom equivalence has
+    a commutative topological-group target, while coprod_eq_iff retains the
+    weaker commutative-monoid target with continuous multiplication.
 
     For monoids M and N, let S : Set M contain, for each x : M, a finite
     indexed family of powers x ^ (e i) with gcd one. In any common carrier F

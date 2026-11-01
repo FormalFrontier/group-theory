@@ -11,6 +11,21 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Characters of binary products.** Restriction gives
+  `PontryaginDual.prodEquiv A B : PontryaginDual (A × B) ≃ₜ*
+  (PontryaginDual A × PontryaginDual B)`; the inverse sends `(χ, ψ)` to
+  `(a, b) ↦ χ a * ψ b`. The source monoids have their original, arbitrary
+  topologies, with no operation-continuity, local-compactness or separation
+  assumption. The equivalence uses the entire compact-open character spaces
+  and is natural under products of continuous monoid homomorphisms. More
+  generally, the compact-open coproduct equivalence for continuous
+  homomorphisms has a commutative topological-group target; its algebraic
+  restriction universal property needs only a commutative-monoid target with
+  continuous multiplication. See
+  [`ContinuousMonoidHom`](GroupTheory/Topology/Algebra/ContinuousMonoidHom.lean)
+  and [`PontryaginDual.Prod`](GroupTheory/Topology/PontryaginDual/Prod.lean).
+  This binary result asserts neither infinite-product duality nor bidual reflexivity.
+
 **[Complete headline catalogue: statements, hypotheses and module links](docs/HeadlineResults.md).**
 The families below give an overview; the catalogue retains the full statements
 and qualifications. For API details and examples, see the
