@@ -134,3 +134,72 @@ theorem List.Perm.prod_eq_zero_iff {M : Type u} [MonoidWithZero M] [IsReduced M]
         intro p
         exact (ih₁ p).trans (ih₂ p)
   simpa only [one_mul] using prefixed 1
+
+
+private theorem prod_eq_zero_of_cons_mem
+    {M : Type u} [MonoidWithZero M] [IsReduced M]
+    {a : M} {l : List M} (ha : a ∈ l) (hz : (a :: l).prod = 0) :
+    l.prod = 0 := by
+  have split : ∀ l : List M, a ∈ l → ∃ s t, l = s ++ a :: t := by
+    intro l
+    induction l with
+    | nil =>
+      intro hm
+      simp only [List.not_mem_nil] at hm
+    | cons b l ih =>
+      intro hm
+      rcases List.mem_cons.mp hm with hab | hm
+      · subst b
+        exact ⟨[], l, rfl⟩
+      · obtain ⟨s, t, rfl⟩ := ih hm
+        exact ⟨b :: s, t, rfl⟩
+  obtain ⟨s, t, rfl⟩ := split l ha
+  have hp : (s ++ a :: t).Perm (a :: (s ++ t)) := by
+    simpa only [List.append_assoc, List.cons_append, List.nil_append] using
+      (List.Perm.append_right t
+        (List.perm_append_comm (l₁ := s) (l₂ := [a])))
+  apply hp.prod_eq_zero_iff.mpr
+  have hh := (List.perm_cons a).mpr hp
+  have hs : a ^ 2 * (s ++ t).prod = 0 := by
+    simpa only [List.prod_cons, pow_two, mul_assoc] using hh.prod_eq_zero_iff.mp hz
+  simpa only [List.prod_cons] using
+    (pow_mul_eq_zero_iff (m := 2) (by decide)).mp hs
+
+/-- In a reduced monoid with zero, vanishing of an ordered product is preserved when its
+membership support is enlarged, regardless of order or multiplicity. -/
+theorem List.prod_eq_zero_of_subset
+    {M : Type u} [MonoidWithZero M] [IsReduced M]
+    {l₁ l₂ : List M} (h : List.Subset l₁ l₂) (hz : l₁.prod = 0) :
+    l₂.prod = 0 := by
+  suffices hdrop : ∀ (l : List M), l ⊆ l₂ → (l ++ l₂).prod = 0 → l₂.prod = 0 by
+    apply hdrop l₁ h
+    simp only [List.prod_append, hz, zero_mul]
+  intro l
+  induction l with
+  | nil =>
+    intro _ hz'
+    simpa only [List.nil_append] using hz'
+  | cons a l ih =>
+    intro h' hz'
+    apply ih
+    · intro x hx
+      exact h' (by simp only [List.mem_cons]; exact Or.inr hx)
+    · apply prod_eq_zero_of_cons_mem (a := a)
+      · simp only [List.mem_append]
+        exact Or.inr (h' (by simp))
+      · exact hz'
+
+-- Reordering the support and deleting a repeated factor preserve vanishing.
+example {M : Type u} [MonoidWithZero M] [IsReduced M] (a b c : M) :
+    [a, b, a, c].prod = 0 ↔ [c, b, a].prod = 0 := by
+  constructor
+  · intro hz
+    apply List.prod_eq_zero_of_subset (l₁ := [a, b, a, c]) ?_ hz
+    intro x hx
+    simp only [List.mem_cons] at hx ⊢
+    rcases hx with rfl | rfl | rfl | rfl | hx <;> simp_all
+  · intro hz
+    apply List.prod_eq_zero_of_subset (l₁ := [c, b, a]) ?_ hz
+    intro x hx
+    simp only [List.mem_cons] at hx ⊢
+    rcases hx with rfl | rfl | rfl | hx <;> simp_all
