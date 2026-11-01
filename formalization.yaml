@@ -3,6 +3,15 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    Fixed evaluation defines PontryaginDual.evalHom on every monoid with a
+    topology, into its entire compact-open bidual. Canonical bidual equivalences
+    of two factors, with their pointwise evaluation laws, give the explicit
+    constructor PontryaginDual.prodEvalEquiv without additional source hypotheses.
+    The additive real plane uses the two real factor equivalences and
+    ContinuousMulEquiv.prodMultiplicative, which lifts Mathlib's algebraic
+    tagged-product equivalence under addition and topologies alone. All source
+    topologies and algebraic structures are the original ones.
+
     Canonical evaluation sends a monoid A with a topology continuously into
     its compact-open Pontryagin bidual under LocallyCompactPair A Circle.
     Evaluation is natural under continuous monoid homomorphisms; evaluation
@@ -188,6 +197,32 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Mathlib tagged products and topological constructions
+    authors:
+      - Johannes Hölzl
+      - Callum Sutton
+      - Yury Kudryashov
+      - Mario Carneiro
+      - Patrick Massot
+      - Thomas Browning
+      - Nailin Guan
+      - Sébastien Gouëzel
+    type: software
+    location: >-
+      Mathlib/Algebra/Group/Equiv/TypeTags.lean,
+      Mathlib/Topology/Constructions.lean,
+      Mathlib/Topology/Constructions/SumProd.lean,
+      Mathlib/Topology/Algebra/ContinuousMonoidHom.lean,
+      Mathlib/Topology/MetricSpace/ProperSpace.lean and
+      Mathlib/Topology/Compactness/LocallyCompact.lean
+    note: >-
+      ContinuousMulEquiv.prodMultiplicative retains the algebraic data of
+      MulEquiv.prodMultiplicative and the original type-tag and product
+      topologies. The real-plane bidual construction combines this equivalence
+      with the canonical real factor equivalences and contravariant dual maps.
+      Stock proper-space and locally compact instances supply the concrete
+      real, product and tagged-source locally compact pairs for the evaluation
+      compatibility statement.
   - title: Fixed vectors of pretransitive permutation representations
     authors:
       - Formal Frontier Agents
@@ -429,6 +464,23 @@ automation:
 
 status:
   scope: >-
+    PontryaginDual.evalHom is the algebraic core of canonical evaluation;
+    the existing continuous eval retains its locally compact pair hypothesis.
+    PontryaginDual.prodEvalEquiv takes independently universed monoids A and B
+    with topologies, supplied equivalences eA and eB to their original biduals,
+    and the laws eA a chi = chi a and eB b psi = psi b. Its forward function
+    is evalHom (A × B); its inverse uses eA.symm and eB.symm after the
+    composition of mapEquiv (prodEquiv A B).symm with the product equivalence
+    on the factor duals. No source group, continuous operations, separation,
+    weak local compactness or locally compact pair premise is added.
+    ContinuousMulEquiv.prodMultiplicative requires only addition and topologies
+    on its independently universed factors, retaining MulEquiv.prodMultiplicative.
+    PontryaginDual.realPlaneEvalEquiv has source Multiplicative (ℝ × ℝ), not
+    the product of two tags; a genuine tagged-product equivalence relates them.
+    Its forward map is evalHom and its inverse uses the tag inverse, the product
+    bidual inverse and twice-contravariant transport. One-point factors are
+    permitted; no all-finite-dimensional or general LCA theorem is asserted.
+
     PontryaginDual.eval A sends a to the character chi ↦ chi a in the
     original compact-open bidual. Its application lemma, twice-contravariant
     naturality and triangular retraction law use only a monoid with a topology
@@ -674,6 +726,46 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: PontryaginDual.evalHom
+      file: GroupTheory/Topology/PontryaginDual.lean
+    - declaration: PontryaginDual.evalHom_apply
+      file: GroupTheory/Topology/PontryaginDual.lean
+    - declaration: PontryaginDual.eval_toMonoidHom
+      file: GroupTheory/Topology/PontryaginDual.lean
+    - declaration: PontryaginDual.prodEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: PontryaginDual.prodEvalEquiv_toMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: PontryaginDual.coe_prodEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: PontryaginDual.prodEvalEquiv_apply
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: PontryaginDual.prodEvalEquiv_symm_apply
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: PontryaginDual.prodEvalEquiv_toContinuousMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Prod.lean
+    - declaration: ContinuousMulEquiv.prodMultiplicative
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.prodMultiplicative_toMulEquiv
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.coe_prodMultiplicative
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.prodMultiplicative_apply
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.prodMultiplicative_symm_apply
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: PontryaginDual.realPlaneEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPlaneEvalEquiv_toMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.coe_realPlaneEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPlaneEvalEquiv_apply
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPlaneEvalEquiv_symm_apply
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPlaneEvalEquiv_toContinuousMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
     - declaration: Representation.mem_fixedSubmodule_ofMulAction_iff
       file: GroupTheory/RepresentationOfMulAction.lean
     - declaration: Representation.ofMulActionFixedSubmoduleEquiv

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Topology.Algebra.Group.CompactOpen
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Constructions
 
 /-!
 # Additive and multiplicative topology type tags
@@ -20,6 +23,20 @@ equivalence to a homeomorphism for the compact-open topologies. It keeps the ori
 additive source and needs no continuity of the source or target operations. For a
 commutative target with continuous multiplication, `toAdditiveRightContinuousAddEquiv`
 also preserves pointwise addition.
+
+`ContinuousMulEquiv.prodMultiplicative` identifies the multiplicative tag of a
+binary additive product with the product of the two multiplicative tags. It uses
+Mathlib's algebraic equivalence and the original tag and product topologies.
+Only addition and topologies on the factors are needed.
+
+## References
+
+* Mathlib's `Algebra.Group.Equiv.TypeTags` (Johannes Hölzl, Callum Sutton and
+  Yury Kudryashov), for the algebraic tagged-product equivalence.
+* Mathlib's `Topology.Constructions` and `Topology.Constructions.SumProd`
+  (Johannes Hölzl, Mario Carneiro and Patrick Massot), for tag and product topologies.
+* Mathlib's `Topology.Algebra.ContinuousMonoidHom` (Thomas Browning and Nailin Guan),
+  for continuous multiplicative equivalences.
 -/
 
 @[expose] public section
@@ -134,6 +151,50 @@ def toAdditiveRightContinuousAddEquiv :
     toAdditiveRightContinuousAddEquiv.symm f = Additive.ofMul (toAdditiveRight.symm f) := rfl
 
 end ContinuousMonoidHom
+
+namespace ContinuousMulEquiv
+
+/-- The multiplicative tag of an additive binary product is continuously
+multiplicatively equivalent to the product of its multiplicative tags. -/
+def prodMultiplicative (A : Type u) (B : Type v) [Add A] [Add B]
+    [TopologicalSpace A] [TopologicalSpace B] :
+    Multiplicative (A × B) ≃ₜ* (Multiplicative A × Multiplicative B) where
+  toMulEquiv := MulEquiv.prodMultiplicative A B
+  continuous_toFun := by
+    change Continuous (fun z : Multiplicative (A × B) =>
+      (Multiplicative.ofAdd z.toAdd.1, Multiplicative.ofAdd z.toAdd.2))
+    exact (_root_.continuous_ofAdd.comp (Continuous.fst _root_.continuous_toAdd)).prodMk
+      (_root_.continuous_ofAdd.comp (Continuous.snd _root_.continuous_toAdd))
+  continuous_invFun := by
+    change Continuous (fun z : Multiplicative A × Multiplicative B =>
+      Multiplicative.ofAdd (z.1.toAdd, z.2.toAdd))
+    exact _root_.continuous_ofAdd.comp
+      ((_root_.continuous_toAdd.comp continuous_fst).prodMk
+        (_root_.continuous_toAdd.comp continuous_snd))
+
+variable (A : Type u) (B : Type v) [Add A] [Add B]
+  [TopologicalSpace A] [TopologicalSpace B]
+
+/-- The continuous tagged-product equivalence coerces to the algebraic one. -/
+@[simp] theorem coe_prodMultiplicative :
+    (prodMultiplicative A B : Multiplicative (A × B) ≃*
+      (Multiplicative A × Multiplicative B)) = MulEquiv.prodMultiplicative A B := rfl
+
+/-- Forgetting topology recovers Mathlib's tagged-product algebraic equivalence. -/
+theorem prodMultiplicative_toMulEquiv :
+    (prodMultiplicative A B).toMulEquiv = MulEquiv.prodMultiplicative A B := rfl
+
+/-- The forward tagged-product equivalence reads the two additive coordinates. -/
+theorem prodMultiplicative_apply (z : Multiplicative (A × B)) :
+    prodMultiplicative A B z =
+      (Multiplicative.ofAdd z.toAdd.1, Multiplicative.ofAdd z.toAdd.2) := rfl
+
+/-- The inverse tagged-product equivalence combines the additive coordinates. -/
+theorem prodMultiplicative_symm_apply (z : Multiplicative A × Multiplicative B) :
+    (prodMultiplicative A B).symm z =
+      Multiplicative.ofAdd (z.1.toAdd, z.2.toAdd) := rfl
+
+end ContinuousMulEquiv
 
 namespace NonarchimedeanAddGroup
 

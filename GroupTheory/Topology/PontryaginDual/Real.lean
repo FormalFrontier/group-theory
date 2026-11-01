@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.PontryaginDual
+public import GroupTheory.Topology.PontryaginDual.Prod
 public import GroupTheory.Topology.TypeTags
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Analysis.Convex.Contractible
@@ -13,6 +14,8 @@ import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.Compactness.LocallyCompact
 
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Topology.Algebra.Group.Neighborhood
@@ -26,6 +29,10 @@ continuous character of the additive real line has a unique such parameter.
 `PontryaginDual.realEquiv` packages this parametrization as a continuous additive
 equivalence onto the entire Pontryagin dual, with its compact-open topology.
 `PontryaginDual.realEvalEquiv` has the canonical bidual evaluation as its forward map.
+`PontryaginDual.realPlaneEvalEquiv` gives canonical biduality on
+`Multiplicative (ℝ × ℝ)`, using the tagged-product equivalence and the two real
+factor equivalences. The tag of the plane and the product of the tags are related
+by a continuous multiplicative equivalence, not identified as source structures.
 
 ## Implementation notes
 
@@ -337,5 +344,86 @@ theorem realEvalEquiv_toContinuousMonoidHom :
 theorem realEvalEquiv_apply_realToDual (x r : ℝ) :
     realEvalEquiv (Multiplicative.ofAdd x) (Additive.toMul (realToDual r)) =
       Real.fourierChar (r * x) := rfl
+
+private theorem realPlaneEval_compat (z : Multiplicative (ℝ × ℝ)) :
+    mapEquiv (mapEquiv (ContinuousMulEquiv.prodMultiplicative ℝ ℝ))
+        (evalHom (Multiplicative (ℝ × ℝ)) z) =
+      prodEvalEquiv realEvalEquiv realEvalEquiv realEvalEquiv_apply realEvalEquiv_apply
+        ((ContinuousMulEquiv.prodMultiplicative ℝ ℝ) z) := by
+  refine PontryaginDual.ext fun χ => ?_
+  simpa only [mapEquiv_apply, evalHom_apply] using
+    (prodEvalEquiv_apply realEvalEquiv realEvalEquiv
+      realEvalEquiv_apply realEvalEquiv_apply
+      ((ContinuousMulEquiv.prodMultiplicative ℝ ℝ) z).1
+      ((ContinuousMulEquiv.prodMultiplicative ℝ ℝ) z).2 χ).symm
+
+/-- Canonical biduality of the additive real plane, with its original tagged
+product topology and the iterated compact-open topology on its bidual. -/
+noncomputable def realPlaneEvalEquiv :
+    Multiplicative (ℝ × ℝ) ≃ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ))) :=
+  let h := ContinuousMulEquiv.prodMultiplicative ℝ ℝ
+  let eP := prodEvalEquiv realEvalEquiv realEvalEquiv
+    realEvalEquiv_apply realEvalEquiv_apply
+  let H := mapEquiv (mapEquiv h)
+  { toFun := evalHom (Multiplicative (ℝ × ℝ))
+    invFun Φ := h.symm (eP.symm (H Φ))
+    left_inv := by
+      intro z
+      change h.symm (eP.symm (H (evalHom (Multiplicative (ℝ × ℝ)) z))) = z
+      rw [realPlaneEval_compat, eP.symm_apply_apply, h.symm_apply_apply]
+    right_inv := by
+      intro Φ
+      apply H.injective
+      change H (evalHom (Multiplicative (ℝ × ℝ))
+        (h.symm (eP.symm (H Φ)))) = H Φ
+      rw [realPlaneEval_compat, h.apply_symm_apply, eP.apply_symm_apply]
+    map_mul' := _root_.map_mul (evalHom (Multiplicative (ℝ × ℝ)))
+    continuous_toFun := by
+      have heq :
+          (evalHom (Multiplicative (ℝ × ℝ)) : Multiplicative (ℝ × ℝ) →
+            PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))) =
+          fun z => H.symm (eP (h z)) := by
+        funext z
+        apply H.injective
+        rw [realPlaneEval_compat, H.apply_symm_apply]
+      rw [heq]
+      exact H.symm.continuous.comp (eP.continuous.comp h.continuous)
+    continuous_invFun := by
+      exact h.symm.continuous.comp (eP.symm.continuous.comp H.continuous) }
+
+/-- Real-plane biduality coerces to the canonical evaluation homomorphism. -/
+@[simp] theorem coe_realPlaneEvalEquiv :
+    (realPlaneEvalEquiv : Multiplicative (ℝ × ℝ) →*
+      PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))) =
+        evalHom (Multiplicative (ℝ × ℝ)) := rfl
+
+/-- The algebraic homomorphism underlying real-plane biduality is evaluation. -/
+theorem realPlaneEvalEquiv_toMonoidHom :
+    (realPlaneEvalEquiv : Multiplicative (ℝ × ℝ) →ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))).toMonoidHom =
+        evalHom (Multiplicative (ℝ × ℝ)) := rfl
+
+/-- Real-plane biduality sends a point to evaluation at that point. -/
+theorem realPlaneEvalEquiv_apply (a : Multiplicative (ℝ × ℝ))
+    (χ : PontryaginDual (Multiplicative (ℝ × ℝ))) :
+    realPlaneEvalEquiv a χ = χ a := rfl
+
+/-- The inverse of real-plane biduality transports to the product of tags,
+uses the product inverse, and returns through the inverse tag equivalence. -/
+theorem realPlaneEvalEquiv_symm_apply
+    (Φ : PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))) :
+    realPlaneEvalEquiv.symm Φ =
+      (ContinuousMulEquiv.prodMultiplicative ℝ ℝ).symm
+        ((prodEvalEquiv realEvalEquiv realEvalEquiv
+          realEvalEquiv_apply realEvalEquiv_apply).symm
+          (mapEquiv (mapEquiv (ContinuousMulEquiv.prodMultiplicative ℝ ℝ)) Φ)) := rfl
+
+/-- The forward continuous homomorphism of real-plane biduality is evaluation
+on the original multiplicative tag of the real plane. -/
+theorem realPlaneEvalEquiv_toContinuousMonoidHom :
+    (realPlaneEvalEquiv : Multiplicative (ℝ × ℝ) →ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))) =
+        eval (Multiplicative (ℝ × ℝ)) := rfl
 
 end PontryaginDual

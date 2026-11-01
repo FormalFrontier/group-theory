@@ -26,6 +26,26 @@ prior results reused from Mathlib.
   and [`PontryaginDual.Prod`](GroupTheory/Topology/PontryaginDual/Prod.lean).
   This binary result asserts neither infinite-product duality nor bidual reflexivity.
 
+- **Canonical biduality of binary products and the real plane.**
+  `PontryaginDual.evalHom A : A →* PontryaginDual (PontryaginDual A)` bundles
+  fixed evaluation for any monoid with a topology. Given factor equivalences
+  `eA : A ≃ₜ* PontryaginDual (PontryaginDual A)` and `eB` with the pointwise
+  laws `eA a χ = χ a` and `eB b ψ = ψ b`, `PontryaginDual.prodEvalEquiv`
+  has evaluation as its forward map and an explicit inverse using the two
+  supplied inverses and the product-dual comparison. No additional local
+  compactness, group, separation or operation-continuity hypotheses are needed.
+  `ContinuousMulEquiv.prodMultiplicative` lifts Mathlib's algebraic
+  tag-of-product equivalence under addition and topologies alone.
+  `PontryaginDual.realPlaneEvalEquiv` applies the product construction to the
+  two real factors and this tag equivalence, on `Multiplicative (ℝ × ℝ)` with
+  its original topology. The binary construction allows one-point factors;
+  no positive-dimension or nontriviality assumption is imposed.
+  See [`PontryaginDual.Prod`](GroupTheory/Topology/PontryaginDual/Prod.lean),
+  [`TypeTags`](GroupTheory/Topology/TypeTags.lean) and
+  [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean).
+  This is not an assertion of all finite-dimensional, infinite-product or
+  general locally compact abelian biduality.
+
 **[Complete headline catalogue: statements, hypotheses and module links](docs/HeadlineResults.md).**
 The families below give an overview; the catalogue retains the full statements
 and qualifications. For API details and examples, see the

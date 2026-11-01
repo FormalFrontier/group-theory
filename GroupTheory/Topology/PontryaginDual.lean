@@ -30,6 +30,8 @@ assert that evaluation on the original monoid is an isomorphism.
 
 * `PontryaginDual.mapEquiv`: contravariant transport of the whole compact-open dual
   along a continuous multiplicative equivalence.
+* `PontryaginDual.evalHom`: canonical evaluation as an algebraic homomorphism into
+  the compact-open bidual, without a locally compact pair hypothesis.
 * `PontryaginDual.eval`: the canonical continuous homomorphism into the bidual.
 
 ## References
@@ -114,11 +116,11 @@ theorem mapEquiv_trans {C : Type w} [Monoid C] [TopologicalSpace C]
 
 end MapEquiv
 
-/-- The canonical continuous homomorphism into the Pontryagin bidual, sending
-`a` to the character `χ ↦ χ a`. The locally compact pair hypothesis supplies
-joint evaluation on the original monoid; no local compactness of its dual is needed. -/
-noncomputable def eval (A : Type u) [Monoid A] [TopologicalSpace A] [LocallyCompactPair A Circle] :
-    A →ₜ* PontryaginDual (PontryaginDual A) where
+/-- Canonical evaluation as an algebraic homomorphism into the compact-open
+Pontryagin bidual. For each point, fixed evaluation is a continuous character;
+continuity in the source point is not asserted. -/
+noncomputable def evalHom (A : Type u) [Monoid A] [TopologicalSpace A] :
+    A →* PontryaginDual (PontryaginDual A) where
   toFun a :=
     { toFun := fun χ => χ a
       map_one' := one_apply a
@@ -126,8 +128,23 @@ noncomputable def eval (A : Type u) [Monoid A] [TopologicalSpace A] [LocallyComp
       continuous_toFun := continuous_eval_const (F := A →ₜ* Circle) a }
   map_one' := PontryaginDual.ext fun χ => _root_.map_one χ
   map_mul' := fun a b => PontryaginDual.ext fun χ => _root_.map_mul χ a b
+
+/-- Fixed evaluation pairs a point with a continuous circle-valued character. -/
+@[simp] theorem evalHom_apply {A : Type u} [Monoid A] [TopologicalSpace A]
+    (a : A) (χ : PontryaginDual A) : evalHom A a χ = χ a := rfl
+
+/-- The canonical continuous homomorphism into the Pontryagin bidual, sending
+`a` to the character `χ ↦ χ a`. The locally compact pair hypothesis supplies
+joint evaluation on the original monoid; no local compactness of its dual is needed. -/
+noncomputable def eval (A : Type u) [Monoid A] [TopologicalSpace A] [LocallyCompactPair A Circle] :
+    A →ₜ* PontryaginDual (PontryaginDual A) where
+  toMonoidHom := evalHom A
   continuous_toFun := ContinuousMonoidHom.continuous_of_continuous_uncurry _
     (continuous_snd.eval (F := A →ₜ* Circle) continuous_fst)
+
+/-- Forgetting continuity of canonical evaluation gives the algebraic evaluation map. -/
+theorem eval_toMonoidHom (A : Type u) [Monoid A] [TopologicalSpace A]
+    [LocallyCompactPair A Circle] : (eval A).toMonoidHom = evalHom A := rfl
 
 variable {A : Type u} [Monoid A] [TopologicalSpace A] [LocallyCompactPair A Circle]
 
