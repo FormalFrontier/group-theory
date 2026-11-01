@@ -203,6 +203,15 @@ prior results reused from Mathlib.
   [arbitrary products](GroupTheory/RepresentationPi.lean), including empty ones,
   and [algebraic direct sums](GroupTheory/RepresentationDirectSum.lean).
 
+- **[Finite transitive permutation representations](GroupTheory/RepresentationOfMulAction.lean).**
+  If a group acts pretransitively on a finite nonempty set `X`, its permutation
+  representation over any semiring `R` has fixed submodule linearly equivalent
+  to `R`. The image of `r` has coefficient `r` at every point, and the inverse
+  evaluates at any point. The acting group need not be finite, and the
+  coefficient semiring may be noncommutative or zero. No invertible group
+  order is required. The construction uses
+  Mathlib's permutation representations and this library's fixed submodules.
+
 - **[Normalized finite-group norms](GroupTheory/RepresentationAveragingProjector.lean).**
   If the order of a finite group is a unit in a possibly noncommutative semiring,
   the normalized norm is an idempotent self-intertwiner whose range is exactly
@@ -433,6 +442,7 @@ claim is implied by this guidance.
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
 | Inhomogeneous monoid cochains over rings, fixed vectors in degree zero and Noetherian cohomology | [`Cohomology.Basic`](GroupTheory/Cohomology/Basic.lean), [`Cohomology.Noetherian`](GroupTheory/Cohomology/Noetherian.lean) |
+| Fixed vectors of finite nonempty transitive permutation representations | [`RepresentationOfMulAction`](GroupTheory/RepresentationOfMulAction.lean) |
 | Fixed-submodule transport across coefficient and acting-monoid maps | [`RepresentationFixedFunctoriality`](GroupTheory/RepresentationFixedFunctoriality.lean) |
 | Given linear lifts of finite-group intertwining maps | [`RepresentationLifting`](GroupTheory/RepresentationLifting.lean), [`RepresentationLinHomAdd`](GroupTheory/RepresentationLinHomAdd.lean) |
 | Finite-group norms and surjections on fixed submodules | [`RepresentationNorm`](GroupTheory/RepresentationNorm.lean), [`RepresentationNormNaturality`](GroupTheory/RepresentationNormNaturality.lean) |

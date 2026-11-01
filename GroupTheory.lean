@@ -70,6 +70,7 @@ public import GroupTheory.RepresentationFixedUniversalProperty
 public import GroupTheory.RepresentationFixedKernels
 public import GroupTheory.RepresentationPi
 public import GroupTheory.RepresentationNorm
+public import GroupTheory.RepresentationOfMulAction
 public import GroupTheory.RepresentationAveragingProjector
 public import GroupTheory.RepresentationAveragingProjectorComparison
 public import GroupTheory.Topology.CompactOpenSubgroup

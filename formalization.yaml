@@ -163,11 +163,29 @@ project:
     equivalences split coordinates and are natural in supplied intertwining maps.
     They use representation-independent submodule-product splittings; the indexed
     splitting linearly enriches Mathlib's subtype-Pi equivalence.
+
+    For a group acting pretransitively on a finite nonempty set X, the fixed
+    submodule of its permutation representation over any semiring R is linearly
+    equivalent to R. The forward map has coefficient r at every point, and the
+    inverse evaluates at any point. The group need not be finite; the semiring
+    may be zero or noncommutative.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
 
 sources:
+  - title: Fixed vectors of finite transitive permutation representations
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: >-
+      GroupTheory/RepresentationOfMulAction.lean,
+      Representation.ofMulActionFixedSubmoduleEquiv
+    note: >-
+      This construction reuses Mathlib's permutation representations, coefficient
+      formulas, finite sums and singleton linear maps, together with this library's
+      fixed submodules over semirings. No finite acting group is needed for the
+      equivalence.
   - title: Positive-power annihilators in reduced monoids with zero
     authors:
       - Formal Frontier Agents
@@ -602,11 +620,27 @@ status:
     all original module data and independent universes. Infinite and empty index
     types are allowed. The stronger invariants_pi identity follows on the same data
     in a separate commutative-ring/group/additive-group context.
+
+    For pretransitive group actions, membership in the permutation representation's
+    fixed submodule is equivalent to equality of every pair of coefficients,
+    without finiteness or nonemptiness. On a finite nonempty carrier the constant
+    coefficient construction is a linear equivalence from the coefficient semiring
+    to that fixed submodule. Its coefficient and arbitrary-point inverse formulas
+    characterize it. No coefficient commutativity, nontriviality or
+    invertible-order assumption is required.
   axioms:
     - propext
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: Representation.mem_fixedSubmodule_ofMulAction_iff
+      file: GroupTheory/RepresentationOfMulAction.lean
+    - declaration: Representation.ofMulActionFixedSubmoduleEquiv
+      file: GroupTheory/RepresentationOfMulAction.lean
+    - declaration: Representation.ofMulActionFixedSubmoduleEquiv_apply_coeff
+      file: GroupTheory/RepresentationOfMulAction.lean
+    - declaration: Representation.ofMulActionFixedSubmoduleEquiv_symm_apply
+      file: GroupTheory/RepresentationOfMulAction.lean
     - declaration: MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular
       file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: AddHomClass.eqOn_iff_eq_of_finite_multiples_mem_of_isAddLeftRegular
