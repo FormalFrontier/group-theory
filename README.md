@@ -290,6 +290,14 @@ The catalogue includes the local finite-neighborhood criterion for arbitrary map
 
 ### Pontryagin characters and bidual evaluation
 
+- **Uniform density of scalar characters.** Let `K` be a compact monoid with a
+  topology, and let `S` be a subgroup of its continuous `Circle`-valued
+  characters that separates points of `K`. The complex linear span of
+  `x ↦ (χ x : ℂ)`, for `χ ∈ S`, is dense in `C(K, ℂ)` for the uniform topology.
+  No measure, continuity of the monoid operations, or separation or countability
+  typeclass on `K` is required. This uses Mathlib's scalar Stone–Weierstrass theorem;
+  see [`GroupTheory.Topology.PontryaginDual.StoneWeierstrass`](GroupTheory/Topology/PontryaginDual/StoneWeierstrass.lean).
+
 - **Real characters and canonical biduality.** Every continuous circle-valued
   character of the additive real line has a unique period-one Fourier frequency.
   `PontryaginDual.realEquiv` identifies the original real topology with the
@@ -411,6 +419,7 @@ claim is implied by this guidance.
 | Normalized norms, natural idempotent self-intertwiners and comparison with Mathlib's averaging map | [`RepresentationAveragingProjector`](GroupTheory/RepresentationAveragingProjector.lean), [`RepresentationAveragingProjectorComparison`](GroupTheory/RepresentationAveragingProjectorComparison.lean) |
 | Real Fourier self-duality and canonical biduality | [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean) |
 | Whole compact-open dual transport; canonical bidual evaluation, naturality and triangular retraction | [`PontryaginDual`](GroupTheory/Topology/PontryaginDual.lean) |
+| Uniform density of scalar characters from point-separating subgroups | [`PontryaginDual.StoneWeierstrass`](GroupTheory/Topology/PontryaginDual/StoneWeierstrass.lean) |
 | Injectivity of canonical bidual evaluation for discrete abelian groups | [`PontryaginDual.Discrete`](GroupTheory/Topology/PontryaginDual/Discrete.lean) |
 | Integrals and off-diagonal orthogonality of Pontryagin characters | [`PontryaginDual.Integral`](GroupTheory/Topology/PontryaginDual/Integral.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |

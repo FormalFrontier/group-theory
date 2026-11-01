@@ -115,6 +115,7 @@ public import GroupTheory.Topology.PontryaginDual
 public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.PontryaginDual.Prod
 public import GroupTheory.Topology.PontryaginDual.Real
+public import GroupTheory.Topology.PontryaginDual.StoneWeierstrass
 public import GroupTheory.Subgroup.IndexTwo
 public import GroupTheory.Transversal
 public import GroupTheory.Topology.CrossedHom
