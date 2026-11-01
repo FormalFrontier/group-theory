@@ -13,6 +13,17 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Canonical Pontryagin bidual evaluation.** For a monoid `A` equipped with a
+  topology and `[LocallyCompactPair A Circle]`, `PontryaginDual.eval A` is the
+  continuous homomorphism `a ↦ (χ ↦ χ a)` into the existing compact-open bidual.
+  It is natural under arbitrary continuous monoid homomorphisms. If the dual
+  also forms a locally compact pair with `Circle`, evaluation on the dual is
+  a section of the dual of evaluation. No group, commutativity, continuity of
+  the monoid operations or Hausdorff hypothesis on `A` is required. These
+  results do not assert injectivity, surjectivity or full Pontryagin reflexivity
+  of the original evaluation. See
+  [`GroupTheory.Topology.PontryaginDual`](GroupTheory/Topology/PontryaginDual.lean).
+
 - **Equality of powers in reduced rings.** In any reduced ring, two elements whose
   powers agree at two coprime natural exponents are equal. More generally,
   `x ^ Nat.gcd m n = y ^ Nat.gcd m n` if and only if both `x ^ m = y ^ m` and
@@ -443,6 +454,7 @@ claim is implied by this guidance.
 | Fixed-action continuity and subgroup quotients | [`ConstMulAction`](GroupTheory/Topology/Algebra/ConstMulAction.lean), [`Quotient`](GroupTheory/Topology/Algebra/Group/Quotient.lean) |
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |
+| Canonical bidual evaluation, naturality and triangular retraction | [`PontryaginDual`](GroupTheory/Topology/PontryaginDual.lean) |
 | Finite index from dense finite generation | [`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean) |
 | Total boundedness and finite-index subgroup bases | [`TotalBounded`](GroupTheory/Topology/Algebra/Group/TotalBounded.lean) |
 | Discrete-valued maps and compact-group factorization | [`CompactDiscrete`](GroupTheory/Topology/ContinuousMap/CompactDiscrete.lean), [`DiscreteFactor`](GroupTheory/Topology/Algebra/CompactGroup/DiscreteFactor.lean) |

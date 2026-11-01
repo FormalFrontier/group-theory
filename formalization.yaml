@@ -3,6 +3,12 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    Canonical evaluation sends a monoid A with a topology continuously into
+    its compact-open Pontryagin bidual under LocallyCompactPair A Circle.
+    Evaluation is natural under continuous monoid homomorphisms; evaluation
+    on the dual is a section of the dual of evaluation when the dual also
+    forms a locally compact pair with Circle. No full reflexivity is asserted.
+
     In a reduced monoid with zero, every nonzero natural exponent m satisfies
     a ^ m * b = 0 iff a * b = 0 and a * b ^ m = 0 iff a * b = 0.
     The lemmas pow_mul_eq_zero_iff and mul_pow_eq_zero_iff require only
@@ -225,6 +231,27 @@ sources:
       than the false printed open-normal intersection. For component images,
       openness corrects the false merely-continuous surjection statement;
       closure remains necessary.
+  - title: Cohomology of Number Fields, canonical bidual evaluation
+    authors:
+      - Jürgen Neukirch
+      - Alexander Schmidt
+      - Kay Wingberg
+    type: book
+    location: >-
+      Corrected second edition, electronic version 2.3, Chapter I, §1,
+      (1.1.10)–(1.1.11).
+    note: >-
+      The canonical evaluation and naturality idea is extended to monoids
+      with a topology under Mathlib's LocallyCompactPair hypothesis.
+      The triangular retraction is not the source's full LCA reflexivity
+      theorem, and the stock Circle model does not itself assert the
+      separate real-quotient-circle source correspondence.
+      The formalization reuses Mathlib's compact-open evaluation/currying
+      approach: continuous-hom machinery by Thomas Browning and Nailin Guan,
+      continuous-map currying by Reid Barton, and fixed/joint evaluation
+      interfaces by Yury Kudryashov. Algebraic MonoidHom.eval and
+      AddChar.doubleDualEmb, and finite AddChar.doubleDualEquiv, are related
+      precedents, not replacements for the continuous character model.
   - title: Cohomology of Number Fields, compact totally disconnected characters
     authors:
       - Jürgen Neukirch
@@ -363,6 +390,16 @@ automation:
 
 status:
   scope: >-
+    PontryaginDual.eval A sends a to the character chi ↦ chi a in the
+    original compact-open bidual. Its application lemma, twice-contravariant
+    naturality and triangular retraction law use only a monoid with a topology
+    and LocallyCompactPair A Circle. Naturality uses an independently-universed
+    target monoid with its own pair hypothesis; the triangle separately needs
+    LocallyCompactPair (PontryaginDual A) Circle. Neither operation continuity,
+    inverses, commutativity nor Hausdorffness of A is assumed. Evaluation on the
+    dual is a section of the dual of evaluation, not a proof that evaluation
+    on A is injective, surjective or a topological isomorphism.
+
     For monoids M and N, let S : Set M contain, for each x : M, a finite
     indexed family of powers x ^ (e i) with gcd one. In any common carrier F
     with FunLike F M N and MulHomClass F M N, fixed g h : F satisfy
