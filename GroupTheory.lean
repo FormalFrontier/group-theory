@@ -35,6 +35,8 @@ public import GroupTheory.Category.Grp.ColimitMap
 public import GroupTheory.Category.Grp.ColimitMapKernel
 public import GroupTheory.Category.Grp.Colimits
 public import GroupTheory.FGScalarSurjectivity
+public import GroupTheory.FreeGroup.IndexTwo
+public import GroupTheory.FreeGroup.Map
 public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
@@ -107,7 +109,6 @@ public import GroupTheory.Topology.RationalCircle
 public import GroupTheory.Topology.TypeTags
 public import GroupTheory.Topology.RationalCircleCharacter
 public import GroupTheory.Subgroup.IndexTwo
-public import GroupTheory.FreeGroup.IndexTwo
 public import GroupTheory.Transversal
 public import GroupTheory.Topology.CrossedHom
 public import GroupTheory.Topology.Algebra.MulAction
