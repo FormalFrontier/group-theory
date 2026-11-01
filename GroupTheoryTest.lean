@@ -29,6 +29,7 @@ public import GroupTheoryTest.IndexNSmul
 public import GroupTheoryTest.QuotientKernel
 public import GroupTheoryTest.QuotientTorsion
 public import GroupTheoryTest.RepresentationNorm
+public import GroupTheoryTest.Ring.Hom.FiniteSum
 public import GroupTheoryTest.Topology.CompactOpenSubgroup
 public import GroupTheoryTest.Topology.Sections
 public import GroupTheoryTest.Topology.ConnectedComponentQuotient
