@@ -13,6 +13,14 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Real characters and canonical biduality.** Every continuous circle-valued
+  character of the additive real line has a unique period-one Fourier frequency.
+  `PontryaginDual.realEquiv` identifies the original real topology with the
+  compact-open topology on the entire real character space. The forward map of
+  `PontryaginDual.realEvalEquiv` is canonical bidual evaluation, not a separately
+  chosen algebraic identification. See
+  [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean).
+
 - **Canonical Pontryagin bidual evaluation.** For a monoid `A` equipped with a
   topology and `[LocallyCompactPair A Circle]`, `PontryaginDual.eval A` is the
   continuous homomorphism `a ↦ (χ ↦ χ a)` into the existing compact-open bidual.
@@ -510,6 +518,7 @@ claim is implied by this guidance.
 | Fixed-action continuity and subgroup quotients | [`ConstMulAction`](GroupTheory/Topology/Algebra/ConstMulAction.lean), [`Quotient`](GroupTheory/Topology/Algebra/Group/Quotient.lean) |
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |
+| Real Fourier self-duality and canonical biduality | [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean) |
 | Canonical bidual evaluation, naturality and triangular retraction | [`PontryaginDual`](GroupTheory/Topology/PontryaginDual.lean) |
 | Finite index from dense finite generation | [`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean) |
 | Total boundedness and finite-index subgroup bases | [`TotalBounded`](GroupTheory/Topology/Algebra/Group/TotalBounded.lean) |

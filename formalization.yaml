@@ -7,7 +7,11 @@ project:
     its compact-open Pontryagin bidual under LocallyCompactPair A Circle.
     Evaluation is natural under continuous monoid homomorphisms; evaluation
     on the dual is a section of the dual of evaluation when the dual also
-    forms a locally compact pair with Circle. No full reflexivity is asserted.
+    forms a locally compact pair with Circle. Every continuous character of the
+    additive real line has a unique period-one Fourier frequency. The Fourier
+    parametrization is an equivalence for the original compact-open topology,
+    and canonical real bidual evaluation is a continuous multiplicative equivalence.
+    No general locally compact abelian reflexivity theorem is asserted.
 
     In a reduced monoid with zero, every nonzero natural exponent m satisfies
     a ^ m * b = 0 iff a * b = 0 and a * b ^ m = 0 iff a * b = 0.
@@ -263,7 +267,12 @@ sources:
       with a topology under Mathlib's LocallyCompactPair hypothesis.
       The triangular retraction is not the source's full LCA reflexivity
       theorem, and the stock Circle model does not itself assert the
-      separate real-quotient-circle source correspondence.
+      separate real-quotient-circle source correspondence. Real character
+      classification and Fourier self-duality are auxiliary real-case results,
+      not the dual-group definition in (1.1.10); canonical real biduality is a
+      special case of the setting in (1.1.11). The auxiliary real proof uses
+      Mathlib's covering-space lifting and real-valued additive linearization,
+      with period-one rather than radian normalization.
       The formalization reuses Mathlib's compact-open evaluation/currying
       approach: continuous-hom machinery by Thomas Browning and Nailin Guan,
       continuous-map currying by Reid Barton, and fixed/joint evaluation
@@ -416,7 +425,14 @@ status:
     LocallyCompactPair (PontryaginDual A) Circle. Neither operation continuity,
     inverses, commutativity nor Hausdorffness of A is assumed. Evaluation on the
     dual is a section of the dual of evaluation, not a proof that evaluation
-    on A is injective, surjective or a topological isomorphism.
+    on arbitrary A is injective, surjective or a topological isomorphism.
+
+    For the additive real line, existsUnique_real classifies every continuous
+    character by a unique period-one Fourier frequency r, with value
+    Real.fourierChar (r * x). realEquiv uses the original real topology and the
+    entire compact-open dual. realEvalEquiv has the canonical evaluation as its
+    forward map and the iterated compact-open topology on its target. These
+    real-case results assume no general locally compact abelian reflexivity.
 
     For monoids M and N, let S : Set M contain, for each x : M, a finite
     indexed family of powers x ^ (e i) with gcd one. In any common carrier F
