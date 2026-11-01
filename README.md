@@ -139,6 +139,12 @@ See the [commuting-divisor API](GroupTheory/Algebra/Divisibility/Basic.lean),
 
 ### Finite sums and product homomorphisms
 
+For submodules of a semiring equipped with a module structure over another
+semiring, `Submodule.sum_eq_sup` identifies finite sums with finite suprema,
+complementing the zero/bottom and addition/supremum identities.
+No scalar-tower, commutativity, or algebra hypothesis is required. See
+[`Algebra.Algebra.Operations`](GroupTheory/Algebra/Algebra/Operations.lean).
+
 Finite families of nonunital ring homomorphisms whose distinct images annihilate
 each other in both orders have a sum homomorphism, even for nonunital,
 nonassociative source and target semirings. For a finite dependent product of
@@ -454,6 +460,7 @@ claim is implied by this guidance.
 | Mathematics | Modules |
 | --- | --- |
 | Finite orthogonal sums of nonunital ring homomorphisms and unital maps from finite products | [`Ring.Hom.FiniteSum`](GroupTheory/Ring/Hom/FiniteSum.lean) |
+| Finite sums of submodules as finite suprema over semirings | [`Algebra.Algebra.Operations`](GroupTheory/Algebra/Algebra/Operations.lean) |
 | Powers of commuting divisors | [`Algebra.Divisibility.Basic`](GroupTheory/Algebra/Divisibility/Basic.lean) |
 | Nilpotency-class bound from a chosen commuting list entry | [`Algebra.BigOperators.GroupWithZero.List`](GroupTheory/Algebra/BigOperators/GroupWithZero/List.lean) |
 | Nilpotency classes of powers and zero-reflecting maps; bounds from commuting divisors and products, semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |

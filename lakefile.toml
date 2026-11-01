@@ -27,6 +27,7 @@ roots = [
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
   "GroupTheory.Topology.Algebra.Group.Subsemigroup",
+  "GroupTheory.Algebra.Algebra.Operations",
   "GroupTheory.Algebra.IsAddUnit",
   "GroupTheory.Algebra.Divisibility.Basic",
   "GroupTheory.Algebra.GroupWithZero.Nilpotent",
@@ -45,6 +46,7 @@ roots = [
 name = "GroupTheoryTest"
 roots = [
   "GroupTheoryTest",
+  "GroupTheoryTest.Algebra.Algebra.Operations",
   "GroupTheoryTest.Algebra.Divisibility.Basic",
   "GroupTheoryTest.Algebra.GroupWithZero.Pi",
   "GroupTheoryTest.Algebra.Ring.Pi",
