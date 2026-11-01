@@ -10,6 +10,16 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Positive-power annihilators.** In any reduced monoid with zero, for every
+  nonzero natural exponent `m`, `a ^ m * b = 0 ↔ a * b = 0` and
+  `a * b ^ m = 0 ↔ a * b = 0`. No commutativity, cancellation, absence of zero
+  divisors or nontriviality is assumed. The exponent condition is essential:
+  a zeroth power is one. Use `pow_mul_eq_zero_iff` and `mul_pow_eq_zero_iff` from
+  [`GroupTheory.Algebra.GroupWithZero.Reduced`](GroupTheory/Algebra/GroupWithZero/Reduced.lean).
+  This Mathlib upstream candidate extends the annihilator API using Mathlib's
+  square-zero criterion, upward power propagation and opposite-monoid transport;
+  a factor equal to one recovers the existing `pow_eq_zero_iff`.
+
 - **Zero-sum pairs and unit images.** In a nonunital, nonassociative semiring,
   `a + b = 0` implies `a * a = b * b`. A function-like multiplication-preserving
   map to a monoid sends such a pair to values that are units simultaneously;

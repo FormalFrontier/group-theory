@@ -3,6 +3,13 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    In a reduced monoid with zero, every nonzero natural exponent m satisfies
+    a ^ m * b = 0 iff a * b = 0 and a * b ^ m = 0 iff a * b = 0.
+    The lemmas pow_mul_eq_zero_iff and mul_pow_eq_zero_iff require only
+    MonoidWithZero and IsReduced, without commutativity, cancellation,
+    absence of zero divisors or nontriviality. The positive-exponent
+    condition is essential.
+
     For monoids M and N, let S : Set M contain, for each x : M, a finite
     indexed family of powers x ^ (e i) with gcd one. In any common carrier F
     with FunLike F M N and MulHomClass F M N, fixed g h : F satisfy
@@ -155,6 +162,19 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Positive-power annihilators in reduced monoids with zero
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: >-
+      GroupTheory/Algebra/GroupWithZero/Reduced.lean,
+      pow_mul_eq_zero_iff and mul_pow_eq_zero_iff
+    note: >-
+      This Mathlib upstream candidate uses Mathlib's square-zero criterion,
+      upward power propagation and opposite-monoid reducedness and power APIs.
+      The left-factor result uses one positive-power induction and the
+      right-factor result follows by opposite transport. At a factor equal
+      to one, these specialize to Mathlib's existing pow_eq_zero_iff.
   - title: Equality of multiplicative maps on finite power-sampling sets
     authors:
       - Formal Frontier Agents
