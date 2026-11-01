@@ -58,3 +58,4 @@ public import GroupTheoryTest.FreeGroup.IndexTwo
 import GroupTheoryTest.Algebra.Order.Ring.MulHom
 import GroupTheoryTest.MonoidHom.PositivePower
 public import GroupTheoryTest.Algebra.GroupWithZero.Pi
+public import GroupTheoryTest.Algebra.Ring.Pi
