@@ -18,6 +18,9 @@ coefficients are all equal. When `X` is finite and nonempty, these vectors form 
 module linearly equivalent to `R`: the forward map gives every coefficient the
 same value, and the inverse evaluates at any point of `X`.
 
+Finite coefficient support also shows that any nonzero fixed vector forces `X` to
+be finite. Thus the fixed submodule is bottom when `X` is infinite.
+
 The coefficients may form any semiring, including a zero or noncommutative
 semiring. The finite-carrier equivalence does not require the acting group to be
 finite, nor does it require an invertible group order.
@@ -59,7 +62,38 @@ theorem mem_fixedSubmodule_ofMulAction_iff (v : R[X]) :
     rw [coeff_ofMulAction]
     exact hv (g⁻¹ • a) a
 
+/-- A nonzero fixed vector of a pretransitive permutation representation forces the carrier
+to be finite. -/
+theorem finite_of_mem_fixedSubmodule_ofMulAction_ne_zero (v : R[X])
+    (hv : v ∈ (ofMulAction R G X).fixedSubmodule) (hv0 : v ≠ 0) : Finite X := by
+  have hcoeff : (v.coeff : X →₀ R) ≠ 0 := by
+    intro h
+    apply hv0
+    apply MonoidAlgebra.coeff_injective
+    simpa using h
+  obtain ⟨a, ha⟩ := Finsupp.support_nonempty_iff.mpr hcoeff
+  have ha0 : v.coeff a ≠ 0 := Finsupp.mem_support_iff.mp ha
+  have hconst :=
+    (mem_fixedSubmodule_ofMulAction_iff (R := R) (G := G) (X := X) v).1 hv
+  apply Set.finite_univ_iff.mp
+  refine (Finset.finite_toSet v.coeff.support).subset ?_
+  intro b _
+  apply Finsupp.mem_support_iff.mpr
+  rw [hconst b a]
+  exact ha0
+
 variable (R G X)
+
+/-- On an infinite pretransitive carrier, the permutation representation has no nonzero
+fixed vectors. -/
+theorem fixedSubmodule_ofMulAction_eq_bot_of_infinite [Infinite X] :
+    (ofMulAction R G X).fixedSubmodule = ⊥ := by
+  apply (Submodule.eq_bot_iff _).2
+  intro v hv
+  by_contra hv0
+  have hfinite : Finite X :=
+    finite_of_mem_fixedSubmodule_ofMulAction_ne_zero (G := G) v hv hv0
+  exact Set.infinite_univ (Set.finite_univ_iff.mpr hfinite)
 
 section Finite
 

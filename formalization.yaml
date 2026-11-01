@@ -172,13 +172,14 @@ project:
     submodule of its permutation representation over any semiring R is linearly
     equivalent to R. The forward map has coefficient r at every point, and the
     inverse evaluates at any point. The group need not be finite; the semiring
-    may be zero or noncommutative.
+    may be zero or noncommutative. A nonzero fixed vector forces the carrier to
+    be finite, and the fixed submodule is bottom on infinite carriers.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
 
 sources:
-  - title: Fixed vectors of finite transitive permutation representations
+  - title: Fixed vectors of pretransitive permutation representations
     authors:
       - Formal Frontier Agents
     type: original-proof
@@ -189,7 +190,9 @@ sources:
       This construction reuses Mathlib's permutation representations, coefficient
       formulas, finite sums and singleton linear maps, together with this library's
       fixed submodules over semirings. No finite acting group is needed for the
-      equivalence.
+      equivalence. The coefficient criterion and finite support show that a
+      nonzero fixed vector forces a finite carrier; infinite carriers have bottom
+      fixed submodule.
   - title: Positive-power annihilators in reduced monoids with zero
     authors:
       - Formal Frontier Agents
@@ -643,7 +646,9 @@ status:
     coefficient construction is a linear equivalence from the coefficient semiring
     to that fixed submodule. Its coefficient and arbitrary-point inverse formulas
     characterize it. No coefficient commutativity, nontriviality or
-    invertible-order assumption is required.
+    invertible-order assumption is required. Finite support of a nonzero fixed
+    vector forces the carrier to be finite, so the fixed submodule is bottom for
+    an infinite carrier.
   axioms:
     - propext
     - Classical.choice
@@ -656,6 +661,10 @@ status:
     - declaration: Representation.ofMulActionFixedSubmoduleEquiv_apply_coeff
       file: GroupTheory/RepresentationOfMulAction.lean
     - declaration: Representation.ofMulActionFixedSubmoduleEquiv_symm_apply
+      file: GroupTheory/RepresentationOfMulAction.lean
+    - declaration: Representation.finite_of_mem_fixedSubmodule_ofMulAction_ne_zero
+      file: GroupTheory/RepresentationOfMulAction.lean
+    - declaration: Representation.fixedSubmodule_ofMulAction_eq_bot_of_infinite
       file: GroupTheory/RepresentationOfMulAction.lean
     - declaration: MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular
       file: GroupTheory/MonoidHom/PositivePower.lean
