@@ -35,6 +35,27 @@ This module uses Mathlib's semiconjugacy and nilpotency-class APIs.
 
 universe u v w
 
+/-- For a nilpotent element, a power vanishes exactly when its exponent is at least the
+nilpotency class. This includes exponent zero and trivial monoids. -/
+theorem IsNilpotent.pow_eq_zero_iff
+    {M : Type u} [MonoidWithZero M] {a : M}
+    (ha : IsNilpotent a) (n : ℕ) :
+    a ^ n = 0 ↔ nilpotencyClass a ≤ n := by
+  constructor
+  · intro hn
+    cases hκ : nilpotencyClass a with
+    | zero =>
+      exact Nat.zero_le n
+    | succ k =>
+      by_contra h
+      have hnk : n ≤ k :=
+        Nat.le_of_lt_succ (Nat.lt_of_not_ge h)
+      have hk : a ^ k ≠ 0 :=
+        (nilpotencyClass_eq_succ_iff.mp hκ).2
+      exact hk (pow_eq_zero_of_le hnk hn)
+  · intro h
+    exact pow_eq_zero_of_le h (pow_nilpotencyClass ha)
+
 namespace SemiconjBy
 
 /-- Transfer nilpotence and its bound along an intertwining relation. -/
