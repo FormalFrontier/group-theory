@@ -25,6 +25,14 @@ prior results reused from Mathlib.
   empty families and zero exponents are included. Empty or all-zero families generate
   the trivial subgroup.
   See [`GroupTheory/Algebra/Group/Subgroup/Power.lean`](GroupTheory/Algebra/Group/Subgroup/Power.lean).
+- **Intersections of cyclic power subgroups.** For any group, element `a`, and natural
+  exponents `m n`, `Subgroup.zpowers_pow_inf` gives
+  `Subgroup.zpowers (a ^ m) ⊓ Subgroup.zpowers (a ^ n) = Subgroup.zpowers (a ^ (Nat.lcm m n))`.
+  In an additive group, `AddSubgroup.zmultiples_nsmul_inf` gives the corresponding
+  intersection formula for the integer-multiple subgroups of `m • a` and `n • a`.
+  Both formulas include zero exponents and require no commutativity or order assumptions.
+  Import [`GroupTheory.Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean)
+  to use these equalities.
 - **Finite power kernels.** In any monoid, let `a` be left-regular: left multiplication
   by `a` is injective. For arbitrary `b`, equality of their powers at the gcd of a finite
   family of natural exponents is equivalent to equality at every selected exponent.
