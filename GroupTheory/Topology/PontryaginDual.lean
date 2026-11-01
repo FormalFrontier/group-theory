@@ -8,7 +8,13 @@ module
 public import Mathlib.Topology.Algebra.PontryaginDual
 
 /-!
-# Evaluation into the Pontryagin bidual
+# Pontryagin dual transport and bidual evaluation
+
+Precomposition by a continuous multiplicative equivalence gives a continuous
+multiplicative equivalence of the entire Pontryagin duals with their compact-open
+topologies. The direction is contravariant: an equivalence `A ≃ₜ* B` gives
+`PontryaginDual B ≃ₜ* PontryaginDual A`. This transport requires only monoids with
+topologies, without local compactness or continuity of their operations.
 
 For a monoid with a topology, evaluation at a point is a continuous circle-valued
 character of its Pontryagin dual. When the monoid and the circle form a locally
@@ -22,14 +28,21 @@ assert that evaluation on the original monoid is an isomorphism.
 
 ## Main definitions
 
+* `PontryaginDual.mapEquiv`: contravariant transport of the whole compact-open dual
+  along a continuous multiplicative equivalence.
 * `PontryaginDual.eval`: the canonical continuous homomorphism into the bidual.
 
 ## References
 
 * Neukirch, Schmidt and Wingberg, *Cohomology of Number Fields*, Chapter I, §1,
   (1.1.10)–(1.1.11), for canonical bidual evaluation and its naturality.
-* Mathlib's `Topology.Algebra.Group.CompactOpen` and `Topology.CompactOpen`,
-  for compact-open evaluation and currying on the existing continuous homomorphism spaces.
+* Mathlib's `Topology.Algebra.PontryaginDual` and
+  `Topology.Algebra.ContinuousMonoidHom`, for `PontryaginDual.map` and continuous
+  multiplicative equivalences.
+* Mathlib's `Topology.Algebra.Group.CompactOpen`, for fixed precomposition via
+  `ContinuousMonoidHom.compLeft` and `ContinuousMonoidHom.continuous_comp_left`,
+  and, with `Topology.CompactOpen`, for compact-open evaluation and currying on
+  the existing continuous homomorphism spaces.
 * Mathlib's `MonoidHom.eval` and `AddChar.doubleDualEmb` are algebraic counterparts;
   `AddChar.doubleDualEquiv` in `Analysis.Fourier.FiniteAbelian.PontryaginDuality`
   gives finite-character biduality. Those abstract-character models are not
@@ -41,6 +54,65 @@ assert that evaluation on the original monoid is an isomorphism.
 universe u v
 
 namespace PontryaginDual
+
+section MapEquiv
+
+/-- Precomposition by a continuous multiplicative equivalence, as a contravariant
+continuous multiplicative equivalence of the whole compact-open Pontryagin duals.
+Its inverse is precomposition by the inverse equivalence. -/
+noncomputable def mapEquiv {A : Type u} {B : Type v} [Monoid A] [Monoid B]
+    [TopologicalSpace A] [TopologicalSpace B] (e : A ≃ₜ* B) :
+    PontryaginDual B ≃ₜ* PontryaginDual A where
+  toFun := map (e : A →ₜ* B)
+  invFun := map (e.symm : B →ₜ* A)
+  left_inv := by
+    intro χ
+    refine PontryaginDual.ext fun b => ?_
+    simp only [map_apply, ContinuousMonoidHom.coe_coe, e.apply_symm_apply]
+  right_inv := by
+    intro ψ
+    refine PontryaginDual.ext fun a => ?_
+    simp only [map_apply, ContinuousMonoidHom.coe_coe, e.symm_apply_apply]
+  map_mul' := _root_.map_mul (map (e : A →ₜ* B))
+  continuous_toFun := (map (e : A →ₜ* B)).continuous
+  continuous_invFun := (map (e.symm : B →ₜ* A)).continuous
+
+variable {A : Type u} {B : Type v}
+variable [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSpace B]
+
+/-- The continuous homomorphism underlying dual transport is the dual map. -/
+@[simp] theorem mapEquiv_toContinuousMonoidHom (e : A ≃ₜ* B) :
+    (mapEquiv e : PontryaginDual B →ₜ* PontryaginDual A) = map (e : A →ₜ* B) := rfl
+
+/-- A transported character is evaluated by applying the source equivalence first. -/
+@[simp] theorem mapEquiv_apply (e : A ≃ₜ* B) (χ : PontryaginDual B) (a : A) :
+    mapEquiv e χ a = χ (e a) := rfl
+
+/-- Inverse dual transport is precomposition by the inverse equivalence. -/
+@[simp] theorem mapEquiv_symm_apply (e : A ≃ₜ* B) (ψ : PontryaginDual A) (b : B) :
+    (mapEquiv e).symm ψ b = ψ (e.symm b) := rfl
+
+/-- Transport along the inverse equivalence is inverse dual transport. -/
+@[simp] theorem mapEquiv_symm (e : A ≃ₜ* B) :
+    mapEquiv e.symm = (mapEquiv e).symm := rfl
+
+variable (A) in
+/-- The identity equivalence induces the identity equivalence of the dual. -/
+@[simp] theorem mapEquiv_refl :
+    mapEquiv (ContinuousMulEquiv.refl A) = ContinuousMulEquiv.refl (PontryaginDual A) := by
+  refine ContinuousMulEquiv.ext fun χ => PontryaginDual.ext fun a => ?_
+  rfl
+
+universe w
+
+/-- Dual transport reverses the order of composition of equivalences. -/
+theorem mapEquiv_trans {C : Type w} [Monoid C] [TopologicalSpace C]
+    (e : A ≃ₜ* B) (f : B ≃ₜ* C) :
+    mapEquiv (e.trans f) = (mapEquiv f).trans (mapEquiv e) := by
+  refine ContinuousMulEquiv.ext fun χ => PontryaginDual.ext fun a => ?_
+  rfl
+
+end MapEquiv
 
 /-- The canonical continuous homomorphism into the Pontryagin bidual, sending
 `a` to the character `χ ↦ χ a`. The locally compact pair hypothesis supplies
