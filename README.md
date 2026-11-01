@@ -56,7 +56,12 @@ prior results reused from Mathlib.
   Exponents may vary per occurrence, including repeated bases; empty lists are allowed.
   This preserves the product-zero condition, not product values.
 
-- **Nilpotency-class bounds.** In any monoid with zero, diagonal semiconjugacy
+- **Nilpotency classes.** In any monoid with zero, `nilpotencyClass_pow` gives
+  `nilpotencyClass (a ^ n) = (nilpotencyClass a + n - 1) / n` for every natural
+  exponent. At exponent zero this uses total natural-number division, not a
+  ceiling at zero. `nilpotencyClass_map` preserves the class under unital monoid
+  maps that preserve and reflect zero; injectivity is not required.
+  Diagonal semiconjugacy
   `SemiconjBy a x a` and nilpotence of `x` give
   `nilpotencyClass a ≤ nilpotencyClass x + 1`
   (`SemiconjBy.nilpotencyClass_le_add_one`;
@@ -432,7 +437,10 @@ this import. For `i ∈ s`, a left row
 `SemiconjBy (f i) (∑ j ∈ s, f j) (f i)` using `Finset.mul_sum` and
 `Finset.sum_eq_single`. When the sum is nilpotent, the generic bound gives
 `nilpotencyClass (f i) ≤ nilpotencyClass (∑ j ∈ s, f j) + 1`.
-For semiconjugacy alone, import `GroupTheory.Algebra.GroupWithZero.Nilpotent`.
+For semiconjugacy, powers and zero-reflecting maps, import
+`GroupTheory.Algebra.GroupWithZero.Nilpotent`. The power formula includes all
+natural exponents. The map formula uses the generic `MonoidWithZeroHomClass`
+interface and the zero-reflection hypothesis `∀ a, f a = 0 → a = 0`.
 
 For the quantitative commuting bound, use
 `Finset.sum_pow_eq_zero_of_pairwise_commute s f n hpow hcomm`, where
@@ -485,7 +493,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
-| Nilpotency-class bounds from semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
+| Nilpotency classes of powers and zero-reflecting maps; bounds from semiconjugacy and orthogonal sums; vanishing powers of finite commuting sums | [`Algebra.GroupWithZero.Nilpotent`](GroupTheory/Algebra/GroupWithZero/Nilpotent.lean), [`Ring.Nilpotent.Finset`](GroupTheory/Ring/Nilpotent/Finset.lean) |
 | Equality of multiplicative or additive maps from finite gcd-one power-sampling sets | [`MonoidHom.PositivePower`](GroupTheory/MonoidHom/PositivePower.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
 | Subgroup membership through finite powers, gcd-one detection and finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
