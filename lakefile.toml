@@ -30,6 +30,7 @@ roots = [
   "GroupTheory.Algebra.IsAddUnit",
   "GroupTheory.Algebra.Divisibility.Basic",
   "GroupTheory.Algebra.GroupWithZero.Nilpotent",
+  "GroupTheory.Algebra.GroupWithZero.Pi",
   "GroupTheory.Algebra.GroupWithZero.Reduced.List",
   "GroupTheory.Algebra.BigOperators.GroupWithZero.List",
   "GroupTheory.Algebra.Polynomial.Units",
@@ -43,6 +44,7 @@ name = "GroupTheoryTest"
 roots = [
   "GroupTheoryTest",
   "GroupTheoryTest.Algebra.Divisibility.Basic",
+  "GroupTheoryTest.Algebra.GroupWithZero.Pi",
   "GroupTheoryTest.GroupAction.CentralizerTransitivity",
   "GroupTheoryTest.GroupAction.FiniteKernelQuotient",
   "GroupTheoryTest.Topology.Algebra.Group.PiQuotientSimp",

@@ -14,6 +14,7 @@ public import GroupTheory.Homology.Finite
 public import GroupTheory.Algebra.BigOperators.Ring.Finset
 public import GroupTheory.Algebra.Group.Hom.Power
 public import GroupTheory.Algebra.Group.Subgroup.Power
+public import GroupTheory.Algebra.GroupWithZero.Pi
 public import GroupTheory.Algebra.GroupWithZero.Reduced
 public import GroupTheory.Algebra.Order.MulHom
 public import GroupTheory.Algebra.Order.Ring.MulHom
