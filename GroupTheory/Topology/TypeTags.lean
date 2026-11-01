@@ -214,3 +214,63 @@ instance instMultiplicative : NonarchimedeanGroup (Multiplicative A) where
 end NonarchimedeanAddGroup
 
 end
+
+
+/-!
+## Dependent-product tags
+
+For any index type, the tag of the original additive dependent product and the
+product of its multiplicative tags are related by a continuous multiplicative
+equivalence. This uses `MulEquiv.piMultiplicative`, not a new algebraic construction.
+-/
+
+@[expose] public section
+
+universe u₁ v₁
+
+namespace ContinuousMulEquiv
+
+/-- The multiplicative tag of a dependent additive product is continuously
+multiplicatively equivalent to the product of its multiplicative tags. The
+algebraic equivalence is `MulEquiv.piMultiplicative`, for an arbitrary index. -/
+def piMultiplicative {I : Type u₁} (A : I → Type v₁) [∀ i, Add (A i)]
+    [∀ i, TopologicalSpace (A i)] :
+    Multiplicative (∀ i, A i) ≃ₜ* (∀ i, Multiplicative (A i)) where
+  toMulEquiv := MulEquiv.piMultiplicative A
+  continuous_toFun := continuous_pi fun i =>
+    _root_.continuous_ofAdd.comp ((continuous_apply i).comp _root_.continuous_toAdd)
+  continuous_invFun := _root_.continuous_ofAdd.comp
+    (continuous_pi fun i => _root_.continuous_toAdd.comp (continuous_apply i))
+
+variable {I : Type u₁} (A : I → Type v₁) [∀ i, Add (A i)]
+  [∀ i, TopologicalSpace (A i)]
+
+/-- The continuous dependent-product tag equivalence coerces to the algebraic one. -/
+@[simp] theorem coe_piMultiplicative :
+    (piMultiplicative A : Multiplicative (∀ i, A i) ≃*
+      (∀ i, Multiplicative (A i))) = MulEquiv.piMultiplicative A := rfl
+
+/-- Forgetting topology recovers Mathlib's dependent-product tag equivalence. -/
+theorem piMultiplicative_toMulEquiv :
+    (piMultiplicative A).toMulEquiv = MulEquiv.piMultiplicative A := rfl
+
+/-- The forward tag equivalence reads all the original additive coordinates. -/
+theorem piMultiplicative_apply (z : Multiplicative (∀ i, A i)) :
+    piMultiplicative A z = fun i => Multiplicative.ofAdd (z.toAdd i) := rfl
+
+/-- The forward tag equivalence reads the chosen additive coordinate. -/
+@[simp] theorem piMultiplicative_apply_ofAdd (a : ∀ i, A i) (i : I) :
+    piMultiplicative A (Multiplicative.ofAdd a) i = Multiplicative.ofAdd (a i) := rfl
+
+/-- The inverse tag equivalence combines the original additive coordinates. -/
+theorem piMultiplicative_symm_apply (z : ∀ i, Multiplicative (A i)) :
+    (piMultiplicative A).symm z = Multiplicative.ofAdd (fun i => (z i).toAdd) := rfl
+
+/-- The inverse tag equivalence returns the chosen original additive coordinate. -/
+@[simp] theorem piMultiplicative_symm_apply_toAdd
+    (z : ∀ i, Multiplicative (A i)) (i : I) :
+    ((piMultiplicative A).symm z).toAdd i = (z i).toAdd := rfl
+
+end ContinuousMulEquiv
+
+end

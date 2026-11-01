@@ -7,6 +7,7 @@ module
 
 public import GroupTheory.Topology.PontryaginDual
 public import GroupTheory.Topology.PontryaginDual.Prod
+public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.TypeTags
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Analysis.Convex.Contractible
@@ -425,5 +426,111 @@ theorem realPlaneEvalEquiv_toContinuousMonoidHom :
     (realPlaneEvalEquiv : Multiplicative (ℝ × ℝ) →ₜ*
       PontryaginDual (PontryaginDual (Multiplicative (ℝ × ℝ)))) =
         eval (Multiplicative (ℝ × ℝ)) := rfl
+
+end PontryaginDual
+
+
+/-!
+## Finite real function spaces
+
+Canonical biduality on the real line extends to the original tag
+`Multiplicative (I → ℝ)` for every finite index, including the empty one.
+The comparison with the product of real tags is a genuine continuous
+multiplicative equivalence. No Euclidean-space carrier is identified with this
+function type.
+-/
+
+@[expose] public section
+
+universe u
+
+namespace PontryaginDual
+
+private theorem realPiEval_compat {I : Type u} [Fintype I]
+    (z : Multiplicative (I → ℝ)) :
+    mapEquiv (mapEquiv (ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ)))
+        (evalHom (Multiplicative (I → ℝ)) z) =
+      piEvalEquiv (fun _ : I => Multiplicative ℝ)
+        (fun _ => realEvalEquiv) (fun _ => realEvalEquiv_apply)
+        ((ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ)) z) := by
+  refine PontryaginDual.ext fun χ => ?_
+  simpa only [mapEquiv_apply, evalHom_apply] using
+    (piEvalEquiv_apply (fun _ : I => Multiplicative ℝ)
+      (fun _ => realEvalEquiv) (fun _ => realEvalEquiv_apply)
+      ((ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ)) z) χ).symm
+
+/-- Canonical biduality of the original multiplicative tag of a finite real
+function space, with its product topology and the compact-open bidual topology.
+The finite index may be empty. This is an auxiliary real-case consequence in
+the canonical biduality setting of Neukirch–Schmidt–Wingberg, Chapter I, §1,
+(1.1.11). -/
+noncomputable def realPiEvalEquiv (I : Type u) [Fintype I] :
+    Multiplicative (I → ℝ) ≃ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (I → ℝ))) :=
+  let h := ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ)
+  let eP := piEvalEquiv (fun _ : I => Multiplicative ℝ)
+    (fun _ => realEvalEquiv) (fun _ => realEvalEquiv_apply)
+  let H := mapEquiv (mapEquiv h)
+  { toFun := evalHom (Multiplicative (I → ℝ))
+    invFun Φ := h.symm (eP.symm (H Φ))
+    left_inv := by
+      intro z
+      change h.symm (eP.symm (H (evalHom (Multiplicative (I → ℝ)) z))) = z
+      rw [realPiEval_compat, eP.symm_apply_apply, h.symm_apply_apply]
+    right_inv := by
+      intro Φ
+      apply H.injective
+      change H (evalHom (Multiplicative (I → ℝ))
+        (h.symm (eP.symm (H Φ)))) = H Φ
+      rw [realPiEval_compat, h.apply_symm_apply, eP.apply_symm_apply]
+    map_mul' := _root_.map_mul (evalHom (Multiplicative (I → ℝ)))
+    continuous_toFun := by
+      have heq :
+          (evalHom (Multiplicative (I → ℝ)) : Multiplicative (I → ℝ) →
+            PontryaginDual (PontryaginDual (Multiplicative (I → ℝ)))) =
+          fun z => H.symm (eP (h z)) := by
+        funext z
+        apply H.injective
+        rw [realPiEval_compat, H.apply_symm_apply]
+      rw [heq]
+      exact H.symm.continuous.comp (eP.continuous.comp h.continuous)
+    continuous_invFun :=
+      h.symm.continuous.comp (eP.symm.continuous.comp H.continuous) }
+
+/-- Finite real biduality coerces to the canonical evaluation homomorphism. -/
+@[simp] theorem coe_realPiEvalEquiv (I : Type u) [Fintype I] :
+    (realPiEvalEquiv I : Multiplicative (I → ℝ) →*
+      PontryaginDual (PontryaginDual (Multiplicative (I → ℝ)))) =
+        evalHom (Multiplicative (I → ℝ)) := rfl
+
+/-- The algebraic homomorphism underlying finite real biduality is evaluation
+on the original tag of the real function space. -/
+theorem realPiEvalEquiv_toMonoidHom (I : Type u) [Fintype I] :
+    (realPiEvalEquiv I : Multiplicative (I → ℝ) →ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (I → ℝ)))).toMonoidHom =
+        evalHom (Multiplicative (I → ℝ)) := rfl
+
+/-- Finite real biduality evaluates a character at the original real-function point. -/
+theorem realPiEvalEquiv_apply {I : Type u} [Fintype I]
+    (a : Multiplicative (I → ℝ)) (χ : PontryaginDual (Multiplicative (I → ℝ))) :
+    realPiEvalEquiv I a χ = χ a := rfl
+
+/-- The inverse of finite real biduality transports to the product of real tags,
+uses the supplied real factor inverses, and returns through the inverse tag map. -/
+theorem realPiEvalEquiv_symm_apply {I : Type u} [Fintype I]
+    (Φ : PontryaginDual (PontryaginDual (Multiplicative (I → ℝ)))) :
+    (realPiEvalEquiv I).symm Φ =
+      (ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ)).symm
+        ((piEvalEquiv (fun _ : I => Multiplicative ℝ)
+          (fun _ => realEvalEquiv) (fun _ => realEvalEquiv_apply)).symm
+          (mapEquiv (mapEquiv
+            (ContinuousMulEquiv.piMultiplicative (fun _ : I => ℝ))) Φ)) := rfl
+
+/-- The continuous homomorphism underlying finite real biduality is the existing
+continuous evaluation map on the original multiplicative tag. -/
+theorem realPiEvalEquiv_toContinuousMonoidHom (I : Type u) [Fintype I] :
+    (realPiEvalEquiv I : Multiplicative (I → ℝ) →ₜ*
+      PontryaginDual (PontryaginDual (Multiplicative (I → ℝ)))) =
+        eval (Multiplicative (I → ℝ)) := rfl
 
 end PontryaginDual

@@ -9,8 +9,14 @@ project:
     constructor PontryaginDual.prodEvalEquiv without additional source hypotheses.
     The additive real plane uses the two real factor equivalences and
     ContinuousMulEquiv.prodMultiplicative, which lifts Mathlib's algebraic
-    tagged-product equivalence under addition and topologies alone. All source
-    topologies and algebraic structures are the original ones.
+    tagged-product equivalence under addition and topologies alone. For finite
+    dependent products, ContinuousMonoidHom.piEquiv and PontryaginDual.piEquiv
+    restrict to the coordinates, and PontryaginDual.piEvalEquiv constructs
+    canonical biduality from canonical factor equivalences. The arbitrary-index
+    tag lift ContinuousMulEquiv.piMultiplicative gives
+    PontryaginDual.realPiEvalEquiv on Multiplicative (I → ℝ) for finite I,
+    including the empty index. All source topologies and algebraic structures
+    are the original ones.
 
     Canonical evaluation sends a monoid A with a topology continuously into
     its compact-open Pontryagin bidual under LocallyCompactPair A Circle.
@@ -197,6 +203,31 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Mathlib finite dependent-product universal property
+    authors:
+      - Joachim Breitner
+      - Yakov Pechersky
+      - Simon Hudon
+      - Patrick Massot
+      - Thomas Browning
+      - Nailin Guan
+    type: software
+    location: >-
+      Mathlib/GroupTheory/NoncommPiCoprod.lean,
+      Mathlib/Data/Finset/NoncommProd.lean,
+      Mathlib/Algebra/Group/Pi/Lemmas.lean,
+      Mathlib/Algebra/BigOperators/Pi.lean and
+      Mathlib/Topology/Algebra/Group/CompactOpen.lean
+    note: >-
+      ContinuousMonoidHom.piEquiv retains the data of
+      MonoidHom.noncommPiCoprodEquiv with its commuting-family witness in the
+      commutative target. Finset.noncommProd_eq_prod identifies its values
+      with ordinary target products. MonoidHom.pi_ext supplies finite
+      coordinate extensionality without source commutativity. The stronger
+      Pi.monoidHomMulEquiv requires commutative source monoids and is not
+      substituted for this algebraic universal property. Fixed pullbacks
+      and products in the compact-open hom-space topological group provide
+      the continuity route.
   - title: Mathlib tagged products and topological constructions
     authors:
       - Johannes Hölzl
@@ -216,10 +247,13 @@ sources:
       Mathlib/Topology/MetricSpace/ProperSpace.lean and
       Mathlib/Topology/Compactness/LocallyCompact.lean
     note: >-
-      ContinuousMulEquiv.prodMultiplicative retains the algebraic data of
-      MulEquiv.prodMultiplicative and the original type-tag and product
-      topologies. The real-plane bidual construction combines this equivalence
-      with the canonical real factor equivalences and contravariant dual maps.
+      ContinuousMulEquiv.prodMultiplicative and
+      ContinuousMulEquiv.piMultiplicative retain the algebraic data of
+      MulEquiv.prodMultiplicative and MulEquiv.piMultiplicative and the
+      original type-tag and product topologies, under addition and topologies
+      alone. The real-plane and finite real-function bidual constructions
+      combine these equivalences with the canonical real factor equivalences
+      and contravariant dual maps.
       Stock proper-space and locally compact instances supply the concrete
       real, product and tagged-source locally compact pairs for the evaluation
       compatibility statement.
@@ -479,7 +513,24 @@ status:
     the product of two tags; a genuine tagged-product equivalence relates them.
     Its forward map is evalHom and its inverse uses the tag inverse, the product
     bidual inverse and twice-contravariant transport. One-point factors are
-    permitted; no all-finite-dimensional or general LCA theorem is asserted.
+    permitted. For a finite index I, arbitrary monoids A i with topologies
+    and a commutative topological group E, ContinuousMonoidHom.piEquiv A E
+    compares the entire compact-open hom space from the original dependent
+    product with the product of the factor hom spaces. Its inverse uses
+    MonoidHom.noncommPiCoprodEquiv and has value product_i c_i(a_i) in E.
+    PontryaginDual.piEquiv is the Circle specialization, and
+    PontryaginDual.piEvalEquiv uses supplied canonical factor bidual
+    equivalences with their evaluation laws, with no additional source
+    hypotheses. Its forward function is evalHom; its inverse applies the
+    supplied factor inverses after the twice-contravariant finite dual
+    comparison. ContinuousMulEquiv.piMultiplicative uses exactly
+    MulEquiv.piMultiplicative for any index, needing only addition and
+    topologies on the factors. PontryaginDual.realPiEvalEquiv has original
+    source Multiplicative (I → ℝ) for finite I, not a product of tags or a
+    definitionally identified EuclideanSpace. Its forward function is
+    evalHom and its inverse returns through the genuine tag equivalence
+    after using the finite-product bidual inverse. The empty index is
+    included. No infinite-product or general LCA theorem is asserted.
 
     PontryaginDual.eval A sends a to the character chi ↦ chi a in the
     original compact-open bidual. Its application lemma, twice-contravariant
@@ -765,6 +816,64 @@ status:
     - declaration: PontryaginDual.realPlaneEvalEquiv_symm_apply
       file: GroupTheory/Topology/PontryaginDual/Real.lean
     - declaration: PontryaginDual.realPlaneEvalEquiv_toContinuousMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: ContinuousMonoidHom.mulSingle
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: Pi.evalContinuousMonoidHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: Pi.coe_evalContinuousMonoidHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: ContinuousMonoidHom.piEquiv
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: ContinuousMonoidHom.piEquiv_symm_apply_apply
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: ContinuousMonoidHom.piEquiv_symm_eq_prod
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean
+    - declaration: PontryaginDual.piEquiv
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEquiv_symm_apply_apply
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEquiv_naturality
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEquiv_mapEquiv_symm_evalHom
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEvalEquiv_toMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.coe_piEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEvalEquiv_apply
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEvalEquiv_symm_apply
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: PontryaginDual.piEvalEquiv_toContinuousMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Pi.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative_toMulEquiv
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.coe_piMultiplicative
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative_apply
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative_apply_ofAdd
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative_symm_apply
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: ContinuousMulEquiv.piMultiplicative_symm_apply_toAdd
+      file: GroupTheory/Topology/TypeTags.lean
+    - declaration: PontryaginDual.realPiEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPiEvalEquiv_toMonoidHom
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.coe_realPiEvalEquiv
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPiEvalEquiv_apply
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPiEvalEquiv_symm_apply
+      file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: PontryaginDual.realPiEvalEquiv_toContinuousMonoidHom
       file: GroupTheory/Topology/PontryaginDual/Real.lean
     - declaration: Representation.mem_fixedSubmodule_ofMulAction_iff
       file: GroupTheory/RepresentationOfMulAction.lean

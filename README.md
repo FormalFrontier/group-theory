@@ -43,8 +43,32 @@ prior results reused from Mathlib.
   See [`PontryaginDual.Prod`](GroupTheory/Topology/PontryaginDual/Prod.lean),
   [`TypeTags`](GroupTheory/Topology/TypeTags.lean) and
   [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean).
-  This is not an assertion of all finite-dimensional, infinite-product or
+  This is not an assertion of infinite-product or
   general locally compact abelian biduality.
+
+- **Finite dependent products and finite real function spaces.** For a finite index
+  `I` and monoids `A i` with topologies, `PontryaginDual.piEquiv A` identifies
+  `PontryaginDual (∀ i, A i)` with `∀ i, PontryaginDual (A i)`, using their entire
+  compact-open duals. Restriction uses the identity-supported coordinate
+  inclusions; the inverse has value `∏ i, χ i (a i)`. The more general
+  `ContinuousMonoidHom.piEquiv A E` has a commutative topological group target
+  `E`; the source factors need no continuous operations, commutativity, local
+  compactness or separation. Supplied canonical factor bidual equivalences and
+  their evaluation laws give `PontryaginDual.piEvalEquiv A e h`, with forward
+  map exactly evaluation and inverse given by the supplied coordinate inverses.
+  `ContinuousMulEquiv.piMultiplicative A` lifts Mathlib's algebraic tag
+  equivalence for any index under addition and topologies alone.
+  `PontryaginDual.realPiEvalEquiv I` then gives canonical biduality on the original
+  `Multiplicative (I → ℝ)` for every finite `I`, including the empty index and
+  hence dimension zero. This real-case consequence is auxiliary to the duality
+  setting of Neukirch–Schmidt–Wingberg. No infinite-product or general locally
+  compact abelian duality theorem is asserted. See
+  [`ContinuousMonoidHom.Pi`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Pi.lean),
+  [`PontryaginDual.Pi`](GroupTheory/Topology/PontryaginDual/Pi.lean) and
+  [`PontryaginDual.Real`](GroupTheory/Topology/PontryaginDual/Real.lean).
+  The finite algebraic universal property reuses Mathlib's work of Joachim
+  Breitner and Yakov Pechersky; the coordinate and tag equivalences reuse the
+  Mathlib formalizations credited in those modules.
 
 **[Complete headline catalogue: statements, hypotheses and module links](docs/HeadlineResults.md).**
 The families below give an overview; the catalogue retains the full statements
