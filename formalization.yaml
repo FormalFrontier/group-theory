@@ -3,6 +3,18 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    For monoids M and N, let S : Set M contain, for each x : M, a finite
+    indexed family of powers x ^ (e i) with gcd one. In any common carrier F
+    with FunLike F M N and MulHomClass F M N, fixed g h : F satisfy
+    Set.EqOn g h S iff g = h whenever every g x is left-regular. The source,
+    target, map-carrier and index universes are independent; both the finite
+    index set and exponent function may depend on x. The additive form uses
+    AddHomClass, additive monoids and natural multiples. No unit-preserving
+    map class, regularity of h, algebra on S, global cancellation,
+    commutativity, finite or nonempty index type, or positivity assumption
+    is required. Zero and repeated exponents are allowed. The indexed image
+    criterion is the range specialization, followed by the Nat/id criterion.
+
     For f : A →* M with only MulOne A and monoids M and N, suppose each
     x : M admits s : Finset ι and e : ι → ℕ with s.gcd e = 1 and
     x ^ (e i) in Set.range f for every i in s. For fixed g, h : M →* N,
@@ -21,9 +33,9 @@ project:
     No regularity of h, global cancellation, commutativity, surjectivity,
     finite or nonempty index type, decidable equality or positivity is needed.
     The same proof gives the additive form with AddZero A and natural multiples.
-    The indexed left-regular power kernel is used directly, and the existing
-    finite-natural-exponent API is its Nat/id specialization with unchanged
-    signatures. Zero and repeated exponents are allowed; singleton exponent one
+    The indexed image criterion specializes the set criterion to the range,
+    and the finite-natural-exponent API is its Nat/id specialization.
+    Zero and repeated exponents are allowed; singleton exponent one
     is legal, while empty or all-zero families cannot have gcd one. Coprime-pair
     and consecutive-power restriction, and the latter's left-cancellative
     injectivity form, are specializations.
@@ -143,6 +155,22 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Equality of multiplicative maps on finite power-sampling sets
+    authors:
+      - Formal Frontier Agents
+    type: original-proof
+    location: >-
+      GroupTheory/MonoidHom/PositivePower.lean,
+      MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular and
+      AddHomClass.eqOn_iff_eq_of_finite_multiples_mem_of_isAddLeftRegular
+    note: >-
+      The set criterion generalizes the indexed image argument and uses the
+      left-regular finite-gcd kernel. Positive-power transport uses Mathlib's
+      image-power theorem and singleton APIs; the same proof gives natural
+      multiples. Zero exponents require only equality of target zeroth powers,
+      not preservation of the identity by every map in the carrier. The image
+      and natural-index criteria specialize the set theorem. No external-source
+      correspondence or coverage claim is asserted.
   - title: A Concise Course in Algebraic Topology
     authors:
       - J. P. May
@@ -315,6 +343,18 @@ automation:
 
 status:
   scope: >-
+    For monoids M and N, let S : Set M contain, for each x : M, a finite
+    indexed family of powers x ^ (e i) with gcd one. In any common carrier F
+    with FunLike F M N and MulHomClass F M N, fixed g h : F satisfy
+    Set.EqOn g h S iff g = h whenever every g x is left-regular. The source,
+    target, map-carrier and index universes are independent; both the finite
+    index set and exponent function may depend on x. The additive form uses
+    AddHomClass, additive monoids and natural multiples. No unit-preserving
+    map class, regularity of h, algebra on S, global cancellation,
+    commutativity, finite or nonempty index type, or positivity assumption
+    is required. Zero and repeated exponents are allowed. The indexed image
+    criterion is the range specialization, followed by the Nat/id criterion.
+
     For any topological group G, the ordinary quotient by its identity
     component is Hausdorff and totally disconnected. G need not be Hausdorff
     or locally compact. The canonical projection is continuous, and every
@@ -510,6 +550,10 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular
+      file: GroupTheory/MonoidHom/PositivePower.lean
+    - declaration: AddHomClass.eqOn_iff_eq_of_finite_multiples_mem_of_isAddLeftRegular
+      file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: MonoidHom.cancel_right_of_finite_powers_mem_range_of_isRightRegular
       file: GroupTheory/MonoidHom/PositivePower.lean
     - declaration: AddMonoidHom.cancel_right_of_finite_multiples_mem_range_of_isAddRightRegular

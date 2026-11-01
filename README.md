@@ -69,6 +69,19 @@ prior results reused from Mathlib.
   precomposition by `f` is injective on homomorphisms into any monoid with unique positive
   roots (`IsMulTorsionFree`); equality can therefore be checked after restriction. The
   additive statements use positive multiples and torsion-free additive targets.
+- **Equality from finite power-sampling sets.** Let `S : Set M`, where `M` and `N`
+  are monoids. Suppose every `x : M` admits `s : Finset ι` and `e : ι → ℕ` with
+  `s.gcd e = 1` and `x ^ (e i) ∈ S` for every `i ∈ s`. For any common carrier
+  `F` with `FunLike F M N` and `MulHomClass F M N`, fixed `g h : F` satisfy
+  `Set.EqOn g h S ↔ g = h` whenever every `g x` is left-regular. The source,
+  target, map-carrier and index universes are independent. Both `s` and `e` may
+  depend on `x`; zero and repeated exponents are allowed. No unit-preserving
+  map class, regularity of `h`, global cancellation, commutativity, algebraic
+  structure on `S`, or finiteness or nonemptiness of the index type is required.
+  The additive form uses `AddHomClass`, additive monoids and natural multiples.
+  Use `MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular` and
+  `AddHomClass.eqOn_iff_eq_of_finite_multiples_mem_of_isAddLeftRegular` from
+  [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
 - **Equality detection through finite power images.** Let `f : A →* M`, with only
   `MulOne A`, and let `M` and `N` be monoids. Suppose each `x : M` admits a finite
   indexed family `s : Finset ι`, `e : ι → ℕ` with `s.gcd e = 1` and
@@ -79,9 +92,9 @@ prior results reused from Mathlib.
   or decidable equality assumption is needed. The additive form uses `AddZero A`,
   additive monoids and natural multiples with gcd one. Zero and repeated exponents
   and coefficients are allowed; singleton exponent one is legal, while empty or
-  all-zero families cannot have gcd one. The indexed left-regular power kernel
-  proves the criterion directly. The existing finite-set-of-natural-exponents API
-  is its `ι = ℕ`, `e = id` specialization, with unchanged signatures. Coprime pairs
+  all-zero families cannot have gcd one. This is the `S = Set.range f` specialization
+  of the set criterion. The finite-set-of-natural-exponents API is its
+  `ι = ℕ`, `e = id` specialization. Coprime pairs
   and consecutive-power images specialize this result; for left-cancellative targets
   the latter make precomposition injective. See
   [`GroupTheory/MonoidHom/PositivePower.lean`](GroupTheory/MonoidHom/PositivePower.lean).
@@ -345,6 +358,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Equality of multiplicative or additive maps from finite gcd-one power-sampling sets | [`MonoidHom.PositivePower`](GroupTheory/MonoidHom/PositivePower.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
 | Subgroup membership through finite powers, gcd-one detection and finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
 | Coinduced cofinite topologies and finite-versus-infinite fibers | [`Topology.Cofinite`](GroupTheory/Topology/Cofinite.lean), [paired integer projections](GroupTheoryTest/Topology/Cofinite.lean) |

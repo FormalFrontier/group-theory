@@ -8,12 +8,20 @@ module
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Restriction of homomorphisms through powers
+
+Multiplicative maps between monoids are determined by agreement on any set containing,
+for each element, a finite indexed family of its powers with gcd one, provided the values
+of the first map are left-regular. The maps may belong to any common `FunLike` carrier
+with `MulHomClass`; no unit-preserving map class is required. The additive statement uses
+`AddHomClass` and natural multiples in additive monoids. The finite families and exponent
+functions may depend on the element, and zero or repeated exponents are allowed.
 
 If every element of a monoid has a positive power in the range of a homomorphism,
 precomposition is injective for homomorphisms into a monoid with unique positive roots.
@@ -302,6 +310,48 @@ theorem eq_of_forall_pow_eq_of_gcd_eq_one {s : Finset ι} {e : ι → ℕ} {a b 
 
 end Finset
 
+namespace MulHomClass
+
+universe uM uN uF uι
+
+/-- Two multiplicative maps agree on a set containing a finite indexed family of powers
+of every element with gcd one if and only if they are equal, provided the values of the
+first map are left-regular. The finite index set and exponent function may both depend
+on the element; exponents may be zero or repeated. -/
+@[to_additive
+  /-- Two additive maps agree on a set containing a finite indexed family of natural
+  multiples of every element with gcd one if and only if they are equal, provided the
+  values of the first map are add-left-regular. The finite index set and coefficient
+  function may both depend on the element; coefficients may be zero or repeated. -/]
+theorem eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular
+    {M : Type uM} {N : Type uN} {F : Type uF} {ι : Type uι}
+    [Monoid M] [Monoid N] [FunLike F M N] [MulHomClass F M N]
+    (S : Set M)
+    (hfamily : ∀ x : M, ∃ s : Finset ι, ∃ e : ι → ℕ,
+      s.gcd e = 1 ∧ ∀ i ∈ s, x ^ (e i) ∈ S)
+    (g h : F) (hg : ∀ x : M, IsLeftRegular (g x)) :
+    Set.EqOn g h S ↔ g = h := by
+  constructor
+  · intro hEq
+    apply DFunLike.ext g h
+    intro x
+    obtain ⟨s, e, hgcd, hs⟩ := hfamily x
+    apply IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hg x) (e := e) hgcd
+    intro i hi
+    by_cases he : e i = 0
+    · simp only [he, pow_zero]
+    · have hmap (k : F) : k (x ^ (e i)) = k x ^ (e i) := by
+        apply Set.singleton_injective
+        simpa only [Set.singleton_pow, Set.image_singleton] using
+          (Set.image_pow_of_ne_zero he k ({x} : Set M))
+      rw [← hmap g, ← hmap h]
+      exact hEq (hs i hi)
+  · rintro rfl
+    intro x hx
+    rfl
+
+end MulHomClass
+
 namespace MonoidHom
 
 section RegularValues
@@ -325,24 +375,18 @@ theorem cancel_right_of_finite_powers_mem_range_of_isLeftRegular
       s.gcd e = 1 ∧ ∀ i ∈ s, x ^ (e i) ∈ Set.range f)
     (g h : M →* N) (hg : ∀ x : M, IsLeftRegular (g x)) :
     g.comp f = h.comp f ↔ g = h := by
+  rw [← MulHomClass.eqOn_iff_eq_of_finite_powers_mem_of_isLeftRegular
+    (Set.range f) hfamily g h hg]
   constructor
   · intro hcomp
+    apply Set.eqOn_range.mpr
+    simpa only [MonoidHom.coe_comp] using
+      congrArg (fun q : A →* N => (q : A → N)) hcomp
+  · intro hEq
     apply MonoidHom.ext
-    intro x
-    obtain ⟨s, e, hgcd, hs⟩ := hfamily x
-    apply IsLeftRegular.eq_of_forall_pow_eq_of_gcd_eq_one (hg x) (e := e) hgcd
-    intro i hi
-    obtain ⟨a, ha⟩ := hs i hi
-    calc
-      g x ^ (e i) = g (x ^ (e i)) := (g.map_pow x (e i)).symm
-      _ = g (f a) := congrArg g ha.symm
-      _ = h (f a) := by
-        simpa only [MonoidHom.comp_apply] using
-          congrArg (fun q : A →* N => q a) hcomp
-      _ = h (x ^ (e i)) := congrArg h ha
-      _ = h x ^ (e i) := h.map_pow x (e i)
-  · intro hgh
-    exact congrArg (fun q : M →* N => q.comp f) hgh
+    intro a
+    simpa only [MonoidHom.comp_apply, Function.comp_apply] using
+      congrFun (Set.eqOn_range.mp hEq) a
 
 /-- Equality of homomorphisms can be tested on an image containing a finite set of
 powers of every element with gcd one, provided the values of the first homomorphism
