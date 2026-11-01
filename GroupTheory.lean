@@ -11,6 +11,7 @@ public import GroupTheory.Cohomology.Finite
 public import GroupTheory.Cohomology.Noetherian
 public import GroupTheory.Homology.Finite
 
+public import GroupTheory.Algebra.BigOperators.Ring.Finset
 public import GroupTheory.Algebra.Group.Hom.Power
 public import GroupTheory.Algebra.Group.Subgroup.Power
 public import GroupTheory.Algebra.GroupWithZero.Reduced
