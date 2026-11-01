@@ -30,6 +30,12 @@ prior results reused from Mathlib.
   This Mathlib upstream candidate extends the annihilator API using Mathlib's
   square-zero criterion, upward power propagation and opposite-monoid transport;
   a factor equal to one recovers the existing `pow_eq_zero_iff`.
+  For two lists aligned so that each entry of one is a positive power of the
+  corresponding entry of the other, their ordered products are zero simultaneously
+  (`List.Forall₂.prod_eq_zero_iff_of_pow`, in
+  [`GroupTheory.Algebra.GroupWithZero.Reduced.List`](GroupTheory/Algebra/GroupWithZero/Reduced/List.lean)).
+  Exponents may vary per occurrence, including repeated bases; empty lists are allowed.
+  This preserves the product-zero condition, not product values.
 
 - **Zero-sum pairs and unit images.** In a nonunital, nonassociative semiring,
   `a + b = 0` implies `a * a = b * b`. A function-like multiplication-preserving
@@ -342,18 +348,24 @@ published release. Dependencies from another Formal Frontier library
 use the GitHub URL and full published release commit, not moving
 `main`, development commits or PR heads.
 
-Import the full library with:
+Import the aggregate module with:
 
 ```lean
 import GroupTheory
 ```
 
+For the occurrence-sensitive positive-power product criterion, import its theory module:
+
+```lean
+import GroupTheory.Algebra.GroupWithZero.Reduced.List
+```
+
 ## Use and verification
 
 Detailed imports, applications, client boundaries and compatibility notes are in
-the [usage guide](docs/Usage.md). All interfaces are available through
-`import GroupTheory`; `GroupTheoryTest` is for repository verification, not
-downstream imports.
+the [usage guide](docs/Usage.md). Use the module imports documented with each
+interface; the aggregate module does not re-export every theory module.
+`GroupTheoryTest` is for repository verification, not downstream imports.
 
 ### Building and checking the repository
 
