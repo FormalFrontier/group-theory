@@ -17,6 +17,13 @@ project:
     PontryaginDual.realPiEvalEquiv on Multiplicative (I → ℝ) for finite I,
     including the empty index. All source topologies and algebraic structures
     are the original ones.
+    Generator evaluation also identifies the compact-open space of continuous
+    homomorphisms from Multiplicative ℤ with any topological group E via
+    ContinuousMonoidHom.intEvalHomeomorph E. For commutative E,
+    ContinuousMonoidHom.intEvalEquiv E is a continuous multiplicative
+    equivalence with the same homeomorphism. Its Circle specialization
+    identifies PontryaginDual (Multiplicative ℤ) with Circle, without local
+    compactness or Hausdorff hypotheses in the generic result.
 
     Canonical evaluation sends a monoid A with a topology continuously into
     its compact-open Pontryagin bidual under LocallyCompactPair A Circle.
@@ -203,6 +210,30 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Mathlib integer universal property and compact-open continuity
+    authors:
+      - Mario Carneiro
+      - Thomas Browning
+      - Nailin Guan
+      - Reid Barton
+      - Sébastien Gouëzel
+      - Johannes Hölzl
+      - Patrick Massot
+    type: software
+    location: >-
+      Mathlib/Data/Int/Cast/Lemmas.lean,
+      Mathlib/Topology/Algebra/ContinuousMonoidHom.lean,
+      Mathlib/Topology/Algebra/Group/CompactOpen.lean,
+      Mathlib/Topology/CompactOpen.lean,
+      Mathlib/Topology/ContinuousOn.lean and
+      Mathlib/Topology/Algebra/Group/ZPow.lean
+    note: >-
+      ContinuousMonoidHom.intEvalHomeomorph equips zpowersHom with discrete-source
+      continuity. Fixed evaluation, joint continuity with a discrete right factor
+      and compact-open currying give its two continuity proofs.
+      ContinuousMonoidHom.intEvalEquiv upgrades the same homeomorphism with
+      ContinuousMulEquiv.mk' and agrees with zpowersMulHom after forgetting
+      continuity.
   - title: Mathlib finite dependent-product universal property
     authors:
       - Joachim Breitner
@@ -875,6 +906,36 @@ status:
       file: GroupTheory/Topology/PontryaginDual/Real.lean
     - declaration: PontryaginDual.realPiEvalEquiv_toContinuousMonoidHom
       file: GroupTheory/Topology/PontryaginDual/Real.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph_apply
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph_symm_apply
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph_symm_toMonoidHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalHomeomorph_symm_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_toHomeomorph
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_apply
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_symm_apply
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_symm_toMonoidHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_apply_eq_zpowersMulHom_symm
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_symm_toMonoidHom_eq_zpowersMulHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
+    - declaration: ContinuousMonoidHom.intEvalEquiv_symm_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean
     - declaration: Representation.mem_fixedSubmodule_ofMulAction_iff
       file: GroupTheory/RepresentationOfMulAction.lean
     - declaration: Representation.ofMulActionFixedSubmoduleEquiv

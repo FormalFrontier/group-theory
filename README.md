@@ -70,6 +70,20 @@ prior results reused from Mathlib.
   Breitner and Yakov Pechersky; the coordinate and tag equivalences reuse the
   Mathlib formalizations credited in those modules.
 
+- **Integer characters by generator evaluation.** For any topological group
+  `E`, `ContinuousMonoidHom.intEvalHomeomorph E` identifies the compact-open
+  space `Multiplicative ℤ →ₜ* E` with `E`, by evaluation at
+  `Multiplicative.ofAdd (1 : ℤ)`. The inverse sends `e` to the continuous
+  homomorphism with underlying map `zpowersHom E e`, taking `n` to
+  `e ^ n.toAdd`. For commutative `E`, `ContinuousMonoidHom.intEvalEquiv E`
+  is a continuous multiplicative equivalence with the same homeomorphism.
+  No local compactness or Hausdorff hypothesis is needed. Specializing to
+  `Circle` identifies the whole `PontryaginDual (Multiplicative ℤ)` with
+  `Circle`. The characteristic laws and target naturality are in
+  [`ContinuousMonoidHom.Int`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int.lean),
+  which reuses Mathlib's integer universal property and compact-open continuity
+  results, with the formalization credits listed in its references.
+
 **[Complete headline catalogue: statements, hypotheses and module links](docs/HeadlineResults.md).**
 The families below give an overview; the catalogue retains the full statements
 and qualifications. For API details and examples, see the
