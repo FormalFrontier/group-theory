@@ -1,6 +1,6 @@
 module
 
-public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
+public import GroupTheory.Topology.Algebra.ContinuousMap.NoSmallSubgroups
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.CompactOpen
 
