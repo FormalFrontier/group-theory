@@ -134,6 +134,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroupsOfGenerators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
 public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.PontryaginDual.Prod
