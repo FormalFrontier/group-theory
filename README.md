@@ -11,6 +11,13 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Surjectivity of bidual evaluation for discrete groups.** For every discrete
+  group `A`, not necessarily commutative,
+  `PontryaginDual.eval_surjective_of_discrete A` makes the canonical map
+  `PontryaginDual.eval A : A →ₜ* PontryaginDual (PontryaginDual A)` surjective.
+  This does not assert injectivity or reflexivity for noncommutative groups. See
+  [`PontryaginDual.Discrete.Surjective`](GroupTheory/Topology/PontryaginDual/Discrete/Surjective.lean).
+
 - **Characters of binary products.** Restriction gives
   `PontryaginDual.prodEquiv A B : PontryaginDual (A × B) ≃ₜ*
   (PontryaginDual A × PontryaginDual B)`; the inverse sends `(χ, ψ)` to

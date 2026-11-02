@@ -52,6 +52,7 @@ public import GroupTheoryTest.Topology.AutomaticContinuity
 public import GroupTheoryTest.Topology.FiniteIndex.Descent
 public import GroupTheoryTest.Topology.FiniteIndex.Ascent
 public import GroupTheoryTest.Topology.CharacterSubgroups
+public import GroupTheoryTest.Topology.PontryaginDual.Discrete.Surjective
 public import GroupTheoryTest.Topology.TypeTags
 public import GroupTheoryTest.Topology.RationalCircleCharacter
 public import GroupTheoryTest.Subgroup.IndexTwo
