@@ -4,6 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
+import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Pi
+
 public import GroupTheory.Topology.Algebra.ContinuousMap.NoSmallSubgroups
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
 public import Mathlib.Algebra.Group.Subgroup.Ker
@@ -18,7 +21,7 @@ public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.Maps.Basic
 
 /-!
-# No small subgroups for homomorphisms from compact generators
+# No small subgroups for homomorphisms from generators
 
 For a commutative topological group with no small subgroups, restriction to a
 compact algebraic generating set gives a continuous injective homomorphism from
@@ -26,12 +29,18 @@ the compact-open homomorphism group to the group of continuous maps on a compact
 space. The latter has no small subgroups, and
 `NoSmallSubgroups.of_injective` transfers this property to the homomorphism group.
 
+Finitely generated monoids use evaluation on a finite generating family. The
+resulting continuous injective map takes values in a finite product of the target,
+which has no small subgroups. The compact-open topology is used throughout.
+
+* `ContinuousMonoidHom.noSmallSubgroups_of_monoid_fg` applies to a finitely
+  generated monoid with any topology.
 * `ContinuousMonoidHom.noSmallSubgroups_of_isCompact_generating` applies to a
   group with a compact subset whose algebraic subgroup closure is the whole group.
 * `ContinuousMonoidHom.noSmallSubgroups_of_fg` applies to a finitely generated
   group with any topology.
 
-No continuity of the source group operations is assumed. Target commutativity
+No continuity of the source operations is assumed. Target commutativity
 is needed for the pointwise group structure on continuous homomorphisms. These
 results do not replace the stronger compact-monoid-source conclusions of
 `ContinuousMonoidHom.isOpen_singleton_one_of_noSmallSubgroups` and
@@ -43,6 +52,29 @@ results do not replace the stronger compact-monoid-source conclusions of
 universe u v
 
 namespace ContinuousMonoidHom
+
+/-- The compact-open group of continuous monoid homomorphisms from a finitely generated
+monoid to a commutative topological group with no small subgroups has no small subgroups.
+No continuity of the source operations is required. -/
+theorem noSmallSubgroups_of_monoid_fg (M : Type u) (D : Type v)
+    [Monoid M] [TopologicalSpace M] [Monoid.FG M]
+    [CommGroup D] [TopologicalSpace D] [IsTopologicalGroup D] [NoSmallSubgroups D] :
+    NoSmallSubgroups (M →ₜ* D) := by
+  obtain ⟨S, hS, φ, hφ⟩ :=
+    (Monoid.fg_iff_exists_freeMonoid_hom_surjective (M := M)).mp inferInstance
+  let _ : Finite S := (finite_iff_nonempty_fintype S).mpr (Set.finite_def.mp hS)
+  let R : (M →ₜ* D) →* (S → D) :=
+    { toFun := fun f s => f (φ (FreeMonoid.of s))
+      map_one' := by
+        funext s
+        exact congrFun (coe_one (A := M) (B := D)) (φ (FreeMonoid.of s))
+      map_mul' := by
+        intro f g
+        funext s
+        exact mul_apply f g (φ (FreeMonoid.of s)) }
+  exact NoSmallSubgroups.of_injective R
+    (continuous_eval_freeMonoid_generators φ).continuousAt
+    (injective_eval_freeMonoid_generators φ hφ)
 
 variable {G : Type u} {D : Type v} [Group G] [TopologicalSpace G]
   [CommGroup D] [TopologicalSpace D] [IsTopologicalGroup D] [NoSmallSubgroups D]
