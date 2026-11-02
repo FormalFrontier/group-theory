@@ -26,6 +26,7 @@ public import GroupTheory.Finsupp.Pointwise
 public import GroupTheory.Finsupp.PointwiseScalar
 public import GroupTheory.Topology.ContinuousMap.CompactLifting
 public import GroupTheory.Topology.ContinuousMap.Quotient
+public import GroupTheory.Topology.ContinuousMonoidHomLifting
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient.ClosedEmbedding
 public import GroupTheory.Semigroup.StableEquality
