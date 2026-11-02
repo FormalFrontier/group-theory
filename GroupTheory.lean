@@ -130,6 +130,7 @@ public import GroupTheory.Topology.PontryaginDual.Discrete.Equivalence
 public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.Algebra.ContinuousAddMonoidHom.Extension
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Compact
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
