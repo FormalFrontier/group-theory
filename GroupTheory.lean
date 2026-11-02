@@ -116,6 +116,7 @@ public import GroupTheory.Topology.PontryaginDual
 public import GroupTheory.Topology.PontryaginDual.Discrete.Surjective
 public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
 public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.PontryaginDual.Prod

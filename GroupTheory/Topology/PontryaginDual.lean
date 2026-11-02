@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Pontryagin dual transport and bidual evaluation
@@ -166,5 +167,17 @@ theorem map_eval_comp_eval [LocallyCompactPair (PontryaginDual A) Circle] :
   refine ContinuousMonoidHom.ext fun χ => PontryaginDual.ext fun a => ?_
   simp only [ContinuousMonoidHom.coe_comp, Function.comp_apply, map_apply, eval_apply,
     ContinuousMonoidHom.coe_id, id_eq]
+
+end PontryaginDual
+
+namespace PontryaginDual
+
+/-- Contravariant transport of circle-valued characters is generic domain transport
+along the inverse equivalence. -/
+theorem mapEquiv_eq_continuousMonoidHomCongrLeft {A : Type u} {B : Type v}
+    [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSpace B] (e : A ≃ₜ* B) :
+    mapEquiv e = ContinuousMulEquiv.continuousMonoidHomCongrLeft Circle e.symm := by
+  ext χ a
+  rfl
 
 end PontryaginDual

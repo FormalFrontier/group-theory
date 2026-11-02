@@ -3,6 +3,15 @@ version: "v0.4"
 project:
   name: Group Theory
   description: >-
+    For finite I and a commutative topological group E,
+    ContinuousMonoidHom.intPiEvalEquiv I E identifies continuous homomorphisms
+    from the original Multiplicative (I → ℤ) with I → E, with the
+    compact-open topology. Evaluation uses the standard integer generators;
+    reconstruction is the finite product of integer powers, including the
+    empty index. Domain and coordinate transports assemble the existing
+    finite-product, integer and type-tag equivalences, without local
+    compactness, separation, nonemptiness or a discrete-target assumption.
+
     Fixed evaluation defines PontryaginDual.evalHom on every monoid with a
     topology, into its entire compact-open bidual. Canonical bidual equivalences
     of two factors, with their pointwise evaluation laws, give the explicit
@@ -210,6 +219,32 @@ project:
   license: Apache-2.0
 
 sources:
+  - title: Mathlib algebraic and topological congruences
+    authors:
+      - Johannes Hölzl
+      - Callum Sutton
+      - Yury Kudryashov
+      - Patrick Massot
+      - Sébastien Gouëzel
+      - Zhouhang Zhou
+      - Reid Barton
+      - Thomas Browning
+      - Nailin Guan
+    type: software
+    location: >-
+      Mathlib/Algebra/Group/Equiv/Basic.lean,
+      Mathlib/Topology/Homeomorph/Lemmas.lean and
+      Mathlib/Topology/Algebra/Group/CompactOpen.lean
+    note: >-
+      ContinuousMulEquiv.continuousMonoidHomCongrLeftHomeomorph and its
+      multiplicative refinement lift algebraic domain congruence by fixed
+      precomposition with the inverse equivalence.
+      ContinuousMulEquiv.piCongrRight combines the existing Pi multiplicative
+      equivalence and Pi homeomorphism, with their coordinate data.
+      ContinuousMonoidHom.intPiEvalEquiv composes these transports with the
+      existing finite-product, integer and type-tag formalizations by
+      Formal Frontier Agents, retaining the noncommutative Pi coproduct of
+      the integer-power homomorphisms.
   - title: Mathlib integer universal property and compact-open continuity
     authors:
       - Mario Carneiro
@@ -808,6 +843,28 @@ status:
     - Classical.choice
     - Quot.sound
   main_results:
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPi_ext
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv_symm_toMonoidHom
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv_symm_apply_ofAdd
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv_symm_eq_iff
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMonoidHom.intPiEvalEquiv_symm_naturality
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean
+    - declaration: ContinuousMulEquiv.continuousMonoidHomCongrLeftHomeomorph
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom.lean
+    - declaration: ContinuousMulEquiv.continuousMonoidHomCongrLeft
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom.lean
+    - declaration: ContinuousMulEquiv.piCongrRight
+      file: GroupTheory/Topology/Algebra/ContinuousMonoidHom.lean
+    - declaration: PontryaginDual.mapEquiv_eq_continuousMonoidHomCongrLeft
+      file: GroupTheory/Topology/PontryaginDual.lean
     - declaration: PontryaginDual.evalHom
       file: GroupTheory/Topology/PontryaginDual.lean
     - declaration: PontryaginDual.evalHom_apply

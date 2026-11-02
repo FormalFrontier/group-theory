@@ -18,6 +18,15 @@ prior results reused from Mathlib.
   This does not assert injectivity or reflexivity for noncommutative groups. See
   [`PontryaginDual.Discrete.Surjective`](GroupTheory/Topology/PontryaginDual/Discrete/Surjective.lean).
 
+For a finite index type `I` and a commutative topological group `E`,
+[`ContinuousMonoidHom.intPiEvalEquiv I E`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean)
+identifies the compact-open space `Multiplicative (I → ℤ) →ₜ* E` with `I → E`
+by evaluation on the standard integer generators. Its inverse sends `c` to
+`ofAdd n ↦ ∏ i, c i ^ n i` and retains the existing finite coproduct of
+integer-power homomorphisms. The source has its original product and type-tag
+topologies. The empty index is included; no nonemptiness, source local
+compactness, separation or discrete-target assumption is needed.
+
 - **Characters of binary products.** Restriction gives
   `PontryaginDual.prodEquiv A B : PontryaginDual (A × B) ≃ₜ*
   (PontryaginDual A × PontryaginDual B)`; the inverse sends `(χ, ψ)` to
@@ -599,6 +608,15 @@ The finite homomorphism constructions reuse Mathlib's additive finite sums and
 Hom/Pi APIs; this library supplies the orthogonal nonunital sum, finite-product
 unital lift and their application and uniqueness lemmas. Upstream contributors
 are credited in the [module references](GroupTheory/Ring/Hom/FiniteSum.lean).
+
+The finite-integer coordinate equivalence assembles this library's existing
+integer, finite-product and type-tag formalizations. Its domain and coordinate
+transports follow Mathlib's algebraic congruences and Pi homeomorphism by
+Johannes Hölzl, Callum Sutton, Yury Kudryashov, Patrick Massot,
+Sébastien Gouëzel, Zhouhang Zhou and Reid Barton, together with the
+compact-open hom-space formalization by Thomas Browning and Nailin Guan.
+The underlying product and integer universal properties are Joachim Breitner's
+noncommutative Pi coproduct and Mario Carneiro's integer-power homomorphism.
 
 Authors: Formal Frontier Agents. The Lean proofs and clients were developed by
 Formal Frontier AI agents. Licensed under [Apache-2.0](LICENSE).
