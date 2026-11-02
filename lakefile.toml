@@ -44,7 +44,8 @@ roots = [
   "GroupTheory.Topology.PontryaginDual.UnitPowers",
   "GroupTheory.Topology.FreeAbelianGroup",
   "GroupTheory.Topology.HomContinuity",
-  "GroupTheory.Topology.FreeGroup"
+  "GroupTheory.Topology.FreeGroup",
+  "GroupTheory.Topology.ContinuousMonoidHom.Quotient"
 ]
 
 [[lean_lib]]
