@@ -42,7 +42,8 @@ roots = [
   "GroupTheory.Ring.Power.Finset",
   "GroupTheory.Algebra.Module.RationalCircle",
   "GroupTheory.Topology.PontryaginDual.UnitPowers",
-  "GroupTheory.Topology.FreeAbelianGroup"
+  "GroupTheory.Topology.FreeAbelianGroup",
+  "GroupTheory.Topology.HomContinuity"
 ]
 
 [[lean_lib]]
