@@ -4,8 +4,11 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
+public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.Topology.Algebra.Group.CompactOpen
+public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.CompactOpen
 
 /-!
@@ -20,6 +23,11 @@ The inverse retains `FreeGroup.lift` as its underlying homomorphism. Continuity 
 at every word follows by free-group induction, preserving the order of multiplication.
 Consequently, a family of continuous homomorphisms is continuous precisely when its generator
 coordinates are continuous.
+
+For a discrete group with a specified generating family, evaluation is a closed embedding
+into the product of copies of a Hausdorff topological group. A finite generating family
+and a locally compact target therefore give a locally compact homomorphism space; in
+particular, this applies to every finitely generated discrete group.
 
 The discrete-source hypothesis is essential: an indiscrete free group can have algebraic lifts
 to a discrete group that are not continuous. In contrast, generator extensionality below needs
@@ -221,5 +229,72 @@ theorem freeGroupHomeomorph_symm_comp_map {J : Type w}
   simp only [coe_comp, Function.comp_apply, hmap, freeGroupHomeomorph_symm_apply_of]
 
 end TopologicalGroup
+
+section GeneratingFamily
+
+variable {I : Type u} {G : Type v} {D : Type w}
+  [Group G] [TopologicalSpace G] [DiscreteTopology G]
+  [Group D] [TopologicalSpace D] [IsTopologicalGroup D] [T2Space D]
+
+/-- Evaluation on a generating family of a discrete group is a closed embedding into the
+product of copies of a Hausdorff topological group. The homomorphism space has its
+compact-open topology, and the generating family need not be finite. -/
+theorem isClosedEmbedding_eval_of_closure_range_eq_top (ι : I → G)
+    (hgen : Subgroup.closure (Set.range ι) = ⊤) :
+    Topology.IsClosedEmbedding (fun f : ContinuousMonoidHom G D => fun i => f (ι i)) := by
+  let : TopologicalSpace (FreeGroup I) := ⊥
+  let : DiscreteTopology (FreeGroup I) := discreteTopology_bot _
+  let q : ContinuousMonoidHom (FreeGroup I) G :=
+    { toMonoidHom := FreeGroup.lift ι
+      continuous_toFun := continuous_of_discreteTopology }
+  have hsurj : Function.Surjective q :=
+    (FreeGroup.lift_surjective_iff_closure_range_eq_top (f := ι)).2 hgen
+  obtain ⟨r, hr⟩ := hsurj.hasRightInverse
+  have hrcont : Continuous r := continuous_of_discreteTopology
+  have hquot : Topology.IsQuotientMap q :=
+    Topology.IsQuotientMap.of_inverse hrcont (map_continuous q) hr
+  have hcover : ∀ K : Set G, IsCompact K →
+      ∃ L : Set (FreeGroup I), IsCompact L ∧ q '' L = K := by
+    intro K hK
+    refine ⟨r '' K, hK.image hrcont, ?_⟩
+    rw [← Set.image_comp, hr.comp_eq_id, Set.image_id]
+  have hclosed : IsClosed
+      {g : ContinuousMonoidHom (FreeGroup I) D | Function.FactorsThrough g q} := by
+    simp only [Function.FactorsThrough, Set.ofPred_forall]
+    exact isClosed_iInter fun a => isClosed_iInter fun b => isClosed_iInter fun _ =>
+      isClosed_eq (continuous_eval_const a) (continuous_eval_const b)
+  have heval : (fun f : ContinuousMonoidHom G D => fun i => f (ι i)) =
+      (freeGroupHomeomorph I D) ∘ Subtype.val ∘
+        quotientPullbackHomeomorph (K := D) q hquot hcover := by
+    funext f i
+    simp only [Function.comp_apply, freeGroupHomeomorph_apply,
+      quotientPullbackHomeomorph_apply_apply]
+    change f (ι i) = f (FreeGroup.lift ι (FreeGroup.of i))
+    rw [FreeGroup.lift_apply_of]
+  rw [heval]
+  exact (freeGroupHomeomorph I D).isClosedEmbedding.comp
+    ((Topology.IsClosedEmbedding.subtypeVal hclosed).comp
+      (quotientPullbackHomeomorph (K := D) q hquot hcover).isClosedEmbedding)
+
+/-- Continuous homomorphisms from a discrete group with a finite generating family into a
+locally compact Hausdorff topological group form a locally compact space. -/
+theorem locallyCompactSpace_of_finite_generating_family
+    [Finite I] [LocallyCompactSpace D] (ι : I → G)
+    (hgen : Subgroup.closure (Set.range ι) = ⊤) :
+    LocallyCompactSpace (ContinuousMonoidHom G D) := by
+  exact
+    (isClosedEmbedding_eval_of_closure_range_eq_top (D := D) ι hgen).locallyCompactSpace
+
+/-- Continuous homomorphisms from a finitely generated discrete group into a locally compact
+Hausdorff topological group form a locally compact space. -/
+theorem locallyCompactSpace_of_fg [Group.FG G] [LocallyCompactSpace D] :
+    LocallyCompactSpace (ContinuousMonoidHom G D) := by
+  obtain ⟨S, hS, hfin⟩ := (Group.fg_iff (G := G)).mp ‹Group.FG G›
+  let : Finite S := hfin.to_subtype
+  exact locallyCompactSpace_of_finite_generating_family
+    (G := G) (D := D) (Subtype.val : S → G)
+    (by simpa only [Subtype.range_val] using hS)
+
+end GeneratingFamily
 
 end ContinuousMonoidHom
