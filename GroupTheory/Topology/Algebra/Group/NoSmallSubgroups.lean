@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Topology.Algebra.Group.Subgroup
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.UniformSpace.Separation
+public import Mathlib.Topology.Order
 
 /-!
 # Groups with no small subgroups
@@ -65,6 +66,14 @@ theorem NoSmallSubgroups.of_nhds_one_pow {U : Set G} (hU : U ∈ 𝓝 (1 : G))
     rw [Subgroup.mem_bot]
     exact hpow g (fun n _ => hH (H.pow_mem hg n))
   · exact bot_le
+
+/-- Every discrete group has no small subgroups, without continuity assumptions
+on its operations. -/
+instance NoSmallSubgroups.of_discreteTopology [DiscreteTopology G] : NoSmallSubgroups G := by
+  apply NoSmallSubgroups.of_nhds_one_pow (U := {1})
+  · exact mem_nhds_discrete.mpr (by simp)
+  · intro g hg
+    simpa using hg 1 Nat.zero_lt_one
 
 section Transport
 
