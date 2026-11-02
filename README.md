@@ -11,6 +11,12 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Real seminormed spaces and no small subgroups.** A real seminormed space's
+  additive group has no small subgroups if and only if its seminorm topology is
+  Hausdorff. In particular, every real normed space has no small subgroups, without
+  completeness or finite-dimensionality hypotheses. See
+  [`NormedSpace.lean`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/NormedSpace.lean).
+
 - **No small subgroups and compact-source hom spaces.**
   `NoSmallSubgroups G` means that some identity neighborhood contains no
   nontrivial subgroup. Its neighborhood and positive-powers APIs include an
