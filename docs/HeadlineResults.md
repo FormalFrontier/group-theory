@@ -11,6 +11,7 @@ mathematical sources and prior formalizations.
 
 ## Catalogue navigation
 
+- [Pointwise products and scalar actions](#pointwise-products-and-scalar-actions)
 - [Zero-sum pairs and multiplicative images](#zero-sum-pairs-and-multiplicative-images)
 - [Power restrictions and order](#power-restrictions-and-order)
 - [Group actions and presentations](#group-actions-and-presentations)
@@ -19,6 +20,29 @@ mathematical sources and prior formalizations.
 - [Topology and abstract homomorphisms](#topology-and-abstract-homomorphisms)
 - [Further algebraic and character results](#further-algebraic-and-character-results)
 
+
+## Pointwise products and scalar actions
+
+For arbitrary `ι : Type u` and `β : ι → Type v`, with independent universes and
+`[∀ i, MulZeroClass (β i)]`, `DFinsupp.pointwiseMul` selects coefficientwise
+multiplication on the existing dependent finitely supported functions. It is not
+registered as an instance. Its application formula, singleton products and support
+inclusions are in [`DFinsupp.Pointwise`](../GroupTheory/DFinsupp/Pointwise.lean).
+The computable support statements use decidable equality of indices and decisions
+for nonzero coefficients; the multiplication itself needs neither.
+
+For constant fibres, `Finsupp.toDFinsupp_mul` preserves the original pointwise
+product at `MulZeroClass` alone. The inverse comparison uses exactly the decision
+arguments of `DFinsupp.toFinsupp`; the plain equivalence has the same forward map
+as `Finsupp.toDFinsupp`. Existing arithmetic and additive/linear conversion APIs
+remain unchanged; see [`Finsupp.Pointwise`](../GroupTheory/Finsupp/Pointwise.lean).
+For independent coefficient and scalar types `C` and `B`, the scalar comparison
+`Finsupp.toDFinsupp_pointwise_smul` requires only `Zero C` and
+`SMulZeroClass B C`. Scalars are full functions `ι → B`, acting through evaluation
+at each index and the existing `DFinsupp` scalar action. The semiring/module
+specialization uses the additive conversion equivalence with this action, not a
+uniform action of the function semiring on every fibre; see
+[`Finsupp.PointwiseScalar`](../GroupTheory/Finsupp/PointwiseScalar.lean).
 
 ## Zero-sum pairs and multiplicative images
 

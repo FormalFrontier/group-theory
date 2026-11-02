@@ -11,6 +11,20 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Pointwise products of dependent finitely supported functions.**
+  `DFinsupp.pointwiseMul` gives a non-instance `Mul (Π₀ i, β i)` whenever
+  each fibre is a `MulZeroClass`; evaluation multiplies the two coefficients.
+  Singles at distinct indices have zero product, and product support is contained
+  in the intersection of the supports. No associativity, unit or finite index is
+  required. `Finsupp.toDFinsupp_mul` recovers the ordinary pointwise product
+  without decidability assumptions. Independently,
+  `Finsupp.toDFinsupp_pointwise_smul` compares function-valued scalar actions
+  using only a zero-preserving coefficient action. These data are selected
+  explicitly, without changing the graded multiplication on `DirectSum`.
+  See [`DFinsupp.Pointwise`](GroupTheory/DFinsupp/Pointwise.lean),
+  [`Finsupp.Pointwise`](GroupTheory/Finsupp/Pointwise.lean) and
+  [`Finsupp.PointwiseScalar`](GroupTheory/Finsupp/PointwiseScalar.lean).
+
 - **Surjectivity of bidual evaluation for discrete groups.** For every discrete
   group `A`, not necessarily commutative,
   `PontryaginDual.eval_surjective_of_discrete A` makes the canonical map

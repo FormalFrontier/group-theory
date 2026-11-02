@@ -20,7 +20,10 @@ public import GroupTheory.Algebra.Order.MulHom
 public import GroupTheory.Algebra.Order.Ring.MulHom
 public import GroupTheory.Algebra.Order.Ring.Sign
 public import GroupTheory.Algebra.Order.Subsemigroup
+public import GroupTheory.DFinsupp.Pointwise
 public import GroupTheory.Finsupp.CoefficientSum
+public import GroupTheory.Finsupp.Pointwise
+public import GroupTheory.Finsupp.PointwiseScalar
 public import GroupTheory.Topology.ContinuousMap.Quotient
 public import GroupTheory.Topology.ContinuousMonoidHom.Quotient
 public import GroupTheory.Semigroup.StableEquality
