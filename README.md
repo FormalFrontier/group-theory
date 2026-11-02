@@ -11,6 +11,20 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **No small subgroups and compact-source hom spaces.**
+  `NoSmallSubgroups G` means that some identity neighborhood contains no
+  nontrivial subgroup. Its neighborhood and positive-powers APIs include an
+  open inversion-symmetric identity neighborhood when inversion is continuous.
+  For a compact monoid `M` with a topology and a commutative topological group
+  `G` with no small subgroups,
+  `ContinuousMonoidHom.discreteTopology_of_noSmallSubgroups` proves
+  `DiscreteTopology (M →ₜ* G)` for the compact-open topology.
+  `Circle.noSmallSubgroups` gives the canonical instance using Mathlib's arc
+  `Circle.centeredArc (Real.pi / 2)` and its existing powers criterion. See
+  [`Group.NoSmallSubgroups`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups.lean),
+  [`ContinuousMonoidHom.NoSmallSubgroups`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/NoSmallSubgroups.lean)
+  and [`Group.NoSmallSubgroups.Circle`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/Circle.lean).
+
 - **Pointwise products of dependent finitely supported functions.**
   `DFinsupp.pointwiseMul` gives a non-instance `Mul (Π₀ i, β i)` whenever
   each fibre is a `MulZeroClass`; evaluation multiplies the two coefficients.

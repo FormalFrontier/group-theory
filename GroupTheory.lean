@@ -96,6 +96,8 @@ public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.OpenMap
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.Product
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Circle
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
 public import GroupTheory.Topology.Algebra.MulAction.Irreducible
@@ -121,6 +123,7 @@ public import GroupTheory.Topology.PontryaginDual.Discrete.Equivalence
 public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
 public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.PontryaginDual.Prod
