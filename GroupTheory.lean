@@ -117,6 +117,7 @@ public import GroupTheory.Topology.TypeTags
 public import GroupTheory.Topology.RationalCircleCharacter
 public import GroupTheory.Topology.PontryaginDual
 public import GroupTheory.Topology.PontryaginDual.Discrete.Surjective
+public import GroupTheory.Topology.PontryaginDual.Discrete.Equivalence
 public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi

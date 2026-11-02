@@ -32,6 +32,18 @@ prior results reused from Mathlib.
   This does not assert injectivity or reflexivity for noncommutative groups. See
   [`PontryaginDual.Discrete.Surjective`](GroupTheory/Topology/PontryaginDual/Discrete/Surjective.lean).
 
+- **Canonical biduality for discrete abelian groups.** For every `A : Type u`
+  with `[CommGroup A] [TopologicalSpace A] [DiscreteTopology A]`,
+  `PontryaginDual.evalEquivOfDiscrete A` is a continuous multiplicative
+  equivalence `A ≃ₜ* PontryaginDual (PontryaginDual A)` with the original
+  compact-open topologies. Its forward map is exactly `PontryaginDual.evalHom A`.
+  The inverse obeys both inverse laws and is characterized by
+  `χ ((PontryaginDual.evalEquivOfDiscrete A).symm Φ) = Φ χ`.
+  Both directions are natural for continuous homomorphisms between discrete
+  abelian groups in independent universes. No finiteness or countability
+  assumption is needed, and the trivial group is included. See
+  [`PontryaginDual.Discrete.Equivalence`](GroupTheory/Topology/PontryaginDual/Discrete/Equivalence.lean).
+
 For a finite index type `I` and a commutative topological group `E`,
 [`ContinuousMonoidHom.intPiEvalEquiv I E`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Int/Pi.lean)
 identifies the compact-open space `Multiplicative (I → ℤ) →ₜ* E` with `I → E`
@@ -436,9 +448,12 @@ The catalogue includes the local finite-neighborhood criterion for arbitrary map
 - **Bidual evaluation separates discrete abelian groups.** For a commutative
   group with its discrete topology, `PontryaginDual.eval_injective_of_discrete`
   proves that the canonical continuous bidual evaluation is injective. No
-  finiteness, finite generation or countability is required. This theorem does
-  not assert surjectivity, topological embedding or full reflexivity. Import
+  finiteness, finite generation or countability is required. The injectivity
+  theorem is available in
   [`PontryaginDual.Discrete`](GroupTheory/Topology/PontryaginDual/Discrete.lean).
+  For full canonical continuous reflexivity, including the inverse, use
+  `PontryaginDual.evalEquivOfDiscrete` in
+  [`PontryaginDual.Discrete.Equivalence`](GroupTheory/Topology/PontryaginDual/Discrete/Equivalence.lean).
 
 - **Integrals and orthogonality of characters.** For a monoid `K` with its original
   topology and measurable space, measurable opens and `[MeasurableMul K]`,
@@ -531,6 +546,7 @@ claim is implied by this guidance.
 | Whole compact-open dual transport; canonical bidual evaluation, naturality and triangular retraction | [`PontryaginDual`](GroupTheory/Topology/PontryaginDual.lean) |
 | Uniform density of scalar characters from point-separating subgroups | [`PontryaginDual.StoneWeierstrass`](GroupTheory/Topology/PontryaginDual/StoneWeierstrass.lean) |
 | Injectivity of canonical bidual evaluation for discrete abelian groups | [`PontryaginDual.Discrete`](GroupTheory/Topology/PontryaginDual/Discrete.lean) |
+| Canonical continuous bidual equivalence, inverse character law and forward/inverse naturality for discrete abelian groups | [`PontryaginDual.Discrete.Equivalence`](GroupTheory/Topology/PontryaginDual/Discrete/Equivalence.lean) |
 | Integrals and off-diagonal orthogonality of Pontryagin characters | [`PontryaginDual.Integral`](GroupTheory/Topology/PontryaginDual/Integral.lean) |
 | Finite kernels and fibers with weak homomorphism targets | [`MonoidHom.Finite`](GroupTheory/MonoidHom/Finite.lean) |
 | Subgroup membership and generated cyclic subgroups through finite powers; finite cyclic-power intersections | [`Algebra.Group.Subgroup.Power`](GroupTheory/Algebra/Group/Subgroup/Power.lean) |
