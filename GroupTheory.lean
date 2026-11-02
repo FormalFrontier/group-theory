@@ -119,6 +119,7 @@ public import GroupTheory.Topology.RationalCircle
 public import GroupTheory.Topology.TypeTags
 public import GroupTheory.Topology.RationalCircleCharacter
 public import GroupTheory.Topology.PontryaginDual
+public import GroupTheory.Topology.PontryaginDual.Restriction
 public import GroupTheory.Topology.PontryaginDual.Discrete.Surjective
 public import GroupTheory.Topology.PontryaginDual.Discrete.Equivalence
 public import GroupTheory.Topology.PontryaginDual.Integral
