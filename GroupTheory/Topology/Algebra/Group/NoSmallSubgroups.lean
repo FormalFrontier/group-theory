@@ -1,3 +1,7 @@
+/-
+SPDX-License-Identifier: Apache-2.0
+Authors: Formal Frontier Agents
+-/
 module
 
 public import Mathlib.Topology.Algebra.Group.Basic
@@ -15,6 +19,12 @@ operations is required for this definition or for its positive-powers constructo
 If inversion is continuous, the property is equivalent to a positive-powers
 criterion, with an open inversion-symmetric neighborhood as witness.
 
+No small subgroups is inherited by subgroups and pulled back along injective
+homomorphisms that are continuous at the identity. More generally, if the codomain
+has no small subgroups, the domain has no small subgroups exactly when the kernel,
+with its induced topology, does. This criterion requires continuity only at the
+identity and no continuity of the group operations.
+
 For a topological group, no small subgroups implies Hausdorffness and admits a
 closed identity-neighborhood containing no nontrivial subgroup. The separation
 argument uses the closure of the trivial subgroup and the compatible right
@@ -26,7 +36,7 @@ uniformity of the original group topology.
 open Set Filter
 open scoped Topology
 
-universe v
+universe u v
 
 /-- A group has no small subgroups if some identity-neighborhood contains only
     the trivial subgroup. -/
@@ -55,6 +65,84 @@ theorem NoSmallSubgroups.of_nhds_one_pow {U : Set G} (hU : U ∈ 𝓝 (1 : G))
     rw [Subgroup.mem_bot]
     exact hpow g (fun n _ => hH (H.pow_mem hg n))
   · exact bot_le
+
+section Transport
+
+variable {H : Type u} [Group H] [TopologicalSpace H]
+
+/-- A subsingleton group has no small subgroups for every topology. -/
+instance NoSmallSubgroups.of_subsingleton [Subsingleton H] : NoSmallSubgroups H := by
+  refine ⟨⟨univ, univ_mem, ?_⟩⟩
+  intro S _
+  apply le_antisymm
+  · intro x _
+    exact Subgroup.mem_bot.mpr (Subsingleton.elim x 1)
+  · exact bot_le
+
+/-- A homomorphism continuous at the identity pulls back no small subgroups if
+its kernel, with the induced topology, also has no small subgroups. -/
+theorem NoSmallSubgroups.of_ker (f : H →* G) (hf : ContinuousAt f (1 : H))
+    [NoSmallSubgroups G] [NoSmallSubgroups f.ker] : NoSmallSubgroups H := by
+  obtain ⟨U, hU, hUsub⟩ := NoSmallSubgroups.exists_nhds_one_subgroup_eq_bot (G := G)
+  obtain ⟨V, hV, hVsub⟩ := NoSmallSubgroups.exists_nhds_one_subgroup_eq_bot (G := f.ker)
+  obtain ⟨W, hW, hWV⟩ := (mem_nhds_subtype (f.ker : Set H) (1 : f.ker) V).mp hV
+  have hpre : f ⁻¹' U ∈ 𝓝 (1 : H) :=
+    hf.preimage_mem_nhds (by simpa only [map_one] using hU)
+  refine ⟨⟨W ∩ f ⁻¹' U, inter_mem hW hpre, ?_⟩⟩
+  intro S hS
+  have himage : S.map f = ⊥ := hUsub _ (by
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Subgroup.mem_map.mp hy
+    exact (hS hx).2)
+  have hSker : S ≤ f.ker := by
+    intro x hx
+    exact MonoidHom.mem_ker.mpr
+      (Subgroup.mem_bot.mp (himage ▸ Subgroup.mem_map_of_mem f hx))
+  have hrestrict : S.comap f.ker.subtype = ⊥ := hVsub _ (by
+    intro x hx
+    exact hWV (hS (Subgroup.mem_comap.mp hx)).1)
+  apply le_antisymm
+  · intro x hx
+    have hx' : (⟨x, hSker hx⟩ : f.ker) ∈ S.comap f.ker.subtype :=
+      Subgroup.mem_comap.mpr hx
+    have hxone := Subgroup.mem_bot.mp (hrestrict ▸ hx')
+    exact Subgroup.mem_bot.mpr (congrArg Subtype.val hxone)
+  · exact bot_le
+
+/-- An injective homomorphism continuous at the identity pulls back no small
+subgroups, without continuity assumptions on the group operations. -/
+theorem NoSmallSubgroups.of_injective (f : H →* G) (hf : ContinuousAt f (1 : H))
+    (hinj : Function.Injective f) [NoSmallSubgroups G] : NoSmallSubgroups H := by
+  let : Subsingleton f.ker :=
+    ⟨fun x y => Subtype.ext (hinj
+      ((MonoidHom.mem_ker.mp x.property).trans
+        (MonoidHom.mem_ker.mp y.property).symm))⟩
+  exact NoSmallSubgroups.of_ker f hf
+
+/-- Every subgroup of a group with no small subgroups has no small subgroups
+with its induced topology. -/
+instance Subgroup.noSmallSubgroups (S : Subgroup G) [NoSmallSubgroups G] :
+    NoSmallSubgroups S :=
+  NoSmallSubgroups.of_injective S.subtype continuous_subtype_val.continuousAt
+    Subtype.val_injective
+
+/-- For a homomorphism continuous at the identity into a group with no small
+subgroups, the domain has no small subgroups exactly when its kernel does.
+The kernel carries its induced topology. The forward implication is subgroup
+inheritance; only the reverse implication uses continuity and the codomain's
+no-small-subgroups hypothesis. -/
+theorem MonoidHom.noSmallSubgroups_iff_ker (f : H →* G)
+    (hf : ContinuousAt f (1 : H)) [NoSmallSubgroups G] :
+    NoSmallSubgroups H ↔ NoSmallSubgroups f.ker := by
+  constructor
+  · intro h
+    let : NoSmallSubgroups H := h
+    infer_instance
+  · intro h
+    let : NoSmallSubgroups f.ker := h
+    exact NoSmallSubgroups.of_ker f hf
+
+end Transport
 
 section IsTopologicalGroup
 
