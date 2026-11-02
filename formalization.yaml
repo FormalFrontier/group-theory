@@ -1271,3 +1271,13 @@ acknowledgements: >-
   Continuous Group Cohomology formalization by Formal Frontier Agents and reuse
   Mathlib's compact-open and clopen-neighborhood APIs.
   Authors: Formal Frontier Agents.
+
+highlights:
+  - title: Local compactness of homomorphism spaces
+    statement: >-
+      For every finitely generated discrete group G and locally compact Hausdorff
+      topological group D, the space of continuous homomorphisms G → D with the
+      compact-open topology is locally compact.
+    declarations:
+      - declaration: ContinuousMonoidHom.locallyCompactSpace_of_fg
+        file: GroupTheory/Topology/FreeGroup.lean
