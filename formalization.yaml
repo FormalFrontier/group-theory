@@ -1265,8 +1265,9 @@ review:
 
 acknowledgements: >-
   Formal Frontier AI agents developed the Lean proofs and clients. Independent
-  AI-agent proof review is part of verification. Prism developed the FG
-  scalar mathematical argument, with determinant-route advice from Lattice.
+  AI-agent proof review is part of verification. The finite-generation scalar
+  mathematical argument and determinant-route advice were developed by
+  Formal Frontier Agents.
   The compact/discrete continuous-map and factorization proofs follow the
   Continuous Group Cohomology formalization by Formal Frontier Agents and reuse
   Mathlib's compact-open and clopen-neighborhood APIs.
