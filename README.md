@@ -11,6 +11,13 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Finite-coordinate factorization.** A homomorphism from an arbitrary product of
+  groups, continuous at the identity, into a group with no small subgroups kills
+  every element equal to the identity on a suitable finite set of coordinates.
+  Globally continuous homomorphisms factor continuously through that finite product,
+  uniquely for the chosen finite set. No continuity of group operations is required.
+  See [`FiniteCoordinates`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/FiniteCoordinates.lean).
+
 - **Real seminormed spaces and no small subgroups.** A real seminormed space's
   additive group has no small subgroups if and only if its seminorm topology is
   Hausdorff. In particular, every real normed space has no small subgroups, without
