@@ -43,7 +43,8 @@ roots = [
   "GroupTheory.Algebra.Module.RationalCircle",
   "GroupTheory.Topology.PontryaginDual.UnitPowers",
   "GroupTheory.Topology.FreeAbelianGroup",
-  "GroupTheory.Topology.HomContinuity"
+  "GroupTheory.Topology.HomContinuity",
+  "GroupTheory.Topology.FreeGroup"
 ]
 
 [[lean_lib]]
