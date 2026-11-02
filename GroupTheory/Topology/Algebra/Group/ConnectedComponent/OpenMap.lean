@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Identity components under open homomorphisms
@@ -18,7 +19,10 @@ continuous exactly when its composite with the restriction is continuous.
 
 Such a homomorphism also reflects equality of connected components of
 representatives: two source representatives have equal target components exactly
-when their source components are equal.
+when their source components are equal. Hence the canonical induced map on
+connected components is injective. If the homomorphism is surjective, that map
+is bijective, assuming fixed-left continuity only on the source: target
+fixed-left continuity follows by quotient descent.
 
 Only continuity of fixed left translations is assumed. The proof uses the
 canonical induced topology on the range, whose identity component maps onto the
@@ -169,6 +173,20 @@ theorem connectedComponents_eq_reflection_of_isOpenMap (q : G →* H)
   exact (q.connectedComponents_eq_reflection_iff hq).mpr
     (q.comap_connectedComponentOfOneOfContinuousConstSMul_eq hq ho hk)
 
+/-- A continuous open homomorphism with preconnected kernel induces an injective map
+on connected components. Surjectivity of the homomorphism is not required. -/
+@[to_additive
+/-- A continuous open additive homomorphism with preconnected kernel induces an injective
+map on connected components. Surjectivity of the homomorphism is not required. -/]
+theorem connectedComponentsMap_injective_of_isOpenMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G)) :
+    Function.Injective hq.connectedComponentsMap := by
+  intro x y hxy
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  apply q.connectedComponents_eq_reflection_of_isOpenMap hq ho hk x y
+  simpa only [Continuous.connectedComponentsMap_mk] using hxy
+
 /-- Under a continuous open homomorphism with preconnected kernel, two source
 representatives have equal target components exactly when their source components
 are equal. -/
@@ -272,5 +290,35 @@ theorem continuous_iff_comp_connectedComponentOfOneMap (q : G →* H)
     (f : Subgroup.connectedComponentOfOneOfContinuousConstSMul H → X) :
     Continuous f ↔ Continuous (f ∘ q.connectedComponentOfOneMap hq) := by
   exact (q.isQuotientMap_connectedComponentOfOneMap hq ho hk).continuous_iff
+
+end MonoidHom
+
+namespace MonoidHom
+
+variable {G : Type u} {H : Type v}
+  [Group G] [TopologicalSpace G] [ContinuousConstSMul G G]
+  [Group H] [TopologicalSpace H]
+
+/-- A continuous open surjective homomorphism with preconnected kernel induces a bijective
+map on connected components. Only the source is assumed to have continuous fixed left
+translations; continuity of target fixed left translations follows by quotient descent. -/
+@[to_additive
+/-- A continuous open surjective additive homomorphism with preconnected kernel induces a
+bijective map on connected components. Only the source is assumed to have continuous fixed
+left translations; continuity of target fixed left translations follows by quotient descent. -/]
+theorem connectedComponentsMap_bijective_of_isOpenMap (q : G →* H)
+    (hq : Continuous q) (ho : IsOpenMap q) (hk : IsPreconnected (q.ker : Set G))
+    (hs : Function.Surjective q) : Function.Bijective hq.connectedComponentsMap := by
+  have hquot : Topology.IsQuotientMap q := ho.isQuotientMap hq hs
+  let : ContinuousConstSMul H H := by
+    constructor
+    intro h
+    obtain ⟨g, rfl⟩ := hs h
+    change Continuous (fun y : H ↦ q g * y)
+    apply hquot.continuous_iff.mpr
+    have hleft : Continuous (fun x : G ↦ g * x) := continuous_const_smul g
+    simpa only [Function.comp_def, map_mul] using hq.comp hleft
+  exact ⟨q.connectedComponentsMap_injective_of_isOpenMap hq ho hk,
+    hq.connectedComponentsMap_surjective hs⟩
 
 end MonoidHom
