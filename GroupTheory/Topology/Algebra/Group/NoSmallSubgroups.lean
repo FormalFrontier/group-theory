@@ -2,6 +2,9 @@ module
 
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Topology.Algebra.Group.Subgroup
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.UniformSpace.Separation
 
 /-!
 # Groups with no small subgroups
@@ -11,6 +14,11 @@ no subgroup other than the trivial subgroup. No continuity of the group
 operations is required for this definition or for its positive-powers constructor.
 If inversion is continuous, the property is equivalent to a positive-powers
 criterion, with an open inversion-symmetric neighborhood as witness.
+
+For a topological group, no small subgroups implies Hausdorffness and admits a
+closed identity-neighborhood containing no nontrivial subgroup. The separation
+argument uses the closure of the trivial subgroup and the compatible right
+uniformity of the original group topology.
 -/
 
 @[expose] public section
@@ -47,6 +55,49 @@ theorem NoSmallSubgroups.of_nhds_one_pow {U : Set G} (hU : U ∈ 𝓝 (1 : G))
     rw [Subgroup.mem_bot]
     exact hpow g (fun n _ => hH (H.pow_mem hg n))
   · exact bot_le
+
+section IsTopologicalGroup
+
+variable [IsTopologicalGroup G]
+
+private theorem regularSpace_of_topologicalGroup : RegularSpace G := by
+  let u := IsTopologicalGroup.rightUniformSpace G
+  -- The exposed construction retains the given topology, not just an equivalent one.
+  have hu : u.toTopologicalSpace = ‹TopologicalSpace G› := rfl
+  exact hu ▸ @UniformSpace.to_regularSpace G u
+
+/-- A closed set containing the identity and no nontrivial subgroup forces a
+    topological group to be Hausdorff. The set need not be a neighborhood. -/
+theorem IsClosed.t2Space_of_subgroup_eq_bot {W : Set G} (hW : IsClosed W)
+    (hW1 : (1 : G) ∈ W)
+    (hsub : ∀ H : Subgroup G, (H : Set G) ⊆ W → H = ⊥) : T2Space G := by
+  have hclosure : ((⊥ : Subgroup G).topologicalClosure : Set G) ⊆ W := by
+    rw [Subgroup.coe_topologicalClosure_bot]
+    exact closure_minimal (singleton_subset_iff.mpr hW1) hW
+  have hbot := hsub (⊥ : Subgroup G).topologicalClosure hclosure
+  have hclosed : IsClosed ({1} : Set G) := by
+    simpa only [hbot, Subgroup.coe_bot] using
+      (⊥ : Subgroup G).isClosed_topologicalClosure
+  let : T1Space G := IsTopologicalGroup.t1Space G hclosed
+  let : RegularSpace G := regularSpace_of_topologicalGroup
+  infer_instance
+
+/-- A topological group with no small subgroups has a closed identity-neighborhood
+    containing no nontrivial subgroup. -/
+theorem NoSmallSubgroups.exists_isClosed_nhds_one [NoSmallSubgroups G] :
+    ∃ W ∈ 𝓝 (1 : G), IsClosed W ∧
+      ∀ H : Subgroup G, (H : Set G) ⊆ W → H = ⊥ := by
+  let : RegularSpace G := regularSpace_of_topologicalGroup
+  obtain ⟨U, hU, hsub⟩ := NoSmallSubgroups.exists_nhds_one_subgroup_eq_bot (G := G)
+  obtain ⟨W, hW, hWclosed, hWU⟩ := exists_mem_nhds_isClosed_subset hU
+  exact ⟨W, hW, hWclosed, fun H hH => hsub H (hH.trans hWU)⟩
+
+/-- A topological group with no small subgroups is Hausdorff. -/
+instance (priority := 100) NoSmallSubgroups.t2Space [NoSmallSubgroups G] : T2Space G := by
+  obtain ⟨W, hW, hWclosed, hsub⟩ := NoSmallSubgroups.exists_isClosed_nhds_one (G := G)
+  exact hWclosed.t2Space_of_subgroup_eq_bot (mem_of_mem_nhds hW) hsub
+
+end IsTopologicalGroup
 
 variable [ContinuousInv G]
 
