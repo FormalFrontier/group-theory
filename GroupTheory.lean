@@ -98,6 +98,7 @@ public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.Product
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Circle
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Units
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
 public import GroupTheory.Topology.Algebra.MulAction.Irreducible
