@@ -167,3 +167,4 @@ public import GroupTheory.Topology.GroupAction.Orbit
 public import GroupTheory.Topology.Algebra.Group.Subsemigroup.Closure
 public import GroupTheory.Topology.UniformSpace.EquicontinuityMap
 public import GroupTheory.Algebra.Ring.Pi
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.UnitsCompactOpen
