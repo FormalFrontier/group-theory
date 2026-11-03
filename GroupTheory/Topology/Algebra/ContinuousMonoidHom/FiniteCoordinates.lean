@@ -16,6 +16,10 @@ continuous at the identity, kills the subgroup whose coordinates are one on some
 finite set. The product has its pointwise group structure and the product topology;
 no continuity of the group operations is needed.
 
+For products of unital magmas, the same whole-tail conclusion holds if inversion
+in the target is continuous at the identity. No source associativity or continuity
+of source operations is needed.
+
 Composing a continuous homomorphism with extension by the identity gives
 finite-factor data. If the coordinate kernel is killed, composing this factor with
 coordinate restriction recovers the original homomorphism. The factor is unique for
@@ -101,6 +105,54 @@ end Monoid
 
 end ContinuousMonoidHom
 
+private theorem exists_finset_eq_one_subset
+    [∀ i, One (G i)] [∀ i, TopologicalSpace (G i)]
+    {U : Set (∀ i, G i)} (hU : U ∈ 𝓝 (1 : ∀ i, G i)) :
+    ∃ s : Finset ι, ∀ x : ∀ i, G i, (∀ i ∈ s, x i = 1) → x ∈ U := by
+  rw [nhds_pi] at hU
+  obtain ⟨s, V, hV, hVU⟩ := Filter.mem_pi'.mp hU
+  refine ⟨s, fun x hx => hVU ?_⟩
+  intro i hi
+  rw [hx i hi]
+  exact mem_of_mem_nhds (hV i)
+
+section MulOneClass
+
+variable [∀ i, MulOneClass (G i)] [∀ i, TopologicalSpace (G i)]
+    [Group D] [TopologicalSpace D]
+
+/-- A homomorphism from a product of unital magmas, continuous at the identity,
+is one on every element that is one on a suitable finite set of coordinates,
+provided the target has no small subgroups and inversion is continuous at the
+identity. The coordinates outside that finite set are unrestricted. -/
+theorem MonoidHom.exists_finset_eq_one_of_coordinates_eq_one_of_continuousAt_inv
+    [NoSmallSubgroups D] (f : (∀ i, G i) →* D) (hf : ContinuousAt f 1)
+    (hinv : ContinuousAt (fun d : D => d⁻¹) (1 : D)) :
+    ∃ s : Finset ι, ∀ x : ∀ i, G i, (∀ i ∈ s, x i = 1) → f x = 1 := by
+  obtain ⟨U, hU, hUsub⟩ := (noSmallSubgroups_iff_submonoid hinv).mp inferInstance
+  have hpre : f ⁻¹' U ∈ 𝓝 (1 : ∀ i, G i) :=
+    hf.preimage_mem_nhds (by simpa only [map_one] using hU)
+  obtain ⟨s, hs⟩ := exists_finset_eq_one_subset hpre
+  let S : Submonoid (∀ i, G i) :=
+    { carrier := {x | ∀ i ∈ s, x i = 1}
+      one_mem' := by
+        intro i _
+        rfl
+      mul_mem' := by
+        intro x y hx hy i hi
+        change x i * y i = 1
+        rw [hx i hi, hy i hi, one_mul] }
+  have hmap : S.map f = ⊥ := hUsub _ (by
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := Submonoid.mem_map.mp hy
+    exact hs x hx)
+  refine ⟨s, ?_⟩
+  intro x hx
+  have hmem : f x ∈ S.map f := Submonoid.mem_map_of_mem f hx
+  exact Submonoid.mem_bot.mp (hmap ▸ hmem)
+
+end MulOneClass
+
 section Group
 
 variable [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
@@ -114,18 +166,15 @@ theorem MonoidHom.exists_finset_coordinateKernel_le_ker (f : (∀ i, G i) →* D
   obtain ⟨U, hU, hUsub⟩ := (noSmallSubgroups_iff (G := D)).mp inferInstance
   have hpre : f ⁻¹' U ∈ 𝓝 (1 : ∀ i, G i) :=
     hf.preimage_mem_nhds (by simpa only [map_one] using hU)
-  rw [nhds_pi] at hpre
-  obtain ⟨s, V, hV, hVU⟩ := Filter.mem_pi'.mp hpre
+  obtain ⟨s, hs⟩ := exists_finset_eq_one_subset hpre
   refine ⟨s, ?_⟩
   have hmap : (Subgroup.pi (s : Set ι) (fun i => (⊥ : Subgroup (G i)))).map f = ⊥ :=
     hUsub _ (by
       intro y hy
       obtain ⟨x, hx, rfl⟩ := Subgroup.mem_map.mp hy
-      apply hVU
+      apply hs x
       intro i hi
-      have hxi : x i = 1 := Subgroup.mem_bot.mp (hx i hi)
-      rw [hxi]
-      exact mem_of_mem_nhds (hV i))
+      exact Subgroup.mem_bot.mp (hx i hi))
   intro x hx
   exact MonoidHom.mem_ker.mpr
     (Subgroup.mem_bot.mp (hmap ▸ Subgroup.mem_map_of_mem f hx))
