@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.ProductDecomposition
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UniformFun
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
@@ -84,3 +85,27 @@ theorem exists_finset_forall_eq_one_of_coordinates_eq_one
   exact Subgroup.mem_bot.mpr (hx i hi)
 
 end MonoidHom
+
+namespace ContinuousMonoidHom
+
+section
+
+attribute [local instance] Classical.decEq
+
+/-- The union of the supports of the canonical coefficient families of continuous
+homomorphisms equicontinuous at the identity is finite. No continuity of group
+operations is required, and the indexing type may be arbitrary. -/
+theorem finite_iUnion_support_productCoefficients_of_equicontinuousAt_one
+    (F : A → ((∀ i, G i) →ₜ* D))
+    (hF : EquicontinuousAt (fun a x => F a x) (1 : ∀ i, G i)) :
+    (⋃ a : A, ((F a).productCoefficients.support : Set ι)).Finite := by
+  classical
+  obtain ⟨s, hs⟩ :=
+    MonoidHom.exists_finset_forall_coordinateKernel_le_ker
+      (fun a => (F a).toMonoidHom) hF
+  refine s.finite_toSet.subset (Set.iUnion_subset fun a => ?_)
+  exact (coordinateKernel_le_ker_iff_support_subset (F a) s).mp (hs a)
+
+end
+
+end ContinuousMonoidHom
