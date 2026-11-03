@@ -144,6 +144,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.LocallyCompact
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroupsOfGenerators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Separation
 public import GroupTheory.Topology.PontryaginDual.Pi
 public import GroupTheory.Topology.PontryaginDual.Prod
 public import GroupTheory.Topology.PontryaginDual.Real
