@@ -73,6 +73,72 @@ theorem NoSmallSubgroups.of_nhds_one_pow {U : Set G} (hU : U ∈ 𝓝 (1 : G))
     exact hpow g (fun n _ => hH (H.pow_mem hg n))
   · exact bot_le
 
+/-- If inversion is continuous at the identity, no small subgroups is equivalent
+    to a positive-powers criterion on an identity-neighborhood. Only the forward
+    implication uses continuity. -/
+theorem noSmallSubgroups_iff_exists_nhds_one_pow_of_continuousAt_inv
+    (hinv : ContinuousAt (fun g : G => g⁻¹) (1 : G)) :
+    NoSmallSubgroups G ↔
+      ∃ U ∈ 𝓝 (1 : G), ∀ g : G, (∀ n : ℕ, 0 < n → g ^ n ∈ U) → g = 1 := by
+  constructor
+  · intro h
+    obtain ⟨W, hW, hsub⟩ := (noSmallSubgroups_iff (G := G)).mp h
+    have hW1 : (1 : G) ∈ W := mem_of_mem_nhds hW
+    have hpre : (fun g : G => g⁻¹) ⁻¹' W ∈ 𝓝 (1 : G) :=
+      hinv.preimage_mem_nhds (by simpa only [inv_one] using hW)
+    let V : Set G := W ∩ (fun g : G => g⁻¹) ⁻¹' W
+    refine ⟨V, inter_mem hW hpre, ?_⟩
+    intro g hg
+    have hZ : (Subgroup.zpowers g : Set G) ⊆ W := by
+      intro x hx
+      rcases Subgroup.mem_zpowers_iff.mp hx with ⟨n, rfl⟩
+      cases n with
+      | ofNat n =>
+          cases n with
+          | zero => simpa using hW1
+          | succ n =>
+              change g ^ ((n + 1 : ℕ) : ℤ) ∈ W
+              simpa only [zpow_natCast] using (hg (n + 1) (Nat.succ_pos n)).1
+      | negSucc n =>
+          simpa only [Set.mem_preimage, zpow_negSucc] using (hg (n + 1) (Nat.succ_pos n)).2
+    have hZbot : Subgroup.zpowers g = ⊥ := hsub _ hZ
+    have hgZ : g ∈ Subgroup.zpowers g :=
+      Subgroup.mem_zpowers_iff.mpr ⟨(1 : ℤ), by simp⟩
+    have hgBot : g ∈ (⊥ : Subgroup G) := hZbot ▸ hgZ
+    exact Subgroup.mem_bot.mp hgBot
+  · rintro ⟨U, hU, hpow⟩
+    exact NoSmallSubgroups.of_nhds_one_pow hU hpow
+
+/-- If inversion is continuous at the identity, no small subgroups is equivalent
+    to an identity-neighborhood containing no nontrivial submonoid. Only the forward
+    implication uses continuity. -/
+theorem noSmallSubgroups_iff_submonoid
+    (hinv : ContinuousAt (fun g : G => g⁻¹) (1 : G)) :
+    NoSmallSubgroups G ↔
+      ∃ U ∈ 𝓝 (1 : G), ∀ H : Submonoid G, (H : Set G) ⊆ U → H = ⊥ := by
+  constructor
+  · intro h
+    obtain ⟨U, hU, hpow⟩ :=
+      (noSmallSubgroups_iff_exists_nhds_one_pow_of_continuousAt_inv hinv).mp h
+    refine ⟨U, hU, ?_⟩
+    intro H hH
+    apply le_antisymm
+    · intro g hg
+      rw [Submonoid.mem_bot]
+      exact hpow g (fun n _ => hH (H.pow_mem hg n))
+    · exact bot_le
+  · rintro ⟨U, hU, hsub⟩
+    refine (noSmallSubgroups_iff (G := G)).mpr ⟨U, hU, ?_⟩
+    intro H hH
+    have hbot : H.toSubmonoid = ⊥ := hsub H.toSubmonoid hH
+    apply le_antisymm
+    · intro g hg
+      apply Subgroup.mem_bot.mpr
+      have hgBot : g ∈ (⊥ : Submonoid G) :=
+        hbot ▸ (show g ∈ H.toSubmonoid from hg)
+      exact Submonoid.mem_bot.mp hgBot
+    · exact bot_le
+
 /-- Every discrete group has no small subgroups, without continuity assumptions
 on its operations. -/
 instance NoSmallSubgroups.of_discreteTopology [DiscreteTopology G] : NoSmallSubgroups G := by
@@ -254,8 +320,10 @@ theorem NoSmallSubgroups.exists_open_nhds_one_pow [NoSmallSubgroups G] :
     ∃ V : Set G, IsOpen V ∧ (1 : G) ∈ V ∧
       (∀ g : G, g ∈ V ↔ g⁻¹ ∈ V) ∧
       ∀ g : G, (∀ n : ℕ, 0 < n → g ^ n ∈ V) → g = 1 := by
-  obtain ⟨U, hU, hsub⟩ := (noSmallSubgroups_iff (G := G)).mp ‹NoSmallSubgroups G›
-  obtain ⟨O, hOU, hO, hO1⟩ := mem_nhds_iff.mp hU
+  obtain ⟨W, hW, hpow⟩ :=
+    (noSmallSubgroups_iff_exists_nhds_one_pow_of_continuousAt_inv
+      (G := G) continuous_inv.continuousAt).mp ‹NoSmallSubgroups G›
+  obtain ⟨O, hOW, hO, hO1⟩ := mem_nhds_iff.mp hW
   let V : Set G := O ∩ ((fun g : G => g⁻¹) ⁻¹' O)
   have hVopen : IsOpen V := hO.inter (hO.preimage continuous_inv)
   have hV1 : (1 : G) ∈ V := ⟨hO1, by simpa using hO1⟩
@@ -265,37 +333,12 @@ theorem NoSmallSubgroups.exists_open_nhds_one_pow [NoSmallSubgroups G] :
     simp only [inv_inv, and_comm]
   refine ⟨V, hVopen, hV1, hVinv, ?_⟩
   intro g hg
-  have hZ : (Subgroup.zpowers g : Set G) ⊆ U := by
-    intro x hx
-    rcases Subgroup.mem_zpowers_iff.mp hx with ⟨n, rfl⟩
-    have hn : g ^ n ∈ V := by
-      cases n with
-      | ofNat n =>
-          cases n with
-          | zero => simpa using hV1
-          | succ n =>
-              change g ^ ((n + 1 : ℕ) : ℤ) ∈ V
-              simpa only [zpow_natCast] using hg (n + 1) (Nat.succ_pos n)
-      | negSucc n =>
-          simpa only [zpow_negSucc] using
-            (hVinv (g ^ (n + 1))).mp (hg (n + 1) (Nat.succ_pos n))
-    exact hOU hn.1
-  have hZbot : Subgroup.zpowers g = ⊥ := hsub _ hZ
-  have hgZ : g ∈ Subgroup.zpowers g :=
-    Subgroup.mem_zpowers_iff.mpr ⟨(1 : ℤ), by simp⟩
-  have hgBot : g ∈ (⊥ : Subgroup G) := hZbot ▸ hgZ
-  exact Subgroup.mem_bot.mp hgBot
+  exact hpow g (fun n hn => hOW (hg n hn).1)
 
 /-- With continuous inversion, no small subgroups is equivalent to a
     positive-powers criterion on an identity-neighborhood. -/
 theorem noSmallSubgroups_iff_exists_nhds_one_pow :
     NoSmallSubgroups G ↔
       ∃ U ∈ 𝓝 (1 : G), ∀ g : G, (∀ n : ℕ, 0 < n → g ^ n ∈ U) → g = 1 := by
-  constructor
-  · intro h
-    let _ : NoSmallSubgroups G := h
-    obtain ⟨V, hVopen, hV1, _, hVpow⟩ :=
-      NoSmallSubgroups.exists_open_nhds_one_pow (G := G)
-    exact ⟨V, hVopen.mem_nhds hV1, hVpow⟩
-  · rintro ⟨U, hU, hpow⟩
-    exact NoSmallSubgroups.of_nhds_one_pow hU hpow
+  exact noSmallSubgroups_iff_exists_nhds_one_pow_of_continuousAt_inv
+    (G := G) continuous_inv.continuousAt
