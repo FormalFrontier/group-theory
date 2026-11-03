@@ -7,6 +7,7 @@ module
 
 import GroupTheoryTest.CocycleAveraging
 import GroupTheoryTest.Category.Grp.Colimits
+import GroupTheoryTest.Category.Grp.Pointed
 
 import GroupTheoryTest.Finsupp.CoefficientSum
 import GroupTheoryTest.Topology.Cofinite

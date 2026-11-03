@@ -629,6 +629,8 @@ claim is implied by this guidance.
 | Coinduced cofinite topologies and finite-versus-infinite fibers | [`Topology.Cofinite`](GroupTheory/Topology/Cofinite.lean), [paired integer projections](GroupTheoryTest/Topology/Cofinite.lean) |
 | Cofinite group operations and actions, coset quotients and homomorphisms | [`Group.Cofinite`](GroupTheory/Topology/Algebra/Group/Cofinite.lean) |
 | Coefficient-sum kernels and factorization over semirings | [`Finsupp.CoefficientSum`](GroupTheory/Finsupp/CoefficientSum.lean), [noncancellative-target client](GroupTheoryTest/Finsupp/CoefficientSum.lean) |
+| Monoids and groups as pointed types | [`Category.Mon.Pointed`](GroupTheory/Category/Mon/Pointed.lean), [`Category.Grp.Pointed`](GroupTheory/Category/Grp/Pointed.lean) |
+| Constant-one zero morphisms of monoids and groups | [`Category.Mon.Zero`](GroupTheory/Category/Mon/Zero.lean), [`Category.Grp.Zero`](GroupTheory/Category/Grp/Zero.lean) |
 | Group pushouts and normal-closure quotients | [`Category.Grp.Pushout`](GroupTheory/Category/Grp/Pushout.lean) |
 | Group-diagram free-product presentations | [`Category.Grp.Colimits`](GroupTheory/Category/Grp/Colimits.lean) |
 | Compatible maps of group colimits and their kernels | [`Category.Grp.ColimitMap`](GroupTheory/Category/Grp/ColimitMap.lean), [`ColimitMapKernel`](GroupTheory/Category/Grp/ColimitMapKernel.lean) |

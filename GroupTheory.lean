@@ -41,6 +41,10 @@ public import GroupTheory.Category.Grp.Pushout
 public import GroupTheory.Category.Grp.ColimitMap
 public import GroupTheory.Category.Grp.ColimitMapKernel
 public import GroupTheory.Category.Grp.Colimits
+public import GroupTheory.Category.Grp.Pointed
+public import GroupTheory.Category.Grp.Zero
+public import GroupTheory.Category.Mon.Pointed
+public import GroupTheory.Category.Mon.Zero
 public import GroupTheory.FGScalarSurjectivity
 public import GroupTheory.FreeGroup.IndexTwo
 public import GroupTheory.FreeGroup.Map
