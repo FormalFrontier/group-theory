@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # No small subgroups under open homomorphisms
@@ -16,6 +17,13 @@ required.
 
 For such a homomorphism continuous at the identity, no small subgroups is
 equivalent for the source and codomain. Surjectivity is not required.
+
+For injective open homomorphisms the source also needs only a group with an
+arbitrary topology. Continuity at one gives an equivalence, hence invariance
+under open embeddings and passage to open subgroups. This API uses the existing
+no-small-subgroups definition and reverse transport from
+`GroupTheory.Topology.Algebra.Group.NoSmallSubgroups`, together with Mathlib's
+subgroup and topological embedding APIs.
 -/
 
 @[expose] public section
@@ -121,3 +129,55 @@ theorem MonoidHom.noSmallSubgroups_iff_of_isOpenMap [IsTopologicalGroup G]
   · intro h
     let : NoSmallSubgroups H := h
     exact NoSmallSubgroups.of_ker f hc
+
+/-- An injective open homomorphism transports no small subgroups between groups
+with arbitrary topologies. No continuity of the homomorphism or of either
+group's operations is required. -/
+theorem NoSmallSubgroups.of_isOpenMap_of_injective [NoSmallSubgroups G]
+    (f : G →* H) (hf : IsOpenMap f) (hinj : Function.Injective f) :
+    NoSmallSubgroups H := by
+  obtain ⟨U, hU, hUsub⟩ := noSmallSubgroups_iff.mp ‹NoSmallSubgroups G›
+  obtain ⟨V, hVU, hVopen, hVone⟩ := mem_nhds_iff.mp hU
+  refine noSmallSubgroups_iff.mpr ⟨f '' V, (hf V hVopen).mem_nhds ?_, ?_⟩
+  · exact ⟨1, hVone, map_one f⟩
+  · intro K hK
+    -- Injectivity pulls the subgroup into the single source NSS window.
+    have hcomap : K.comap f = ⊥ := hUsub _ (by
+      intro x hx
+      obtain ⟨y, hy, hyx⟩ := hK (Subgroup.mem_comap.mp hx)
+      exact hVU ((hinj hyx) ▸ hy))
+    -- Every element of K is in the range, so triviality of its comap suffices.
+    apply le_antisymm ?_ bot_le
+    intro y hy
+    obtain ⟨x, _, rfl⟩ := hK hy
+    have hx : x ∈ K.comap f := Subgroup.mem_comap.mpr hy
+    have hxone : x = 1 := Subgroup.mem_bot.mp (hcomap ▸ hx)
+    simp only [Subgroup.mem_bot, hxone, map_one]
+
+/-- For an injective open homomorphism continuous at one, no small subgroups is
+equivalent for the original source and target topologies. -/
+theorem MonoidHom.noSmallSubgroups_iff_of_isOpenMap_of_injective
+    (f : G →* H) (hf : IsOpenMap f) (hinj : Function.Injective f)
+    (hc : ContinuousAt f 1) : NoSmallSubgroups G ↔ NoSmallSubgroups H := by
+  constructor
+  · intro h
+    let : NoSmallSubgroups G := h
+    exact NoSmallSubgroups.of_isOpenMap_of_injective f hf hinj
+  · intro h
+    let : NoSmallSubgroups H := h
+    exact NoSmallSubgroups.of_injective f hc hinj
+
+/-- No small subgroups is invariant under open embeddings of groups with
+arbitrary topologies. -/
+theorem MonoidHom.noSmallSubgroups_iff_of_isOpenEmbedding (f : G →* H)
+    (hf : Topology.IsOpenEmbedding f) : NoSmallSubgroups G ↔ NoSmallSubgroups H := by
+  rcases Topology.isOpenEmbedding_iff_continuous_injective_isOpenMap.mp hf with
+    ⟨hc, hinj, hopen⟩
+  exact f.noSmallSubgroups_iff_of_isOpenMap_of_injective hopen hinj hc.continuousAt
+
+/-- An open subgroup has no small subgroups exactly when its ambient group does,
+with the canonical subgroup structure and induced topology. -/
+theorem OpenSubgroup.noSmallSubgroups_iff (U : OpenSubgroup G) :
+    NoSmallSubgroups U ↔ NoSmallSubgroups G :=
+  (SubgroupClass.subtype U).noSmallSubgroups_iff_of_isOpenEmbedding
+    U.isOpen.isOpenEmbedding_subtypeVal

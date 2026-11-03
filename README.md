@@ -38,6 +38,17 @@ prior results reused from Mathlib.
   [`ContinuousMonoidHom.NoSmallSubgroups`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/NoSmallSubgroups.lean)
   and [`Group.NoSmallSubgroups.Circle`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/Circle.lean).
 
+- **No small subgroups is local under open embeddings.**
+  For groups `G`, `H` with their original arbitrary topologies, an injective
+  open homomorphism `f : G →* H` sends `NoSmallSubgroups G` to
+  `NoSmallSubgroups H`; neither operation continuity nor continuity of `f`
+  is required. If `f` is continuous at one, the two properties are equivalent.
+  In particular they are equivalent under open embeddings and between an
+  open subgroup and its ambient group. The API uses this library's existing
+  definition and reverse transport together with Mathlib's subgroup and
+  topological embedding APIs. See
+  [`Group.NoSmallSubgroups.OpenMap`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/OpenMap.lean).
+
 - **Pointwise products of dependent finitely supported functions.**
   `DFinsupp.pointwiseMul` gives a non-instance `Mul (Π₀ i, β i)` whenever
   each fibre is a `MulZeroClass`; evaluation multiplies the two coefficients.
