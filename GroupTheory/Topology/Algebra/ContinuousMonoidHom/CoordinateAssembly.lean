@@ -492,3 +492,39 @@ theorem ofDFinsupp_unique_of_dependsOn
         (fun i hi => (hxy i hi).symm)
 
 end ContinuousMonoidHom
+
+namespace ContinuousMonoidHom
+
+variable {ι : Type u} {Gi : ι → Type v} {D : Type w}
+variable [∀ i, Monoid (Gi i)] [∀ i, TopologicalSpace (Gi i)]
+variable [CommMonoid D] [TopologicalSpace D] [ContinuousMul D]
+
+open scoped BigOperators
+
+/-- In a commutative target, assembly is evaluated by the ordinary finite product
+on any finite cover of the nonzero coefficients. -/
+theorem ofDFinsupp_apply_eq_prod
+    (c : DFinsupp (fun i => Additive (Gi i →ₜ* D)))
+    (hc : ∀ (i j : ι), i ≠ j → ∀ (x : Gi i) (y : Gi j),
+      Commute ((c i).toMul x) ((c j).toMul y))
+    (S : Finset ι) (hS : ∀ i, c i ≠ 0 → i ∈ S) (x : ∀ i, Gi i) :
+    ofDFinsupp c hc x = ∏ i ∈ S, (c i).toMul (x i) := by
+  classical
+  rw [ofDFinsupp_apply c hc S hS x]
+  suffices h : ∀ T : Finset ι,
+      T.noncommProd (fun i => (c i).toMul (x i))
+        (fun i _hi j _hj hij => hc i j hij (x i) (x j)) =
+          ∏ i ∈ T, (c i).toMul (x i) from h S
+  intro T
+  induction T using Finset.induction_on with
+  | empty =>
+      simpa only [Finset.prod_empty] using
+        (Finset.noncommProd_empty (fun i => (c i).toMul (x i))
+          (fun i _hi j _hj hij => hc i j hij (x i) (x j)))
+  | @insert i T hi ih =>
+      rw [Finset.noncommProd_insert_of_notMem T i
+        (fun j => (c j).toMul (x j))
+        (fun j _hj k _hk hjk => hc j k hjk (x j) (x k)) hi,
+        Finset.prod_insert hi, ih]
+
+end ContinuousMonoidHom

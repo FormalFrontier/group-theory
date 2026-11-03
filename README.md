@@ -11,6 +11,13 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Finite-support product homomorphisms.** For arbitrary topologized groups `G i` and
+  a commutative group `D` with continuous multiplication and no small subgroups,
+  continuous homomorphisms `(∀ i, G i) →ₜ* D` are canonically equivalent as commutative
+  monoids to finitely supported families of continuous coordinate homomorphisms.
+  [Module](GroupTheory/Topology/Algebra/ContinuousMonoidHom/ProductDecomposition.lean)
+  (`ContinuousMonoidHom.productDecomposition`).
+
 - Groups with a given uniformity and no small subgroups pass this property to
   their full uniform function spaces, without continuous group operations.
   An arbitrary family of ordinary homomorphisms from a product of groups into
