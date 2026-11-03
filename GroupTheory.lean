@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.UnitsFiniteCoordinateSupport
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.UnitsFiniteCoordinates
 public import GroupTheory.CocycleAveraging
 public import GroupTheory.Cohomology.Artinian
