@@ -432,6 +432,13 @@ two additive commutative monoids to an additive commutative group extend uniquel
 to both Grothendieck completions; a semiring's additive completion has a canonical
 ring structure and universal ring lifts, without cancellation.
 
+For a finitely generated additive commutative group `M`, a subgroup has finite
+index exactly when its canonical integer-module finrank equals `Module.finrank ℤ M`.
+The [finite-index criterion](GroupTheory/FiniteIndex.lean) requires
+`[Module.Finite ℤ M]`, not freeness or torsion-freeness, and includes rank zero.
+The span of a linearly independent family of `Module.finrank ℤ M` elements has
+finite quotient and positive subgroup index.
+
 For an additive commutative group `V`, subgroup `L` and natural `n`, bijective
 multiplication by `n` on `V` gives `(V/L)[n] ≃+ L/nL`. If `L` is finitely generated,
 this torsion subgroup is finite of cardinality `n ^ Module.finrank ℤ L`, without
@@ -672,6 +679,7 @@ claim is implied by this guidance.
 | Open quotients and compatible sections | [`OpenQuotient`](GroupTheory/Topology/OpenQuotient.lean), [`Sections`](GroupTheory/Topology/Sections.lean) |
 | Kernels of quotient maps and scalar torsion | [`QuotientGroup.Kernel`](GroupTheory/QuotientGroup/Kernel.lean), [`QuotientTorsion`](GroupTheory/QuotientTorsion.lean), [`QuotientTorsion.Cardinality`](GroupTheory/QuotientTorsion/Cardinality.lean) |
 | Cyclic norms and scalar maps | [`CyclicNorm`](GroupTheory/CyclicNorm.lean), [`FGScalarSurjectivity`](GroupTheory/FGScalarSurjectivity.lean), [`IndexNSmul`](GroupTheory/IndexNSmul.lean) |
+| Finite index and full integer-module rank | [`FiniteIndex`](GroupTheory/FiniteIndex.lean) |
 
 ## References
 
