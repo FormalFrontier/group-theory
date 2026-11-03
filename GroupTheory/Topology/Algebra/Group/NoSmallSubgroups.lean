@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Topology.Algebra.Group.Subgroup
@@ -26,10 +27,15 @@ has no small subgroups, the domain has no small subgroups exactly when the kerne
 with its induced topology, does. This criterion requires continuity only at the
 identity and no continuity of the group operations.
 
-For a topological group, no small subgroups implies Hausdorffness and admits a
-closed identity-neighborhood containing no nontrivial subgroup. The separation
-argument uses the closure of the trivial subgroup and the compatible right
-uniformity of the original group topology.
+Continuity of fixed left translations alone makes a group with no small
+subgroups a T₀ space. More generally, an open set containing the identity and no
+nontrivial subgroup forces T₀ under the same continuity hypothesis.
+
+For a topological group, regularity of the original topology upgrades this to
+Hausdorffness. Such a group also admits a closed identity-neighborhood containing
+no nontrivial subgroup. The closed-set separation criterion uses the closure of
+the trivial subgroup, and regularity uses the compatible right uniformity of the
+original group topology.
 -/
 
 @[expose] public section
@@ -153,6 +159,47 @@ theorem MonoidHom.noSmallSubgroups_iff_ker (f : H →* G)
 
 end Transport
 
+section ContinuousConstSMul
+
+variable [ContinuousConstSMul G G]
+
+/-- An open set containing the identity and no nontrivial subgroup forces a group
+with continuous left translations to be T₀. -/
+theorem IsOpen.t0Space_of_subgroup_eq_bot {U : Set G} (hU : IsOpen U)
+    (hU1 : (1 : G) ∈ U)
+    (hsub : ∀ H : Subgroup G, (H : Set G) ⊆ U → H = ⊥) : T0Space G := by
+  let H : Subgroup G :=
+    { carrier := {x | Inseparable x (1 : G)}
+      one_mem' := Inseparable.refl 1
+      mul_mem' := by
+        intro x y hx hy
+        have hxy : Inseparable (x * y) x := by
+          simpa only [smul_eq_mul, mul_one] using hy.const_smul x
+        exact hxy.trans hx
+      inv_mem' := by
+        intro x hx
+        have hinv : Inseparable (1 : G) x⁻¹ := by
+          simpa only [smul_eq_mul, inv_mul_cancel, mul_one] using hx.const_smul (x⁻¹)
+        exact hinv.symm }
+  have hH : H = ⊥ := hsub H (by
+    intro x hx
+    exact ((show Inseparable x (1 : G) from hx).mem_open_iff hU).mpr hU1)
+  refine (t0Space_iff_inseparable G).mpr ?_
+  intro x y hxy
+  have hmem : y⁻¹ * x ∈ H := by
+    change Inseparable (y⁻¹ * x) (1 : G)
+    simpa only [smul_eq_mul, inv_mul_cancel] using hxy.const_smul (y⁻¹)
+  have hone : y⁻¹ * x = 1 := Subgroup.mem_bot.mp (hH ▸ hmem)
+  exact (inv_mul_eq_one.mp hone).symm
+
+/-- A group with no small subgroups and continuous left translations is T₀. -/
+instance (priority := 100) NoSmallSubgroups.t0Space [NoSmallSubgroups G] : T0Space G := by
+  obtain ⟨U, hU, hsub⟩ := NoSmallSubgroups.exists_nhds_one_subgroup_eq_bot (G := G)
+  obtain ⟨V, hVU, hV, hV1⟩ := mem_nhds_iff.mp hU
+  exact hV.t0Space_of_subgroup_eq_bot hV1 (fun H hH => hsub H (hH.trans hVU))
+
+end ContinuousConstSMul
+
 section IsTopologicalGroup
 
 variable [IsTopologicalGroup G]
@@ -191,8 +238,10 @@ theorem NoSmallSubgroups.exists_isClosed_nhds_one [NoSmallSubgroups G] :
 
 /-- A topological group with no small subgroups is Hausdorff. -/
 instance (priority := 100) NoSmallSubgroups.t2Space [NoSmallSubgroups G] : T2Space G := by
-  obtain ⟨W, hW, hWclosed, hsub⟩ := NoSmallSubgroups.exists_isClosed_nhds_one (G := G)
-  exact hWclosed.t2Space_of_subgroup_eq_bot (mem_of_mem_nhds hW) hsub
+  let : ContinuousConstSMul G G := ⟨fun a => continuous_const_mul a⟩
+  let : T0Space G := NoSmallSubgroups.t0Space (G := G)
+  let : RegularSpace G := regularSpace_of_topologicalGroup
+  infer_instance
 
 end IsTopologicalGroup
 
