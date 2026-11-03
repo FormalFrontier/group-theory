@@ -105,6 +105,7 @@ public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.NormedSpace
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.OpenMap
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Pi
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Units
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UniformFun
 public import GroupTheory.Topology.Algebra.Group.Quotient
 public import GroupTheory.Topology.Algebra.MulActionHom
 public import GroupTheory.Topology.Algebra.MulAction.Irreducible
@@ -132,6 +133,7 @@ public import GroupTheory.Topology.PontryaginDual.Integral
 public import GroupTheory.Topology.Algebra.ContinuousAddMonoidHom.Extension
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Compact
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.EquicontinuousFiniteCoordinates
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi

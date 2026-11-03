@@ -11,6 +11,12 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- Groups with a given uniformity and no small subgroups pass this property to
+  their full uniform function spaces, without continuous group operations.
+  An arbitrary family of ordinary homomorphisms from a product of groups into
+  such a group, equicontinuous at the identity, kills one common
+  finite-coordinate subgroup, including all infinite off-coordinate tails.
+
 - **Finite-coordinate factorization.** A homomorphism from an arbitrary product of
   groups, continuous at the identity, into a group with no small subgroups kills
   every element equal to the identity on a suitable finite set of coordinates.
