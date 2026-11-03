@@ -374,3 +374,62 @@ theorem coordinateMulSupport_subset_of_eq_comp_restrict
     _ = 1 := f.map_one
 
 end MonoidHom
+
+namespace MonoidHom
+
+section
+
+variable {ι : Type u} {G : ι → Type v} {D : Type w}
+variable [∀ i, MulOneClass (G i)] [MulOneClass D]
+variable [∀ i, TopologicalSpace (G i)] [TopologicalSpace D] [T0Space D]
+
+/-- A continuous homomorphism whose coefficient values outside `s` are trivial is the
+composition of its finite-coordinate factor with restriction to `s`. -/
+theorem eq_finiteCoordinateFactor_comp_restrict_of_coordinate_values_eq_one
+    (f : (∀ i, G i) →* D) (hf : Continuous f) (s : Finset ι)
+    (hc : ∀ i, i ∉ s → ∀ a : G i, f.coordinateHom i a = 1) :
+    (f : (∀ i, G i) → D) =
+      (f.finiteCoordinateFactor s : (∀ i : {i // i ∈ s}, G i) → D) ∘
+        (fun (x : ∀ i, G i) (i : {i // i ∈ s}) => x i) := by
+  classical
+  have hdep : ∀ x y : (∀ i, G i),
+      (∀ i ∈ (s : Set ι), x i = y i) → f x = f y :=
+    (coordinate_values_eq_one_off_iff f hf (s : Set ι)).mp hc
+  have hs : ∀ z : ∀ i, G i, (∀ i ∈ s, z i = 1) → f z = 1 := by
+    intro z hz
+    calc
+      f z = f 1 := hdep z 1 (by
+        intro i hi
+        simpa only [Pi.one_apply] using hz i hi)
+      _ = 1 := f.map_one
+  exact eq_finiteCoordinateFactor_comp_restrict_of_eq_one f s hs
+
+/-- The finite-coordinate factor evaluated on a restricted tuple recovers the original
+value when every coefficient value outside `s` is trivial. -/
+theorem finiteCoordinateFactor_restrict_of_coordinate_values_eq_one
+    (f : (∀ i, G i) →* D) (hf : Continuous f) (s : Finset ι)
+    (hc : ∀ i, i ∉ s → ∀ a : G i, f.coordinateHom i a = 1)
+    (x : ∀ i, G i) :
+    f.finiteCoordinateFactor s (fun i => x i) = f x := by
+  exact (congrFun
+    (eq_finiteCoordinateFactor_comp_restrict_of_coordinate_values_eq_one f hf s hc) x).symm
+
+/-- For a continuous homomorphism into a `T0` space, a finite set contains the
+coordinate support exactly when the canonical factor reconstructs the homomorphism. -/
+theorem coordinateMulSupport_subset_iff_eq_finiteCoordinateFactor_comp_restrict
+    (f : (∀ i, G i) →* D) (hf : Continuous f) (s : Finset ι) :
+    f.coordinateMulSupport ⊆ (s : Set ι) ↔
+      (f : (∀ i, G i) → D) =
+        (f.finiteCoordinateFactor s : (∀ i : {i // i ∈ s}, G i) → D) ∘
+          (fun (x : ∀ i, G i) (i : {i // i ∈ s}) => x i) := by
+  constructor
+  · intro hs
+    exact eq_finiteCoordinateFactor_comp_restrict_of_coordinate_values_eq_one f hf s
+      ((coordinateMulSupport_subset_iff_coordinate_values_eq_one f (s : Set ι)).mp hs)
+  · intro h
+    exact coordinateMulSupport_subset_of_eq_comp_restrict f (s : Set ι)
+      (f.finiteCoordinateFactor s : (∀ i : {i // i ∈ s}, G i) → D) h
+
+end
+
+end MonoidHom
