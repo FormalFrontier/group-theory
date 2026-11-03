@@ -1381,8 +1381,9 @@ Noetherian case both required topological properties follow on the subsemigroup;
 in the preirreducible case a chosen member supplies nonemptiness, there is one
 irreducible component, and ambient well-foundedness transfers along the closed
 inclusion. Surjectivity supplies the identity and inverse within the same carrier.
-These proofs retain the inverse-closure idea by minimal left translates credited
-to Flint in the [subsemigroup module](../GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
+These proofs retain the inverse-closure idea by minimal left translates developed
+by Formal Frontier Agents; see the
+[subsemigroup module](../GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
 The public closed Noetherian and closed preirreducible interfaces, their additive
 negation counterparts, and the submonoid unit consequence use the original data.
 

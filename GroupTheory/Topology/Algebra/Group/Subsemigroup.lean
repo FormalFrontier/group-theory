@@ -30,7 +30,8 @@ submonoid.
 
 ## Acknowledgements
 
-The inverse-closure argument by minimal left translates is due to Flint.
+The inverse-closure argument by minimal left translates was developed by
+Formal Frontier Agents.
 -/
 
 @[expose] public section

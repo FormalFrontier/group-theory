@@ -23,6 +23,8 @@ prior results reused from Mathlib.
   An arbitrary family of ordinary homomorphisms from a product of groups into
   such a group, equicontinuous at the identity, kills one common
   finite-coordinate subgroup, including all infinite off-coordinate tails.
+  See [`UniformFun`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/UniformFun.lean)
+  and [`EquicontinuousFiniteCoordinates`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/EquicontinuousFiniteCoordinates.lean).
 
 - **Finite-coordinate factorization.** A homomorphism from an arbitrary product of
   groups, continuous at the identity, into a group with no small subgroups kills
@@ -61,6 +63,15 @@ prior results reused from Mathlib.
   definition and reverse transport together with Mathlib's subgroup and
   topological embedding APIs. See
   [`Group.NoSmallSubgroups.OpenMap`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/OpenMap.lean).
+
+- **No small subgroups under open homomorphisms.** Let `G` be a topological
+  group, `H` a group with a topology, and `f : G →* H` an open homomorphism
+  whose kernel has the discrete topology induced from `G`. If `G` has no small
+  subgroups, then so does `H`; neither continuity of `f`, continuous operations
+  on `H`, nor surjectivity is required. If `f` is also continuous at the identity,
+  `G` has no small subgroups if and only if `H` does. See
+  [`NoSmallSubgroups.of_isOpenMap`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/OpenMap.lean)
+  and [`MonoidHom.noSmallSubgroups_iff_of_isOpenMap`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/OpenMap.lean).
 
 - **No small subgroups in totally disconnected groups.** For a totally
   disconnected topological group `G` in which each point admits a compact
@@ -698,7 +709,8 @@ K. S. Brown, *Cohomology of Groups*, Graduate Texts in Mathematics 87,
 Springer, 1982, gives the classical finite-group cohomology vanishing theorem
 underlying the [crossed-map averaging results](GroupTheory/CocycleAveraging.lean).
 
-The inverse-closure idea using minimal left translates is due to Flint; see the
+The inverse-closure idea using minimal left translates was developed by
+Formal Frontier Agents; see the
 [subsemigroup module](GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
 
 ## Credits and license
