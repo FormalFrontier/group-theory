@@ -75,6 +75,17 @@ prior results reused from Mathlib.
   and the [NSS and discreteness guide](docs/NoSmallSubgroups.md) for the statements,
   proof ideas and formalization credits.
 
+- **Locally compact homomorphism spaces.** Let `G` be a finitely generated
+  discrete group and `D` a locally compact monoid with a topology and jointly
+  continuous multiplication. If `IsClosed ({1} : Set D)`, then
+  `ContinuousMonoidHom.locallyCompactSpace_of_fg_of_isClosed_one` proves
+  `LocallyCompactSpace (G →ₜ* D)` for the original compact-open topology.
+  No group structure, commutativity, continuous inversion or separation axiom
+  is assumed on `D`. The proof uses the canonical units lift and this library's
+  existing group-target local-compactness theorem. See
+  [`ContinuousMonoidHom.LocallyCompact`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/LocallyCompact.lean)
+  and [`ContinuousMonoidHom.Units`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Units.lean).
+
 - **Pointwise products of dependent finitely supported functions.**
   `DFinsupp.pointwiseMul` gives a non-instance `Mul (Π₀ i, β i)` whenever
   each fibre is a `MulZeroClass`; evaluation multiplies the two coefficients.
@@ -621,7 +632,9 @@ claim is implied by this guidance.
 | Group pushouts and normal-closure quotients | [`Category.Grp.Pushout`](GroupTheory/Category/Grp/Pushout.lean) |
 | Group-diagram free-product presentations | [`Category.Grp.Colimits`](GroupTheory/Category/Grp/Colimits.lean) |
 | Compatible maps of group colimits and their kernels | [`Category.Grp.ColimitMap`](GroupTheory/Category/Grp/ColimitMap.lean), [`ColimitMapKernel`](GroupTheory/Category/Grp/ColimitMapKernel.lean) |
-| Dense unit maps for unit-reflecting monoid homomorphisms | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
+| Dense unit maps for unit-reflecting monoid homomorphisms; closed-identity criterion, local compactness and Hausdorffness of canonical units | [`Topology.Algebra.Group.Units`](GroupTheory/Topology/Algebra/Group/Units.lean), [rational and integer-quotient examples](GroupTheoryTest/Topology/Algebra/Group/Units.lean) |
+| Canonical units lifts; compact-open family homeomorphism for groups with continuous inversion and monoid targets under `LocallyCompactPair G D` | [`ContinuousMonoidHom.Units`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Units.lean) |
+| Locally compact compact-open hom spaces from finitely generated discrete groups to locally compact topological monoids with closed identity singleton | [`ContinuousMonoidHom.LocallyCompact`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/LocallyCompact.lean) |
 | Products of submodules and their coordinate splitting | [`LinearAlgebra.Prod`](GroupTheory/LinearAlgebra/Prod.lean), [`LinearAlgebra.Pi`](GroupTheory/LinearAlgebra/Pi.lean) |
 | Fixed vectors, products, direct sums and left exactness over semirings | [`RepresentationInvariants`](GroupTheory/RepresentationInvariants.lean), [`RepresentationPi`](GroupTheory/RepresentationPi.lean), [`RepresentationDirectSum`](GroupTheory/RepresentationDirectSum.lean) |
 | Inhomogeneous monoid cochains over rings, fixed vectors in degree zero and Noetherian cohomology | [`Cohomology.Basic`](GroupTheory/Cohomology/Basic.lean), [`Cohomology.Noetherian`](GroupTheory/Cohomology/Noetherian.lean) |

@@ -140,6 +140,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.EquicontinuousFin
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Int.Pi
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.LocallyCompact
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroups
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.NoSmallSubgroupsOfGenerators
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Pi
