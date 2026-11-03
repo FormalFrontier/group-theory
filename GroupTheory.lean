@@ -143,6 +143,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.CoordinateAssembl
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateSupport
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateSupportMap
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Precomposition
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.ProductDecomposition
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.EquicontinuousFiniteCoordinates
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Generators
