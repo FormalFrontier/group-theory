@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.CoordinateAssembly
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Coordinates
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
 public import Mathlib.Data.DFinsupp.BigOperators
 
@@ -46,33 +47,6 @@ section MulOneClass
 
 variable [∀ i, MulOneClass (G i)]
 
-private theorem map_coordinate_truncation_eq [MulOneClass D] (f g : (∀ i, G i) →* D)
-    (s : Finset ι) (x : ∀ i, G i)
-    (h : ∀ i ∈ s, f (Pi.mulSingle i (x i)) = g (Pi.mulSingle i (x i))) :
-    f (fun i => if i ∈ s then x i else 1) =
-      g (fun i => if i ∈ s then x i else 1) := by
-  classical
-  revert h
-  induction s using Finset.induction_on with
-  | empty =>
-      intro _
-      have he : (fun i => if i ∈ (∅ : Finset ι) then x i else 1) = (1 : ∀ i, G i) := by
-        funext i
-        simp
-      rw [he]
-      exact (map_one f).trans (map_one g).symm
-  | @insert i s hi ih =>
-      intro h
-      have htrunc : (fun j => if j ∈ insert i s then x j else 1) =
-          Pi.mulSingle i (x i) * (fun j => if j ∈ s then x j else 1) := by
-        funext j
-        by_cases hji : j = i
-        · subst j
-          simp [hi]
-        · simp [hji]
-      rw [htrunc, map_mul, map_mul, h i (Finset.mem_insert_self i s),
-        ih (fun j hj => h j (Finset.mem_insert_of_mem hj))]
-
 private theorem map_coordinate_truncation [CommMonoid D] (f : (∀ i, G i) →* D)
     (s : Finset ι) (x : ∀ i, G i) :
     f (fun i => if i ∈ s then x i else 1) =
@@ -101,55 +75,6 @@ section Monoid
 variable [∀ i, Monoid (G i)] [∀ i, TopologicalSpace (G i)]
     [Monoid D] [TopologicalSpace D]
 
-private def coordinateProjection (i : ι) : (∀ j, G j) →ₜ* G i :=
-  { toFun := fun x => x i
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl
-    continuous_toFun := continuous_apply i }
-
-/-- Restriction of a continuous product homomorphism to one coordinate, by
-inserting the identity in every other coordinate. -/
-noncomputable def coordinateHom (f : (∀ i, G i) →ₜ* D) (i : ι) : G i →ₜ* D := by
-  classical
-  exact f.comp
-    { toFun := Pi.mulSingle i
-      map_one' := by
-        funext j
-        simp
-      map_mul' := by
-        intro x y
-        funext j
-        by_cases h : j = i
-        · subst j
-          simp
-        · simp [h]
-      continuous_toFun := by
-        apply continuous_pi
-        intro j
-        by_cases h : j = i
-        · subst j
-          have he : (fun x : G i => Pi.mulSingle i x i) = (fun x : G i => x) := by
-            funext x
-            simp
-          rw [he]
-          exact continuous_id
-        · have he : (fun x : G i => Pi.mulSingle i x j) = (fun _ : G i => (1 : G j)) := by
-            funext x
-            simp [h]
-          rw [he]
-          exact continuous_const }
-
-@[simp]
-theorem coordinateHom_apply (f : (∀ i, G i) →ₜ* D) (i : ι) (t : G i) :
-    f.coordinateHom i t = f (Pi.mulSingle i t) := rfl
-
-@[simp]
-theorem coordinateHom_one (i : ι) :
-    (1 : (∀ i, G i) →ₜ* D).coordinateHom i = 1 := by
-  apply DFunLike.ext
-  intro t
-  rfl
-
 end Monoid
 
 section CommMonoid
@@ -163,22 +88,6 @@ theorem coordinateHom_mul (f g : (∀ i, G i) →ₜ* D) (i : ι) :
   apply DFunLike.ext
   intro t
   rfl
-
-private def coordinateContribution (i : ι) :
-    Additive (G i →ₜ* D) →+ Additive ((∀ j, G j) →ₜ* D) :=
-  { toFun := fun g => Additive.ofMul (g.toMul.comp (coordinateProjection i))
-    map_zero' := by
-      change (1 : G i →ₜ* D).comp (coordinateProjection i) = 1
-      apply DFunLike.ext
-      intro x
-      rfl
-    map_add' := by
-      intro f g
-      change (f.toMul * g.toMul).comp (coordinateProjection i) =
-        f.toMul.comp (coordinateProjection i) * g.toMul.comp (coordinateProjection i)
-      apply DFunLike.ext
-      intro x
-      rfl }
 
 /-- Assemble a finitely supported family of continuous coordinate homomorphisms.
 This bundles the commutative specialization of `ofDFinsupp` as a monoid homomorphism
@@ -378,7 +287,7 @@ theorem ext_coordinateHom {f g : (∀ i, G i) →ₜ* D}
       simpa [finiteCoordinateFactor_apply] using
         (f.finiteCoordinateFactor_restrict (s ∪ t) hsf x).symm
     _ = g (fun i => if i ∈ s ∪ t then x i else 1) := by
-      apply map_coordinate_truncation_eq f.toMonoidHom g.toMonoidHom (s ∪ t) x
+      apply MonoidHom.map_coordinate_truncation_eq f.toMonoidHom g.toMonoidHom (s ∪ t) x
       intro i _
       change f (Pi.mulSingle i (x i)) = g (Pi.mulSingle i (x i))
       simpa only [coordinateHom_apply] using
@@ -436,7 +345,7 @@ theorem coordinateKernel_le_ker_iff_support_subset
         simpa [finiteCoordinateFactor_apply] using
           (f.finiteCoordinateFactor_restrict t ht x).symm
       _ = (1 : (∀ i, G i) →* D) (fun i => if i ∈ t then x i else 1) := by
-        apply map_coordinate_truncation_eq f.toMonoidHom 1 t x
+        apply MonoidHom.map_coordinate_truncation_eq f.toMonoidHom 1 t x
         intro i _
         simpa using hsingle i
       _ = 1 := rfl
