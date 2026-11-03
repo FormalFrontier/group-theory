@@ -49,6 +49,19 @@ prior results reused from Mathlib.
   topological embedding APIs. See
   [`Group.NoSmallSubgroups.OpenMap`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/OpenMap.lean).
 
+- **No small subgroups in totally disconnected groups.** For a totally
+  disconnected topological group `G` in which each point admits a compact
+  neighborhood (`WeaklyLocallyCompactSpace G`),
+  `noSmallSubgroups_iff_discreteTopology` states
+  `NoSmallSubgroups G ↔ DiscreteTopology G`. For a compact totally disconnected
+  topological group, `noSmallSubgroups_iff_finite` states
+  `NoSmallSubgroups G ↔ Finite G`. These criteria concern the given topology;
+  no commutativity, nontriviality or separate Hausdorff hypothesis is required.
+  The open-subgroup argument is classical van Dantzig theory. See
+  [`Group.NoSmallSubgroups.TotallyDisconnected`](GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/TotallyDisconnected.lean)
+  and the [NSS and discreteness guide](docs/NoSmallSubgroups.md) for the statements,
+  proof ideas and formalization credits.
+
 - **Pointwise products of dependent finitely supported functions.**
   `DFinsupp.pointwiseMul` gives a non-instance `Mul (Π₀ i, β i)` whenever
   each fibre is a `MulZeroClass`; evaluation multiplies the two coefficients.
