@@ -23,6 +23,7 @@ rev = "1ecd25213926138278dbd661bd516de9135d944a"
 name = "GroupTheory"
 roots = [
   "GroupTheory",
+  "GroupTheory.Category.Grp.Exact",
   "GroupTheory.Topology.LocallyConstant",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
