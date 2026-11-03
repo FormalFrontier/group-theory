@@ -103,6 +103,22 @@ theorem coordinateTruncation_apply (s : Finset ι) (x : ∀ i, G i) :
   funext i
   by_cases hi : i ∈ s <;> simp [coordinateTruncation, hi]
 
+/-- Truncation to the empty set is the identity element of the product. -/
+theorem coordinateTruncation_empty (x : ∀ i, G i) :
+    coordinateTruncation (∅ : Finset ι) x = 1 := by
+  funext i
+  simp [coordinateTruncation_apply]
+
+/-- Inserting a new coordinate multiplies its single-coordinate value on the left. -/
+theorem coordinateTruncation_insert (s : Finset ι) (i : ι) (hi : i ∉ s)
+    (x : ∀ j, G j) :
+    coordinateTruncation (insert i s) x = Pi.mulSingle i (x i) * coordinateTruncation s x := by
+  funext j
+  by_cases hji : j = i
+  · subst j
+    simp [coordinateTruncation_apply, hi]
+  · simp [coordinateTruncation_apply, hji]
+
 /-- Replace the coordinates in a finite set by one and retain all other coordinates. -/
 noncomputable def coordinateTail (s : Finset ι) : (∀ i, G i) →* ∀ i, G i :=
   MonoidHom.pi fun i => if i ∈ s then 1 else Pi.evalMonoidHom G i

@@ -8,6 +8,7 @@ module
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.ProductDecomposition
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UniformFun
+public import GroupTheory.Topology.UniformSpace.Equicontinuity
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
@@ -25,6 +26,10 @@ The finite-coordinate kernel theorem for a single ordinary homomorphism then
 applies. In particular the conclusion concerns the entire subgroup, including
 infinite tails outside the chosen coordinates; it is not a finite-support
 statement and does not assert global continuity.
+
+When target multiplication is continuous at `(1, 1)`, a continuous family is
+equicontinuous at one if and only if its coordinate families are equicontinuous
+at one and the union of its canonical coefficient supports is finite.
 -/
 
 @[expose] public section
@@ -33,6 +38,64 @@ open Set Filter
 open scoped Topology
 
 universe z u v w
+
+section
+
+variable {A : Type z} {ι : Type u} {G : ι → Type v} {D : Type w}
+    [∀ i, MulOneClass (G i)] [∀ i, TopologicalSpace (G i)]
+    [MulOneClass D] [UniformSpace D]
+
+attribute [local instance] Classical.decEq
+
+namespace MonoidHom
+
+/-- A common finite truncation of a family of homomorphisms is equicontinuous at
+one if its coordinate families are equicontinuous there and multiplication in
+the target is continuous at `(1, 1)`. No continuity of the homomorphisms or of
+source operations, no associativity, and no small-subgroups condition is needed. -/
+theorem equicontinuousAt_one_coordinateTruncation
+    (F : A → ((∀ i, G i) →* D)) (s : Finset ι)
+    (hcoord : ∀ i ∈ s, EquicontinuousAt
+      (fun a (x : G i) => (F a).coordinateHom i x) (1 : G i))
+    (hmul : ContinuousAt (fun p : D × D => p.1 * p.2) (1, 1)) :
+    EquicontinuousAt (fun a x => F a (coordinateTruncation s x)) (1 : ∀ i, G i) := by
+  refine (equicontinuousAt_iff_forall_mem_nhds_of_eq
+    (F := fun a x => F a (coordinateTruncation s x))
+    (x₀ := (1 : ∀ i, G i)) (c := (1 : D))
+    (fun a => by simp only [map_one])).mpr ?_
+  revert hcoord
+  induction s using Finset.induction_on with
+  | empty =>
+    intro _ W hW
+    exact Filter.Eventually.of_forall fun x a => by
+      simpa only [coordinateTruncation_empty, map_one] using mem_of_mem_nhds hW
+  | @insert i s hi ih =>
+    intro hcoord W hW
+    have hpre : {p : D × D | p.1 * p.2 ∈ W} ∈ 𝓝 (1, 1) :=
+      hmul.preimage_mem_nhds (by simpa only [one_mul] using hW)
+    obtain ⟨U, hU, V, hV, hUV⟩ := mem_nhds_prod_iff.mp hpre
+    have hc : ∀ᶠ y in 𝓝 (1 : G i), ∀ a, (F a).coordinateHom i y ∈ U :=
+      (equicontinuousAt_iff_forall_mem_nhds_of_eq
+        (F := fun a (y : G i) => (F a).coordinateHom i y)
+        (x₀ := (1 : G i)) (c := (1 : D))
+        (fun a => map_one ((F a).coordinateHom i))).mp
+          (hcoord i (Finset.mem_insert_self i s)) U hU
+    have hproj : Tendsto (fun x : ∀ j, G j => x i)
+        (𝓝 (1 : ∀ j, G j)) (𝓝 (1 : G i)) :=
+      (continuous_apply i).continuousAt
+    have hhead : ∀ᶠ x in 𝓝 (1 : ∀ j, G j), ∀ a, (F a).coordinateHom i (x i) ∈ U :=
+      hproj.eventually hc
+    have htail := ih (fun j hj => hcoord j (Finset.mem_insert_of_mem hj)) V hV
+    filter_upwards [hhead, htail] with x hx htx
+    intro a
+    rw [coordinateTruncation_insert s i hi x, map_mul]
+    simpa [coordinateHom_apply] using
+      hUV (show ((F a).coordinateHom i (x i), F a (coordinateTruncation s x)) ∈
+        U ×ˢ V from ⟨hx a, htx a⟩)
+
+end MonoidHom
+
+end
 
 variable {A : Type z} {ι : Type u} {G : ι → Type v} {D : Type w}
     [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
@@ -105,6 +168,80 @@ theorem finite_iUnion_support_productCoefficients_of_equicontinuousAt_one
       (fun a => (F a).toMonoidHom) hF
   refine s.finite_toSet.subset (Set.iUnion_subset fun a => ?_)
   exact (coordinateKernel_le_ker_iff_support_subset (F a) s).mp (hs a)
+
+end
+
+section
+
+attribute [local instance] Classical.decEq
+
+/-- A family of continuous homomorphisms from a product into a group with a uniform
+space structure and no small subgroups is equicontinuous at one exactly when its
+coordinate families are equicontinuous at one and their canonical supports have
+finite union. Only multiplication continuity at `(1, 1)` is needed for the converse;
+no compatibility between the group structure and the uniformity is required. -/
+theorem equicontinuousAt_one_iff_coordinateHom_and_finite_iUnion_support
+    (F : A → ((∀ i, G i) →ₜ* D))
+    (hmul : ContinuousAt (fun p : D × D => p.1 * p.2) (1, 1)) :
+    EquicontinuousAt (fun a x => F a x) (1 : ∀ i, G i) ↔
+      (∀ i : ι, EquicontinuousAt
+        (fun a (x : G i) => (F a).coordinateHom i x) (1 : G i)) ∧
+      (⋃ a : A, ((F a).productCoefficients.support : Set ι)).Finite := by
+  constructor
+  · intro hF
+    refine ⟨?_, finite_iUnion_support_productCoefficients_of_equicontinuousAt_one F hF⟩
+    intro i
+    have hone : (Pi.mulSingle i (1 : G i) : ∀ j, G j) = 1 := by simp
+    have hins : Tendsto (fun y : G i => (Pi.mulSingle i y : ∀ j, G j))
+        (𝓝 (1 : G i)) (𝓝 (1 : ∀ j, G j)) := by
+      have hcont : Tendsto (fun y : G i => (Pi.mulSingle i y : ∀ j, G j))
+          (𝓝 (1 : G i)) (𝓝 (Pi.mulSingle i (1 : G i))) :=
+        (continuous_mulSingle i).continuousAt
+      simpa only [hone] using hcont
+    intro U hU
+    simpa only [coordinateHom_apply, hone] using hins.eventually (hF U hU)
+  · rintro ⟨hcoord, hsupport⟩
+    let s : Finset ι := hsupport.toFinset
+    have hs (a : A) : (F a).productCoefficients.support ⊆ s := by
+      intro i hi
+      exact hsupport.mem_toFinset.mpr (Set.mem_iUnion.mpr ⟨a, hi⟩)
+    have htrunc (a : A) (x : ∀ i, G i) :
+        F a (MonoidHom.coordinateTruncation s x) = F a x := by
+      have hk := (coordinateKernel_le_ker_iff_support_subset (F a) s).mpr (hs a)
+      calc
+        F a (MonoidHom.coordinateTruncation s x) =
+            (F a).finiteCoordinateFactor s (fun i => x i) := by
+          rw [finiteCoordinateFactor_apply, MonoidHom.coordinateTruncation_apply]
+          apply congrArg (fun y : ∀ i, G i => F a y)
+          funext i
+          by_cases hi : i ∈ s <;> simp [hi]
+        _ = F a x := (F a).finiteCoordinateFactor_restrict s hk x
+    have hfinite : EquicontinuousAt
+        (fun a x => F a (MonoidHom.coordinateTruncation s x)) (1 : ∀ i, G i) := by
+      refine MonoidHom.equicontinuousAt_one_coordinateTruncation
+        (fun a => (F a).toMonoidHom) s ?_ hmul
+      intro i hi
+      simpa [MonoidHom.coordinateHom_apply, coordinateHom_apply] using hcoord i
+    simpa only [htrunc] using hfinite
+
+end
+
+section
+
+variable [ContinuousMul D]
+
+attribute [local instance] Classical.decEq
+
+/-- The coordinate-family and common-finite-support criterion when target
+multiplication is continuous everywhere. -/
+theorem equicontinuousAt_one_iff_coordinateHom_and_finite_iUnion_support_of_continuousMul
+    (F : A → ((∀ i, G i) →ₜ* D)) :
+    EquicontinuousAt (fun a x => F a x) (1 : ∀ i, G i) ↔
+      (∀ i : ι, EquicontinuousAt
+        (fun a (x : G i) => (F a).coordinateHom i x) (1 : G i)) ∧
+      (⋃ a : A, ((F a).productCoefficients.support : Set ι)).Finite :=
+  equicontinuousAt_one_iff_coordinateHom_and_finite_iUnion_support F
+    continuous_mul.continuousAt
 
 end
 
