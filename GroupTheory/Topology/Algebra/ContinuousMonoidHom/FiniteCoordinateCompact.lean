@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UnitsNeighborhood
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateNeighborhood
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Compact
 import GroupTheory.Topology.Pi.FiniteDeviations
@@ -18,6 +19,8 @@ subgroup of the target's units gives one finite set of coordinates through
 which every member of a compact family of continuous homomorphisms factors.
 The family has the compact-open topology on the original homomorphism space.
 No compatibility between multiplication and the given topologies is assumed.
+The same conclusion holds when the target's canonical group of units has no small
+subgroups.
 
 The proof constructs a sequence of finite-coordinate extensions of tail
 points. Every coordinate is eventually the identity, and each fixed
@@ -214,5 +217,24 @@ theorem exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_subgroup_
   apply hnot (S N)
   rw [← hxeval N]
   exact hN (f (S N)) (hf (S N)) N le_rfl
+
+/-- A compact family of continuous homomorphisms from a product of groups has
+one common finite-coordinate factorization when the target's canonical group
+of units has no small subgroups. The source groups and target monoid retain
+their given arbitrary topologies, and all factorizations use the given maps'
+canonical finite-coordinate factors and the original restrictions. No operation
+continuity or separation is assumed. For background, see
+Neukirch–Schmidt–Wingberg, *Cohomology of Number Fields*. -/
+theorem exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_noSmallSubgroups_units
+    [NoSmallSubgroups Dˣ]
+    (K : Set ((∀ i, G i) →ₜ* D)) (hK : IsCompact K) :
+    ∃ s : Finset ι, ∀ f ∈ K, (f : (∀ i, G i) → D) =
+      (f.finiteCoordinateFactor s : (∀ i : {i // i ∈ s}, G i) → D) ∘
+        (fun (x : ∀ i, G i) (i : {i // i ∈ s}) => x i) := by
+  obtain ⟨V, hV, h1, hsub⟩ :=
+    (Units.noSmallSubgroups_iff_exists_open_subgroup_eq_bot).1
+      (inferInstance : NoSmallSubgroups Dˣ)
+  exact exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_subgroup_values
+    K hK V hV h1 hsub
 
 end ContinuousMonoidHom
