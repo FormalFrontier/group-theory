@@ -56,6 +56,7 @@ public import GroupTheory.FreeGroup.Rank
 public import GroupTheory.GroupAction.Automorphism
 public import GroupTheory.GroupAction.Centralizer
 public import GroupTheory.GroupAction.DoubleCoset
+public import GroupTheory.GroupAction.Integral
 public import GroupTheory.GroupAction.InvariantSetoid
 public import GroupTheory.GroupAction.Orbit
 public import GroupTheory.GroupAction.Quotient

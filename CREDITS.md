@@ -108,6 +108,15 @@
 - Van Dantzig's compact-open subgroup theorem, used in Neukirch, Schmidt,
   and Wingberg, *Cohomology of Number Fields*, corrected second edition,
   Chapter I, §1, Proposition (1.1.9), for the identity-component discussion.
+- The finite-orbit theorem for integral elements composes Mathlib's
+  `IsIntegral` monic-polynomial witness, `Polynomial.Monic.mem_rootSet`
+  for root membership, `Polynomial.smul_mem_rootSet` for stability under
+  scalar-commuting actions, and `Polynomial.rootSet_finite` for root
+  finiteness. The orbit set is Mathlib's `MulAction.orbit`. The
+  [module references](GroupTheory/GroupAction/Integral.lean) identify the
+  reused APIs; scalar commutation fixes the image of the coefficient ring
+  without an action on that ring.
+
 - The coset-map universal property reuses Mathlib's coset and orbit–stabilizer
   constructions by Chris Hughes, Thomas Browning and Yury Kudryashov, and its
   equivariant-map API by Kenny Lau and Antoine Chambert-Loir. Its clients use

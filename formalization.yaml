@@ -214,11 +214,29 @@ project:
     inverse evaluates at any point. The group need not be finite; the semiring
     may be zero or noncommutative. A nonzero fixed vector forces the carrier to
     be finite, and the fixed submodule is bottom on infinite carriers.
+
+    An element x of a commutative domain A integral over a commutative ring R
+    has a finite orbit under any monoid M acting on A by semiring endomorphisms
+    that commute with R-scalars. The three universes are independent; no
+    action on R, injective scalar map, faithful action, integrality of all
+    of A, or group or finiteness assumption on M is required.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
 
 sources:
+  - title: Mathlib polynomial roots, integrality and monoid orbits
+    type: software
+    location: >-
+      Mathlib/Algebra/Polynomial/Roots.lean,
+      Mathlib/RingTheory/IntegralClosure/IsIntegral/Defs.lean and
+      Mathlib/GroupTheory/GroupAction/Defs.lean
+    note: >-
+      IsIntegral.finite_orbit combines the IsIntegral monic-polynomial witness
+      with Polynomial.Monic.mem_rootSet, Polynomial.smul_mem_rootSet and
+      Polynomial.rootSet_finite, using the orbit set MulAction.orbit.
+      Scalar commutation fixes the image of the coefficient ring without
+      an action on that ring.
   - title: Mathlib algebraic and topological congruences
     authors:
       - Johannes Hölzl
@@ -838,6 +856,14 @@ status:
     invertible-order assumption is required. Finite support of a nonzero fixed
     vector forces the carrier to be finite, so the fixed submodule is bottom for
     an infinite carrier.
+
+    IsIntegral.finite_orbit takes R : Type u, A : Type v and M : Type w
+    in independent universes, with CommRing R, CommRing A, IsDomain A,
+    Algebra R A, Monoid M, MulSemiringAction M A and SMulCommClass M R A.
+    For x : A and hx : IsIntegral R x it proves (MulAction.orbit M x).Finite.
+    Only x is assumed integral; R need not be a field or domain, its scalar
+    map need not be injective, and the action need not be faithful. The
+    acting monoid need not be a group or finite. No action on R is required.
   axioms:
     - propext
     - Classical.choice
@@ -1191,6 +1217,8 @@ status:
       file: GroupTheory/FGScalarSurjectivity.lean
     - declaration: AddCommGroup.nsmul_bijective_iff_finite_coprime
       file: GroupTheory/FGScalarSurjectivity.lean
+    - declaration: IsIntegral.finite_orbit
+      file: GroupTheory/GroupAction/Integral.lean
     - declaration: MulAction.mem_fixedPoints_subgroup_iff
       file: GroupTheory/GroupAction/Quotient.lean
     - declaration: MulActionHom.quotientEquivFixedPoints

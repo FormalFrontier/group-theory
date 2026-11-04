@@ -392,6 +392,22 @@ injections. No nonempty-index premise is needed. See the
 [map construction](../GroupTheory/Category/Grp/ColimitMap.lean) and
 [kernel theorem](../GroupTheory/Category/Grp/ColimitMapKernel.lean).
 
+### Finite orbits of integral elements
+
+Import
+[`GroupTheory.GroupAction.Integral`](../GroupTheory/GroupAction/Integral.lean)
+directly. For `R : Type u`, `A : Type v` and `M : Type w` with
+`[CommRing R] [CommRing A] [IsDomain A] [Algebra R A]`,
+`[Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]`, and
+`hx : IsIntegral R x`, use `hx.finite_orbit (M := M)` to obtain
+`(MulAction.orbit M x).Finite`. The universes are independent.
+
+Scalar commutation is the coefficient-fixing hypothesis; no action on `R`
+is needed. There is no field or domain assumption on `R`, injectivity
+assumption on `algebraMap R A`, faithfulness requirement, global
+integrality hypothesis on `A`, or group or finiteness assumption on `M`.
+See the [result guide](Results.md#finite-orbits-of-integral-elements).
+
 ### Action automorphisms
 
 Import `GroupTheory.GroupAction.Centralizer` (or `GroupTheory`). For an action

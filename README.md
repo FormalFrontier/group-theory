@@ -376,6 +376,16 @@ for additive restriction, pointwise comparison and multiplicative-map versions.
 
 ### Group actions and presentations
 
+For a commutative ring `R`, a commutative domain `A` with an `R`-algebra
+structure, and a monoid `M` acting on `A` by semiring endomorphisms,
+`IsIntegral.finite_orbit` proves that every element integral over `R` has
+finite orbit, provided `[SMulCommClass M R A]`. The three types may lie in
+independent universes. Scalar commutation fixes the image of `R`; no action
+on `R`, injective scalar map, faithful action, integrality of all of `A`,
+or group or finiteness assumption on `M` is required. See
+[`GroupAction.Integral`](GroupTheory/GroupAction/Integral.lean) and the
+[finite-orbit API](docs/Results.md#finite-orbits-of-integral-elements).
+
 For arbitrary subgroups `H, K` of a group `G`, equivariant maps `G/H → G/K`
 exist exactly when `H ≤ gKg⁻¹` for some `g`; the coset actions are isomorphic
 exactly when the subgroups are conjugate, not merely when maps exist both ways.
@@ -664,6 +674,7 @@ claim is implied by this guidance.
 | Additive universal property, biadditive Grothendieck extensions, arbitrary products, cofinal denominator forms and quotient representatives | [`MonoidLocalization.GrothendieckGroup`](GroupTheory/MonoidLocalization/GrothendieckGroup.lean) |
 | Ring structures, canonical generators and multiplicative universal properties for additive Grothendieck groups of semirings | [`MonoidLocalization.GrothendieckGroup.Ring`](GroupTheory/MonoidLocalization/GrothendieckGroup/Ring.lean) |
 | Additive-unit absorption and nilpotence reflection in Grothendieck rings | [`Algebra.IsAddUnit`](GroupTheory/Algebra/IsAddUnit.lean), [`MonoidLocalization.GrothendieckGroup.Nilpotent`](GroupTheory/MonoidLocalization/GrothendieckGroup/Nilpotent.lean) |
+| Finite orbits of integral elements under scalar-commuting monoid actions on commutative domains | [`GroupAction.Integral`](GroupTheory/GroupAction/Integral.lean) |
 | Equivariant maps from cosets and subgroup-fixed points | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [permutation-action and boundary examples](GroupTheoryTest/CosetActionHom.lean) |
 | Canonical coset-action isomorphisms and subgroup conjugacy | [`GroupAction.Quotient`](GroupTheory/GroupAction/Quotient.lean), [nonnormal examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |
 | Product-coset orbits and double cosets | [`GroupAction.DoubleCoset`](GroupTheory/GroupAction/DoubleCoset.lean), [permutation and boundary examples](GroupTheoryTest/Topology/Algebra/Group/Quotient.lean) |

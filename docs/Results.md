@@ -12,6 +12,7 @@ The following results are available in this library.
 - [Power kernels and finite image detection](#power-kernels-and-finite-image-detection)
 - [Cofinite topologies](#cofinite-topologies)
 - [Dense fibers and quotient topologies](#dense-fibers-and-quotient-topologies)
+- [Finite orbits of integral elements](#finite-orbits-of-integral-elements)
 - [Actions, cosets and fixed vectors](#actions-cosets-and-fixed-vectors)
 - [Monoid cochains and Noetherian cohomology](#monoid-cochains-and-noetherian-cohomology)
 - [Coefficient sums and pushouts](#coefficient-sums-and-pushouts)
@@ -264,6 +265,30 @@ finite gcd-one image criteria. See the
   [indiscrete, nondiscrete quotient of index three](../GroupTheoryTest/Topology/QuotientGroup.lean)
   of the original product `ℕ → ZMod 3`. More generally, an open continuous surjection
   has an indiscrete target exactly when all its fibers are dense.
+
+## Finite orbits of integral elements
+
+For `R : Type u`, `A : Type v` and `M : Type w` in independent universes,
+assume `[CommRing R] [CommRing A] [IsDomain A] [Algebra R A]`,
+`[Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]`.
+For any `x : A` and `hx : IsIntegral R x`,
+[`IsIntegral.finite_orbit`](../GroupTheory/GroupAction/Integral.lean) gives
+`(MulAction.orbit M x).Finite`.
+
+The action is by semiring endomorphisms of `A`. Commuting with the
+`R`-scalar action makes each endomorphism fix every `algebraMap R A r`,
+using preservation of one; no action on `R` is supplied. A monic polynomial
+witnessing integrality of `x` has every orbit point in its root set in `A`,
+and that root set is finite. The argument reuses Mathlib's `IsIntegral`,
+`Polynomial.Monic.mem_rootSet`, `Polynomial.smul_mem_rootSet` and
+`Polynomial.rootSet_finite`; see the [credits](../CREDITS.md).
+
+Only the chosen element is assumed integral. The coefficient ring `R`
+need not be a field or domain, its scalar map need not be injective, and
+the action need not be faithful. Neither group structure nor finiteness of
+`M` is required. This is finiteness of the orbit set, not of `M` or `A`.
+See the [usage guide](Usage.md#finite-orbits-of-integral-elements) for the
+import and theorem call.
 
 ## Actions, cosets and fixed vectors
 
