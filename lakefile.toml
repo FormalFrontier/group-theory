@@ -26,6 +26,7 @@ roots = [
   "GroupTheory.FiniteIndex",
   "GroupTheory.Category.Grp.Exact",
   "GroupTheory.Topology.LocallyConstant",
+  "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
   "GroupTheory.Topology.Algebra.Group.Subsemigroup",
