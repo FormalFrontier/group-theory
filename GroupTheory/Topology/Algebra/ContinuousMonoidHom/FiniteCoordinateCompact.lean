@@ -9,6 +9,7 @@ public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UnitsNeighborh
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateNeighborhood
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Compact
 import GroupTheory.Topology.Pi.FiniteDeviations
+import GroupTheory.Topology.ValueSubgroups
 import Mathlib.Topology.CompactOpen
 
 /-!
@@ -129,25 +130,19 @@ theorem exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_subgroup_
       push Not at hall
       let L : Subgroup (∀ i, G i) :=
         Subgroup.pi (s : Set ι) (fun i => (⊥ : Subgroup (G i)))
-      have hmap : L.map f.toMonoidHom.toHomUnits = ⊥ := by
-        apply hsub
-        intro z hz
-        rcases hz with ⟨a, ha, rfl⟩
-        change f a ∈ V
-        exact hall a (by
-          intro i hi
-          exact ha i hi)
+      have hone : ∀ a ∈ L, f a = 1 :=
+        (f.toMonoidHom.mapsTo_iff_eq_one_of_subgroup_values L V h1 hsub).1 (by
+          intro a ha
+          exact hall a (by
+            intro i hi
+            exact ha i hi))
       apply hfail
       refine (f.eq_finiteCoordinateFactor_comp_restrict_iff_eq_one s).2 ?_
       intro a ha
       have haL : a ∈ L := by
         intro i hi
         exact ha i hi
-      have hamap : f.toMonoidHom.toHomUnits a ∈ L.map f.toMonoidHom.toHomUnits :=
-        ⟨a, haL, rfl⟩
-      rw [hmap] at hamap
-      have haunit : f.toMonoidHom.toHomUnits a = 1 := hamap
-      exact congrArg (fun z : Dˣ => (z : D)) haunit
+      exact hone a haL
     obtain ⟨y, hy, hnot⟩ := hy
     obtain ⟨t, ht⟩ :=
       f.exists_eq_finiteCoordinateFactor_comp_restrict_of_subgroup_values V hV h1 hsub
