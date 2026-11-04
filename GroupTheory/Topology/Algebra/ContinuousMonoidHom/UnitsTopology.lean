@@ -6,7 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Units
-import Mathlib.Topology.CompactOpen
+public import GroupTheory.Topology.ContinuousMap.Inseparable
 
 /-!
 # Unit valuation on spaces of continuous monoid homomorphisms
@@ -19,6 +19,10 @@ No compatibility of the target topology with multiplication is needed.
 For a group with continuous inversion, valuation postcomposition is the two-sided
 inverse of `ContinuousMonoidHom.toHomUnits`. Consequently the latter map is open.
 This does not assert continuity of the unit-lifting map.
+
+Fixed algebraic unit evaluations also give R₁ separation of the homomorphism
+space whenever the canonical units are R₁. No continuity of the source group
+operations or of multiplication on the target is needed for this criterion.
 -/
 
 @[expose] public section
@@ -107,5 +111,101 @@ theorem isOpenMap_toHomUnits :
   exact hs.preimage continuous_compUnitsVal
 
 end UnitLifting
+
+end ContinuousMonoidHom
+
+namespace ContinuousMonoidHom
+
+open Filter Topology
+
+section Separation
+
+variable {G : Type u} {D : Type v}
+  [Group G] [TopologicalSpace G] [Monoid D] [TopologicalSpace D]
+
+/-- Evaluation of the algebraic unit lift at a fixed source element is continuous. -/
+theorem continuous_unitEval (g : G) :
+    Continuous (fun f : G →ₜ* D => f.toMonoidHom.toHomUnits g) := by
+  have hforget : Continuous
+      (toContinuousMap : (G →ₜ* D) → C(G, D)) := continuous_induced_dom
+  have heval (a : G) : Continuous (fun f : G →ₜ* D => f a) :=
+    (continuous_eval_const a : Continuous (fun f : C(G, D) => f a)).comp hforget
+  refine Units.continuous_iff.2 ⟨?_, ?_⟩
+  · simpa only [Function.comp_def, MonoidHom.coe_toHomUnits,
+      ContinuousMonoidHom.coe_toMonoidHom, MonoidHom.coe_coe] using heval g
+  · have hinv :
+        (fun f : G →ₜ* D => (↑((f.toMonoidHom.toHomUnits g)⁻¹) : D)) =
+      (fun f : G →ₜ* D => f (g⁻¹)) := by
+      funext f
+      calc
+        (↑((f.toMonoidHom.toHomUnits g)⁻¹) : D) =
+            (↑(f.toMonoidHom.toHomUnits (g⁻¹)) : D) :=
+          congrArg (fun z : Dˣ => (z : D))
+            (map_inv f.toMonoidHom.toHomUnits g).symm
+        _ = f (g⁻¹) := by
+          simp only [MonoidHom.coe_toHomUnits,
+            ContinuousMonoidHom.coe_toMonoidHom, MonoidHom.coe_coe]
+    rw [hinv]
+    exact heval (g⁻¹)
+
+/-- Two continuous monoid homomorphisms are inseparable exactly when all their
+algebraic unit evaluations are inseparable. -/
+theorem inseparable_iff_forall_unitEval {f h : G →ₜ* D} :
+    Inseparable f h ↔ ∀ g : G,
+      Inseparable (f.toMonoidHom.toHomUnits g) (h.toMonoidHom.toHomUnits g) := by
+  constructor
+  · intro hfh g
+    exact hfh.map (continuous_unitEval g)
+  · intro hfh
+    have hforget : Topology.IsInducing
+        (toContinuousMap : (G →ₜ* D) → C(G, D)) := ⟨rfl⟩
+    apply hforget.inseparable_iff.1
+    apply ContinuousMap.inseparable_iff_forall_eval.2
+    intro g
+    simpa only [MonoidHom.coe_toHomUnits,
+      ContinuousMonoidHom.coe_toMonoidHom, MonoidHom.coe_coe,
+      ContinuousMonoidHom.coe_toContinuousMap, ContinuousMap.coe_coe] using
+      (hfh g).map Units.continuous_val
+
+/-- R₁ separation of canonical units implies R₁ separation of the compact-open
+space of continuous monoid homomorphisms from a group with an arbitrary topology. -/
+instance instR1SpaceOfUnits [R1Space Dˣ] : R1Space (G →ₜ* D) := by
+  classical
+  refine r1Space_iff_inseparable_or_disjoint_nhds.2 ?_
+  intro f h
+  by_cases hfh : Inseparable f h
+  · exact Or.inl hfh
+  · right
+    have hex : ∃ g : G, ¬ Inseparable
+        (f.toMonoidHom.toHomUnits g) (h.toMonoidHom.toHomUnits g) := by
+      by_contra hn
+      apply hfh
+      apply inseparable_iff_forall_unitEval.2
+      intro g
+      by_contra hg
+      exact hn ⟨g, hg⟩
+    rcases hex with ⟨g, hg⟩
+    have hd : Disjoint (nhds (f.toMonoidHom.toHomUnits g))
+        (nhds (h.toMonoidHom.toHomUnits g)) := by
+      rcases (r1Space_iff_inseparable_or_disjoint_nhds.1
+          (inferInstance : R1Space Dˣ))
+          (f.toMonoidHom.toHomUnits g) (h.toMonoidHom.toHomUnits g) with hi | hd
+      · exact (hg hi).elim
+      · exact hd
+    have hmap : Disjoint
+        (Filter.map (fun k : G →ₜ* D => k.toMonoidHom.toHomUnits g) (nhds f))
+        (Filter.map (fun k : G →ₜ* D => k.toMonoidHom.toHomUnits g) (nhds h)) :=
+      hd.mono (continuous_unitEval g).continuousAt
+        (continuous_unitEval g).continuousAt
+    exact Filter.disjoint_of_map hmap
+
+/-- Continuous multiplication on the target suffices for R₁ separation, without
+closedness of its identity and without continuity assumptions on source operations. -/
+theorem r1Space_of_continuousMul [ContinuousMul D] : R1Space (G →ₜ* D) := by
+  let _ : IsTopologicalGroup Dˣ := inferInstance
+  let _ : R1Space Dˣ := inferInstance
+  exact instR1SpaceOfUnits
+
+end Separation
 
 end ContinuousMonoidHom
