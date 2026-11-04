@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 
 module
+public import GroupTheory.Topology.Algebra.MonoidHom.OpenMap
 public import GroupTheory.Topology.Algebra.Group.SubgroupFamily
 
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.UnitsFiniteCoordinateSupport

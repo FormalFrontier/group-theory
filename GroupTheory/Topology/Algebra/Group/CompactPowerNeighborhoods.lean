@@ -8,7 +8,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Compactness.Compact
-import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
 
 /-!
 # Integer-power control and identity-neighborhood bases
@@ -108,3 +108,19 @@ theorem IsCompact.hasAntitoneBasis_nhds_one_zpow_mem
       exact Filter.mem_of_superset (hW N) hNU
   · intro N M hNM x hx n hn
     exact hx n (le_trans hn (Nat.add_le_add_right hNM 1))
+
+/-- A weakly locally compact topological group with no small subgroups is first countable. -/
+instance (priority := 100) NoSmallSubgroups.firstCountableTopology
+    {G : Type u} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+    [WeaklyLocallyCompactSpace G] [NoSmallSubgroups G] : FirstCountableTopology G := by
+  obtain ⟨K, hK_nhds, hK, _, hK_subgroup⟩ :=
+    (noSmallSubgroups_iff_exists_isCompact_isClosed_nhds_one (G := G)).mp
+      ‹NoSmallSubgroups G›
+  let : (𝓝 (1 : G)).IsCountablyGenerated :=
+    (hK.hasAntitoneBasis_nhds_one_zpow_mem hK_nhds hK_subgroup).toHasBasis.isCountablyGenerated
+  refine ⟨fun g => ?_⟩
+  have hmap : Filter.map (Homeomorph.mulLeft g) (𝓝 (1 : G)) = 𝓝 g := by
+    simpa only [Homeomorph.coe_mulLeft, mul_one] using
+      (Homeomorph.mulLeft g).map_nhds_eq (1 : G)
+  rw [← hmap]
+  infer_instance
