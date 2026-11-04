@@ -35,6 +35,7 @@ roots = [
   "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
+  "GroupTheory.Topology.Algebra.Group.Pi",
   "GroupTheory.Topology.Algebra.Group.Subsemigroup",
   "GroupTheory.Topology.Algebra.Group.NoSmallSubgroups",
   "GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.TotallyDisconnected",
