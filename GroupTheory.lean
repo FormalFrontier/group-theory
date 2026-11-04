@@ -145,6 +145,7 @@ public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateS
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinates
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateClosed
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateNeighborhood
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateCompact
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Precomposition
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.ProductDecomposition
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.EquicontinuousFiniteCoordinates
