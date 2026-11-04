@@ -8,6 +8,7 @@ module
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UnitsNeighborhood
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.FiniteCoordinateNeighborhood
 public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.Compact
+public import GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactFamilies
 import GroupTheory.Topology.Pi.FiniteDeviations
 import GroupTheory.Topology.ValueSubgroups
 import Mathlib.Topology.CompactOpen
@@ -311,5 +312,69 @@ theorem exists_mem_nhds_mapsTo_of_isCompact_of_noSmallSubgroups_units
   change f x ∈ W
   rw [congrFun (hs f hf) x]
   exact hxW
+
+end ContinuousMonoidHom
+
+namespace ContinuousMonoidHom
+
+variable {ι : Type u} {G : ι → Type v} {D : Type w}
+  [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
+  [∀ i, IsTopologicalGroup (G i)] [∀ i, LocallyCompactSpace (G i)]
+  [Group D] [TopologicalSpace D] [IsTopologicalGroup D]
+
+/-- A family of continuous homomorphisms from a product of locally compact groups
+into a topological group with no small subgroups is compact if and only if it is
+closed, has common identity-neighborhood control, and has relatively compact
+values at every point. Only the individual source factors, not their product,
+are required to be locally compact. -/
+theorem isCompact_iff_of_noSmallSubgroups [NoSmallSubgroups D]
+  (K : Set ((∀ i, G i) →ₜ* D)) :
+  IsCompact K ↔ IsClosed K ∧
+    (∀ W : Set D, W ∈ 𝓝 (1 : D) →
+      ∃ U : Set (∀ i, G i), U ∈ 𝓝 (1 : ∀ i, G i) ∧
+        ∀ f ∈ K, Set.MapsTo (f : (∀ i, G i) → D) U W) ∧
+    ∀ x : (∀ i, G i), IsCompact (closure
+      ((fun f : ((∀ i, G i) →ₜ* D) => f x) '' K)) := by
+  let _ : T2Space D := inferInstance
+  constructor
+  · intro hK
+    have hunits : NoSmallSubgroups Dˣ :=
+      NoSmallSubgroups.of_injective (Units.coeHom D)
+        Units.continuous_val.continuousAt (fun _ _ h => Units.ext h)
+    let _ : NoSmallSubgroups Dˣ := hunits
+    refine ⟨hK.isClosed, ?_, ?_⟩
+    · intro W hW
+      exact exists_mem_nhds_mapsTo_of_isCompact_of_noSmallSubgroups_units K hK W hW
+    · intro x
+      let _ : UniformSpace D := IsTopologicalGroup.leftUniformSpace (G := D)
+      let 𝔖 : Set (Set (∀ i, G i)) := {s | IsCompact s}
+      have heval : Continuous
+          (fun g : UniformOnFun (∀ i, G i) D 𝔖 => UniformOnFun.toFun 𝔖 g x) := by
+        exact (UniformOnFun.uniformContinuous_eval_of_mem
+          (β := D) (𝔖 := 𝔖) (s := {x}) (x := x) (by simp) isCompact_singleton).continuous
+      have hevalHom : Continuous (fun f : ((∀ i, G i) →ₜ* D) => f x) :=
+        heval.comp
+          (isInducing_toUniformOnFunIsCompact (M := ∀ i, G i) (D := D)).continuous
+      have himage : IsCompact ((fun f : ((∀ i, G i) →ₜ* D) => f x) '' K) :=
+        hK.image hevalHom
+      rw [himage.isClosed.closure_eq]
+      exact himage
+  · rintro ⟨hclosed, hcontrol, hpoint⟩
+    apply isCompact_of_isClosed_of_leftEquicontinuous K hclosed
+    · intro x W hW
+      obtain ⟨U, hU, hmaps⟩ := hcontrol W hW
+      have htranslate : Continuous (fun y : (∀ i, G i) => x⁻¹ * y) :=
+        continuous_const.mul continuous_id
+      have hpre : (fun y : (∀ i, G i) => x⁻¹ * y) ⁻¹' U ∈ 𝓝 x := by
+        apply htranslate.continuousAt.preimage_mem_nhds
+        simpa only [inv_mul_cancel] using hU
+      refine ⟨(fun y : (∀ i, G i) => x⁻¹ * y) ⁻¹' U, hpre, ?_⟩
+      intro f hf y hy
+      have hvalue : f (x⁻¹ * y) ∈ W := hmaps f hf hy
+      simpa only [map_mul, map_inv] using hvalue
+    · intro x
+      refine ⟨closure ((fun f : ((∀ i, G i) →ₜ* D) => f x) '' K), hpoint x, ?_⟩
+      intro f hf
+      exact subset_closure ⟨f, hf, rfl⟩
 
 end ContinuousMonoidHom
