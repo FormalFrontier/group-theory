@@ -27,6 +27,7 @@ roots = [
   "GroupTheory.Category.Grp.Exact",
   "GroupTheory.Topology.LocallyConstant",
   "GroupTheory.Topology.Pi.FiniteDeviations",
+  "GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UnitsNeighborhood",
   "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
