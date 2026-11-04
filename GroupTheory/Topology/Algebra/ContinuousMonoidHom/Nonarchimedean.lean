@@ -119,25 +119,9 @@ into a group with no small subgroups is locally constant. The target topology
 need not make its operations continuous. -/
 theorem isLocallyConstant_of_noSmallSubgroups (f : G →ₜ* D) :
     IsLocallyConstant (f : G → D) := by
-  have hunits : NoSmallSubgroups Dˣ := by
-    apply Units.noSmallSubgroups_iff_exists_open_subgroup_eq_bot.mpr
-    rcases ‹NoSmallSubgroups D› with ⟨hD⟩
-    obtain ⟨U, hU, hsmall⟩ := hD
-    obtain ⟨V, hVU, hVo, hVone⟩ := mem_nhds_iff.mp hU
-    refine ⟨V, ?_, ?_, ?_⟩
-    · assumption
-    · assumption
-    · intro H hH
-      have himage : H.map (Units.coeHom D) = ⊥ := by
-        apply hsmall (H.map (Units.coeHom D))
-        rintro d ⟨u, hu, rfl⟩
-        exact hVU (hH u hu)
-      apply le_antisymm ?_ bot_le
-      intro u hu
-      apply Subgroup.mem_bot.mpr
-      apply Units.ext
-      have hval : (u : D) ∈ H.map (Units.coeHom D) := ⟨u, hu, rfl⟩
-      simpa [himage] using hval
+  have hunits : NoSmallSubgroups Dˣ :=
+    NoSmallSubgroups.of_injective (Units.coeHom D)
+      Units.continuous_val.continuousAt (fun _ _ h => Units.ext h)
   let _ : NoSmallSubgroups Dˣ := hunits
   exact f.isLocallyConstant_of_noSmallSubgroups_units
 
