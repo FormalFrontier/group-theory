@@ -23,6 +23,10 @@ No compatibility between multiplication and the given topologies is assumed.
 The same conclusion holds when the target's canonical group of units has no small
 subgroups.
 
+If each source factor is locally compact, these compact families also have
+common identity-neighborhood control. Evaluation is used only on the common
+finite stage, and its neighborhood is pulled back by the original restriction.
+
 The proof constructs a sequence of finite-coordinate extensions of tail
 points. Every coordinate is eventually the identity, and each fixed
 homomorphism is eventually exactly the identity on this sequence. Compact shifted
@@ -231,5 +235,81 @@ theorem exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_noSmallSu
       (inferInstance : NoSmallSubgroups Dˣ)
   exact exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_subgroup_values
     K hK V hV h1 hsub
+
+end ContinuousMonoidHom
+
+namespace ContinuousMonoidHom
+
+variable {ι : Type u} {G : ι → Type v} {D : Type w}
+    [∀ i, Group (G i)] [∀ i, TopologicalSpace (G i)]
+    [∀ i, LocallyCompactSpace (G i)] [Monoid D] [TopologicalSpace D]
+
+/-- If each source factor is locally compact and the target's canonical units
+have no small subgroups, a compact family of continuous homomorphisms has one
+common source identity neighborhood for every target identity neighborhood.
+Only the finite-coordinate stage is required to be locally compact; all maps
+and topologies are the original ones. -/
+theorem exists_mem_nhds_mapsTo_of_isCompact_of_noSmallSubgroups_units
+    [NoSmallSubgroups Dˣ]
+    (K : Set ((∀ i, G i) →ₜ* D)) (hK : IsCompact K)
+    (W : Set D) (hW : W ∈ 𝓝 (1 : D)) :
+    ∃ U : Set (∀ i, G i), U ∈ 𝓝 (1 : ∀ i, G i) ∧
+      ∀ f ∈ K, Set.MapsTo (f : (∀ i, G i) → D) U W := by
+  classical
+  obtain ⟨s, hs⟩ :=
+    exists_eq_finiteCoordinateFactor_comp_restrict_of_isCompact_of_noSmallSubgroups_units K hK
+  let A := ∀ i : {i // i ∈ s}, G i
+  let e : A →ₜ* (∀ i, G i) :=
+    (ContinuousMonoidHom.id (∀ i, G i)).finiteCoordinateFactor s
+  let R : ((∀ i, G i) →ₜ* D) → C(A, D) := fun f => (f.comp e).toContinuousMap
+  have hprecomp : Continuous (fun f : (∀ i, G i) →ₜ* D => f.comp e) := by
+    exact continuous_comp_left e
+  have hprojection : Continuous (fun f : A →ₜ* D => f.toContinuousMap) :=
+    continuous_induced_dom
+  have hR : Continuous R := hprojection.comp hprecomp
+  let L : Set C(A, D) := R '' K
+  have hL : IsCompact L := hK.image hR
+  have hLone (g : C(A, D)) (hg : g ∈ L) : g 1 = 1 := by
+    rcases hg with ⟨f, _, rfl⟩
+    exact map_one (f.comp e)
+  have heval : Continuous (fun p : C(A, D) × A => p.1 p.2) := continuous_eval
+  -- Compactness of the parameter family turns evaluation rectangles into one tube.
+  have hrect (g : L) :
+      ∃ O : Set C(A, D), IsOpen O ∧ (g : C(A, D)) ∈ O ∧
+        ∃ V : Set A, V ∈ 𝓝 (1 : A) ∧
+          ∀ q ∈ O, ∀ x ∈ V, q x ∈ W := by
+    have hWg : W ∈ 𝓝 ((g : C(A, D)) 1) := by
+      simpa only [hLone _ g.property] using hW
+    have hpre : (fun p : C(A, D) × A => p.1 p.2) ⁻¹' W ∈
+        𝓝 ((g : C(A, D)), (1 : A)) :=
+      heval.continuousAt.preimage_mem_nhds hWg
+    rw [nhds_prod_eq] at hpre
+    obtain ⟨P, hP, V, hV, hPV⟩ := Filter.mem_prod_iff.mp hpre
+    obtain ⟨O, hOP, hO, hgO⟩ := mem_nhds_iff.mp hP
+    refine ⟨O, hO, hgO, V, hV, ?_⟩
+    intro q hq x hx
+    exact hPV (show (q, x) ∈ P ×ˢ V from ⟨hOP hq, hx⟩)
+  choose O hO hmem V hV hOV using hrect
+  have hcover : L ⊆ ⋃ g : L, O g := by
+    intro g hg
+    exact Set.mem_iUnion.2 ⟨⟨g, hg⟩, hmem ⟨g, hg⟩⟩
+  have hU (t : Finset L) : (⋂ g ∈ t, V g) ∈ 𝓝 (1 : A) := by
+    induction t using Finset.induction_on with
+    | empty => simp
+    | @insert g t hg ih => simpa using inter_mem (hV g) ih
+  obtain ⟨t, ht⟩ := hL.elim_finite_subcover O hO hcover
+  let r : (∀ i, G i) → A := fun x i => x i
+  have hr : Continuous r := continuous_pi fun i => continuous_apply (i : ι)
+  refine ⟨r ⁻¹' (⋂ g ∈ t, V g), hr.continuousAt.preimage_mem_nhds (hU t), ?_⟩
+  intro f hf x hx
+  have hRf : R f ∈ L := ⟨f, hf, rfl⟩
+  rcases Set.mem_iUnion.1 (ht hRf) with ⟨g, hg⟩
+  rcases Set.mem_iUnion.1 hg with ⟨hgt, hfg⟩
+  have hxV : r x ∈ V g := Set.mem_iInter.1 (Set.mem_iInter.1 hx g) hgt
+  have hxW := hOV g (R f) hfg (r x) hxV
+  change f.finiteCoordinateFactor s (r x) ∈ W at hxW
+  change f x ∈ W
+  rw [congrFun (hs f hf) x]
+  exact hxW
 
 end ContinuousMonoidHom
