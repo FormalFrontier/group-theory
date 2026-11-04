@@ -32,6 +32,7 @@ roots = [
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.Nonarchimedean",
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactFiniteStage",
   "GroupTheory.Topology.Algebra.MonoidHom.CompactBounds",
+  "GroupTheory.Topology.Algebra.MonoidHom.CompactPowerControl",
   "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
