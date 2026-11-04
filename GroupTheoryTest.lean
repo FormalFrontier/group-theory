@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 
 module
+public import GroupTheoryTest.SubgroupFamily
 
 import GroupTheoryTest.CocycleAveraging
 import GroupTheoryTest.Category.Grp.Colimits
