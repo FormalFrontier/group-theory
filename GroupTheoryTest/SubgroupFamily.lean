@@ -7,6 +7,7 @@ module
 
 import GroupTheory.Topology.Algebra.Group.SubgroupFamily
 import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.UniformSpace.Basic
 
@@ -95,3 +96,79 @@ private theorem zero_subgroup_discrete :
   · rw [hn]
     exact Filter.mem_principal_self _
   · simp
+
+/-- For the zero-subgroup family on the original integer module, fixed-scalar
+continuity upgrades on the saved right uniform space and supplies the stock
+completion module. Its scalar action computes on the original image, which
+separates `2` from `1`. The diagonal uniformity comes from the preceding control,
+not from the discrete topology alone. -/
+private theorem zero_subgroup_completion_smul :
+    let r : Ring ℤ := inferInstance
+    let s : Semiring ℤ := r.toSemiring
+    let g : AddCommGroup ℤ := inferInstance
+    let m : @Module ℤ ℤ s g.toAddCommMonoid := inferInstance
+    let d : @DistribSMul ℤ ℤ g.toAddGroup.toAddMonoid.toAddZeroClass :=
+      @DistribMulAction.toDistribSMul ℤ ℤ s.toMonoid g.toAddCommMonoid.toAddMonoid
+        m.toDistribMulAction
+    let H : Unit → @AddSubgroup ℤ g.toAddGroup := fun _ => ⊥
+    let B : @AddGroupFilterBasis ℤ g.toAddGroup := @AddSubgroup.familyBasis ℤ Unit g H
+    let u : UniformSpace ℤ :=
+      @IsTopologicalAddGroup.rightUniformSpace ℤ g.toAddGroup B.topology
+        (@AddGroupFilterBasis.isTopologicalAddGroup ℤ g.toAddGroup B)
+    u.uniformity = 𝓟 (SetRel.id : Set (ℤ × ℤ)) ∧
+      ∃ hU : @IsUniformAddGroup ℤ u g.toAddGroup,
+        ∃ hC : @UniformContinuousConstSMul ℤ ℤ u d.toSMulZeroClass.toSMul,
+          let mC : @Module ℤ (@UniformSpace.Completion ℤ u) s
+              (@UniformSpace.Completion.instAddCommGroup ℤ u g hU).toAddCommMonoid :=
+            @UniformSpace.Completion.instModule (α := ℤ) (R := ℤ) u g hU s m hC
+          mC.toDistribMulAction.toMulAction.toSMul =
+            (inferInstance : SMul ℤ (@UniformSpace.Completion ℤ u)) ∧
+          @SMul.smul ℤ (@UniformSpace.Completion ℤ u) mC.toDistribMulAction.toMulAction.toSMul
+              2 (@UniformSpace.Completion.coe' ℤ u 1) =
+            @UniformSpace.Completion.coe' ℤ u 2 ∧
+          @UniformSpace.Completion.coe' ℤ u 2 ≠ @UniformSpace.Completion.coe' ℤ u 1 := by
+  intro r s g m d H B u
+  rcases zero_subgroup_discrete with ⟨_, _, _, _, _, _, _, _, hu, ht, _, _⟩
+  have hUniformity : u.uniformity = 𝓟 (SetRel.id : Set (ℤ × ℤ)) := hu
+  have hTopology : B.topology = ⊥ := ht
+  have hTop : @IsTopologicalAddGroup ℤ B.topology g.toAddGroup :=
+    @AddGroupFilterBasis.isTopologicalAddGroup ℤ g.toAddGroup B
+  have hU : @IsUniformAddGroup ℤ u g.toAddGroup :=
+    @isUniformAddGroup_of_addCommGroup ℤ g B.topology hTop
+  have hH : ∀ (a : ℤ) (i : Unit) (x : ℤ), x ∈ H i → a • x ∈ H i := by
+    intro a i x hx
+    have hx0 : x = 0 := AddSubgroup.mem_bot.mp hx
+    simpa only [hx0, smul_zero] using (H i).zero_mem
+  have hCont : @ContinuousConstSMul ℤ ℤ B.topology d.toSMulZeroClass.toSMul :=
+    @AddSubgroup.familyBasis_continuousConstSMul ℤ Unit g ℤ d H hH
+  have hC : @UniformContinuousConstSMul ℤ ℤ u d.toSMulZeroClass.toSMul :=
+    @uniformContinuousConstSMul_of_continuousConstSMul ℤ ℤ g.toAddGroup d u hU hCont
+  have : @IsUniformAddGroup ℤ u g.toAddGroup := hU
+  have : @UniformContinuousConstSMul ℤ ℤ u d.toSMulZeroClass.toSMul := hC
+  have hT0 : @T0Space ℤ u.toTopologicalSpace := by
+    change @T0Space ℤ B.topology
+    rw [hTopology]
+    infer_instance
+  refine ⟨hUniformity, hU, hC, ?_⟩
+  intro mC
+  refine ⟨rfl, ?_, ?_⟩
+  · have hOne :=
+      @MulAction.one_smul ℤ (@UniformSpace.Completion ℤ u) s.toMonoid
+        mC.toDistribMulAction.toMulAction (@UniformSpace.Completion.coe' ℤ u 1)
+    calc
+      _ = @SMul.smul ℤ (@UniformSpace.Completion ℤ u)
+            mC.toDistribMulAction.toMulAction.toSMul 1
+            (@UniformSpace.Completion.coe' ℤ u 1) +
+          @SMul.smul ℤ (@UniformSpace.Completion ℤ u)
+            mC.toDistribMulAction.toMulAction.toSMul 1
+            (@UniformSpace.Completion.coe' ℤ u 1) :=
+        @Module.add_smul ℤ (@UniformSpace.Completion ℤ u) s
+          (@UniformSpace.Completion.instAddCommGroup ℤ u g hU).toAddCommMonoid
+          mC 1 1 (@UniformSpace.Completion.coe' ℤ u 1)
+      _ = @UniformSpace.Completion.coe' ℤ u 1 +
+          @UniformSpace.Completion.coe' ℤ u 1 :=
+        congrArg (fun z : @UniformSpace.Completion ℤ u => z + z) hOne
+      _ = @UniformSpace.Completion.coe' ℤ u 2 :=
+        (@UniformSpace.Completion.coe_add ℤ u g.toAddGroup hU 1 1).symm
+  · intro hEq
+    exact (by decide : (2 : ℤ) ≠ 1) (@UniformSpace.Completion.coe_injective ℤ u hT0 2 1 hEq)
