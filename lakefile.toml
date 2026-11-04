@@ -29,6 +29,7 @@ roots = [
   "GroupTheory.Topology.Pi.FiniteDeviations",
   "GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.UnitsNeighborhood",
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.Nonarchimedean",
+  "GroupTheory.Topology.Algebra.MonoidHom.CompactBounds",
   "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
