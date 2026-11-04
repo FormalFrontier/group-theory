@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Topology.Algebra.Constructions
 
 /-!
@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.Constructions
 When a group's topology is induced by its value and inverse-value coordinates, an open
 neighbourhood of the identity's value can control subgroups uniformly. The units specialization
 uses the canonical units topology of a monoid equipped with an arbitrary topology.
+
+For a homomorphism from a group, `MonoidHom.mapsTo_iff_eq_one_of_subgroup_values`
+characterizes when a subgroup has all its values in a set controlling unit subgroups.
 -/
 
 @[expose] public section
@@ -44,3 +47,21 @@ theorem Units.exists_isOpen_val_subgroup_subset
     (Topology.IsInducing.exists_isOpen_value_subgroup_subset
       (f := fun x : Dˣ => (x : D))
       (Units.isInducing_embedProduct (M := D)) hW)
+
+/-- If all unit subgroups valued in `V` are trivial, mapping into `V` means being killed. -/
+public theorem MonoidHom.mapsTo_iff_eq_one_of_subgroup_values
+    {G : Type*} {D : Type*} [Group G] [Monoid D] (f : G →* D)
+    (H : Subgroup G) (V : Set D) (h1 : 1 ∈ V)
+    (hV : ∀ K : Subgroup Dˣ, Set.MapsTo Units.val K V → K = ⊥) :
+    Set.MapsTo f H V ↔ ∀ x ∈ H, f x = 1 := by
+  constructor
+  · intro hf x hx
+    let K := H.map f.toHomUnits
+    have hK : K = ⊥ := hV K (by
+      rintro u ⟨y, hy, rfl⟩
+      exact hf hy)
+    have hxK : f.toHomUnits x ∈ K := ⟨x, hx, rfl⟩
+    rw [hK] at hxK
+    exact congrArg Units.val hxK
+  · intro hf x hx
+    simpa only [hf x hx] using h1
