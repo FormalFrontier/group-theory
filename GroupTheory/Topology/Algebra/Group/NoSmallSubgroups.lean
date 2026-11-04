@@ -309,6 +309,26 @@ instance (priority := 100) NoSmallSubgroups.t2Space [NoSmallSubgroups G] : T2Spa
   let : RegularSpace G := regularSpace_of_topologicalGroup
   infer_instance
 
+/-- A weakly locally compact topological group has no small subgroups if and only if
+it has a compact closed identity-neighborhood containing no nontrivial subgroup. -/
+theorem noSmallSubgroups_iff_exists_isCompact_isClosed_nhds_one
+    [WeaklyLocallyCompactSpace G] :
+    NoSmallSubgroups G ↔
+      ∃ K ∈ 𝓝 (1 : G), IsCompact K ∧ IsClosed K ∧
+        ∀ H : Subgroup G, (H : Set G) ⊆ K → H = ⊥ := by
+  constructor
+  · intro h
+    let : NoSmallSubgroups G := h
+    obtain ⟨C, hCcompact, hC⟩ := exists_compact_mem_nhds (1 : G)
+    obtain ⟨W, hW, hWclosed, hWfree⟩ :=
+      NoSmallSubgroups.exists_isClosed_nhds_one (G := G)
+    refine ⟨C ∩ W, inter_mem hC hW, hCcompact.inter_right hWclosed,
+      hCcompact.isClosed.inter hWclosed, ?_⟩
+    intro H hH
+    exact hWfree H (fun x hx => (hH hx).2)
+  · rintro ⟨K, hK, _, _, hKfree⟩
+    exact noSmallSubgroups_iff.mpr ⟨K, hK, hKfree⟩
+
 end IsTopologicalGroup
 
 variable [ContinuousInv G]
