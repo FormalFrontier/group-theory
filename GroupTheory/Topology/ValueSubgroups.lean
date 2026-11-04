@@ -22,7 +22,7 @@ characterizes when a subgroup has all its values in a set controlling unit subgr
 
 open MulOpposite
 
-universe u v
+universe u v w
 
 /-- Open value neighbourhoods control subgroups. -/
 theorem Topology.IsInducing.exists_isOpen_value_subgroup_subset
@@ -65,3 +65,13 @@ public theorem MonoidHom.mapsTo_iff_eq_one_of_subgroup_values
     exact congrArg Units.val hxK
   · intro hf x hx
     simpa only [hf x hx] using h1
+
+/-- A homomorphism maps a subgroup into a set containing one and controlling unit subgroups
+if and only if it is trivial on that subgroup. -/
+theorem mapsTo_iff_eq_one_of_subgroup_values {G : Type u} {D : Type v} {F : Type w}
+    [Group G] [Monoid D] [FunLike F G D] [MonoidHomClass F G D] (f : F)
+    (H : Subgroup G) (V : Set D) (h1 : 1 ∈ V)
+    (hV : ∀ K : Subgroup Dˣ, Set.MapsTo Units.val K V → K = ⊥) :
+    Set.MapsTo f H V ↔ ∀ x ∈ H, f x = 1 := by
+  exact MonoidHom.mapsTo_iff_eq_one_of_subgroup_values
+    (MonoidHomClass.toMonoidHom f) H V h1 hV
