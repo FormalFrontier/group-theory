@@ -22,6 +22,9 @@ public import GroupTheory.Algebra.Group.Subgroup.Power
 public import GroupTheory.Algebra.GroupWithZero.Pi
 public import GroupTheory.Algebra.GroupWithZero.Reduced
 public import GroupTheory.Algebra.Order.MulHom
+public import GroupTheory.Character.Extension
+public import GroupTheory.Character.Cyclic
+public import GroupTheory.Character.Separation
 public import GroupTheory.Algebra.Order.Ring.MulHom
 public import GroupTheory.Algebra.Order.Ring.Sign
 public import GroupTheory.Algebra.Order.Subsemigroup

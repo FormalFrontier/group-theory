@@ -11,6 +11,12 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+### Circle-valued characters
+
+Every abelian group has enough homomorphisms into the standard complex unit circle to separate distinct elements. A circle-valued homomorphism on any subgroup extends to the whole group. For a group with its given discrete topology, the same algebraic characters are continuous, and evaluation into the product indexed by all continuous circle characters is injective. This is a separation result, not surjectivity or a topological embedding into the compact-open bidual.
+
+See [subgroup extension](GroupTheory/Character/Extension.lean), [cyclic characters](GroupTheory/Character/Cyclic.lean), and [separation and evaluation](GroupTheory/Character/Separation.lean).
+
 - **Compact homomorphism loci for unital magmas.** For a discrete unital magma
   `M` and a compact Hausdorff unital magma `D` with continuous multiplication,
   `ContinuousMap.isCompact_mulOneHomLocus` proves compactness of the full locus
