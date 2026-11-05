@@ -104,6 +104,7 @@ public import GroupTheory.Topology.Algebra.Group.PiDiscreteFactor
 public import GroupTheory.Topology.Algebra.Group.Cofinite
 public import GroupTheory.Topology.Algebra.Group.Commutator
 public import GroupTheory.Topology.Algebra.Group.Subgroup
+public import GroupTheory.Topology.Algebra.Group.KernelClosure
 public import GroupTheory.Topology.Algebra.Group.Subsemigroup
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.OpenMap
