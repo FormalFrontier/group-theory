@@ -114,6 +114,7 @@ public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.OpenMap
 public import GroupTheory.Topology.Algebra.Group.ConnectedComponent.Product
 public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups
+public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.BoundedExponent
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.Circle
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.NormedSpace
 public import GroupTheory.Topology.Algebra.Group.NoSmallSubgroups.OpenMap

@@ -86,6 +86,24 @@ local discreteness hypothesis. With compactness, the second turns the same
 assumption into finiteness, so neither a separate open-subgroup construction nor
 an extra separation assumption is needed at the point of use.
 
+## Uniformly bounded exponent
+
+[The bounded-exponent module](../GroupTheory/Topology/Algebra/Group/NoSmallSubgroups/BoundedExponent.lean)
+proves `NoSmallSubgroups.discreteTopology_of_pow_eq_one`. For a group with its given
+topology, continuous multiplication and NSS, a single natural number `n ≠ 0` with
+`g ^ n = 1` for every `g` forces discreteness. No continuity of inversion,
+separation, local compactness or commutativity is assumed.
+
+A neighborhood containing no nontrivial subgroup can be pulled back along the
+finitely many power maps with exponents below `n`. Each point in the resulting
+neighborhood generates a cyclic subgroup inside the original neighborhood, so it
+is the identity. Fixed translations then isolate every point. The exponent must
+be uniform: pointwise torsion alone does not give this conclusion.
+
+With `CompactSpace G`, `NoSmallSubgroups.finite_of_pow_eq_one` then gives `Finite G`
+by the compact-discrete finiteness theorem. Neither implication is a global
+instance, and the finiteness conclusion requires compactness.
+
 ## Credit
 
 The open-subgroup theorem is classical van Dantzig theory. The formalization
