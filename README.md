@@ -485,6 +485,14 @@ also links the explicit index-two generators and nilpotence reflection on additi
 
 ### Topology and abstract homomorphisms
 
+**Continuous endomorphisms of additive circles.** For every nonzero real `T`,
+`AddCircle.continuousAddMonoidHomEquivInt` is an additive equivalence from
+continuous additive endomorphisms of `AddCircle T`, with pointwise addition,
+to `ℤ`. Its inverse sends `n` to `n • id`, pointwise `x ↦ n • x`;
+equivalently, every such `F` satisfies `F x = n • x` for all `x`, for a
+unique integer `n`. See the
+[endomorphism module](GroupTheory/Topology/AddCircle/Endomorphisms.lean).
+
 **Compact subsemigroups and submonoids.** In a group with a given topology
 and continuous fixed left translations, a closed compact subsemigroup `S`
 satisfies `x ∈ S → x⁻¹ ∈ S`. Every element of a closed compact submonoid is
@@ -720,6 +728,7 @@ claim is implied by this guidance.
 | Closed self-embeddings with finitely many irreducible components | [`Topology.IsClosedEmbedding.surjective_of_finite_irreducibleComponents`](GroupTheory/Topology/ClosedEmbedding.lean) |
 | Fixed-action continuity and subgroup quotients | [`ConstMulAction`](GroupTheory/Topology/Algebra/ConstMulAction.lean), [`Quotient`](GroupTheory/Topology/Algebra/Group/Quotient.lean) |
 | Compact open subgroups, open kernels and circle characters | [`CompactOpenSubgroup`](GroupTheory/Topology/CompactOpenSubgroup.lean), [`OpenKernel`](GroupTheory/Topology/OpenKernel.lean), [`CircleCharacter`](GroupTheory/Topology/CircleCharacter.lean) |
+| Integer classification of continuous additive endomorphisms of `AddCircle T` for real `T ≠ 0` | [`AddCircle.Endomorphisms`](GroupTheory/Topology/AddCircle/Endomorphisms.lean) |
 | Character subgroups and rational-circle comparison | [`CharacterSubgroups`](GroupTheory/Topology/CharacterSubgroups.lean), [`RationalCircle`](GroupTheory/Topology/RationalCircle.lean), [`RationalCircleCharacter`](GroupTheory/Topology/RationalCircleCharacter.lean) |
 | Finite index from dense finite generation | [`FiniteIndex`](GroupTheory/Topology/FiniteIndex.lean) |
 | Total boundedness and finite-index subgroup bases | [`TotalBounded`](GroupTheory/Topology/Algebra/Group/TotalBounded.lean) |

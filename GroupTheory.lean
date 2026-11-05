@@ -130,6 +130,7 @@ public import GroupTheory.Topology.ConnectedComponentOpenSubgroup
 public import GroupTheory.Topology.OpenKernel
 public import GroupTheory.Topology.CircleCharacter
 public import GroupTheory.Topology.AddCircle
+public import GroupTheory.Topology.AddCircle.Endomorphisms
 public import GroupTheory.Topology.FiniteIndex
 public import GroupTheory.Topology.AutomaticContinuity
 public import GroupTheory.Topology.FiniteIndex.Descent
