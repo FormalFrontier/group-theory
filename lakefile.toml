@@ -71,6 +71,7 @@ roots = [
   "GroupTheory.Topology.FreeGroup",
   "GroupTheory.Topology.ContinuousMonoidHom.Quotient",
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.DirectSum",
+  "GroupTheory.Topology.Algebra.ContinuousMonoidHom.DirectSumNaturality",
 ]
 
 [[lean_lib]]
