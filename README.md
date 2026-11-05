@@ -11,6 +11,16 @@ prior results reused from Mathlib.
 
 ## Headline results
 
+- **Compact homomorphism loci for unital magmas.** For a discrete unital magma
+  `M` and a compact Hausdorff unital magma `D` with continuous multiplication,
+  `ContinuousMap.isCompact_mulOneHomLocus` proves compactness of the full locus
+  `{f : C(M, D) | f 1 = 1 ∧ ∀ x y, f (x * y) = f x * f y}` in the compact-open
+  topology. No associativity or finite generation is needed. For monoids,
+  `ContinuousMonoidHom.homeoMulOneHomLocus` identifies its canonical subspace
+  with `M →ₜ* D`, preserving the continuous-map data in both directions; this
+  identification needs only monoids with their given topologies. See
+  [`ContinuousMonoidHom.Compact`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Compact.lean).
+
 - **Finite-support product homomorphisms.** For arbitrary topologized groups `G i` and
   a commutative group `D` with continuous multiplication and no small subgroups,
   continuous homomorphisms `(∀ i, G i) →ₜ* D` are canonically equivalent as commutative
@@ -636,6 +646,7 @@ claim is implied by this guidance.
 
 | Mathematics | Modules |
 | --- | --- |
+| Compact unit/multiplication loci for discrete unital magmas and their monoid hom-space identification; compact bounded families and local compactness for compact NSS group targets | [`ContinuousMonoidHom.Compact`](GroupTheory/Topology/Algebra/ContinuousMonoidHom/Compact.lean) |
 | Finite orthogonal sums of nonunital ring homomorphisms and unital maps from finite products | [`Ring.Hom.FiniteSum`](GroupTheory/Ring/Hom/FiniteSum.lean) |
 | Finite sums of submodules as finite suprema over semirings | [`Algebra.Algebra.Operations`](GroupTheory/Algebra/Algebra/Operations.lean) |
 | Powers of commuting divisors | [`Algebra.Divisibility.Basic`](GroupTheory/Algebra/Divisibility/Basic.lean) |

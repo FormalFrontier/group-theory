@@ -16,7 +16,18 @@ public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
-# Compact bounded families of homomorphisms
+# Compact spaces of homomorphisms
+
+For unital magmas `M` and `D`, `ContinuousMap.mulOneHomLocus M D` is the set of
+continuous maps preserving one and multiplication, with the subspace topology
+of the compact-open space `C(M, D)`. It is closed when `D` is Hausdorff with
+continuous multiplication, and compact when additionally `M` is discrete and
+`D` is compact. Neither magma needs to be associative.
+
+For monoids, `ContinuousMonoidHom.homeoMulOneHomLocus M D` identifies this
+subspace with `M →ₜ* D`, preserving the continuous-map data in both directions.
+The identification needs only the given topologies, with no continuity of
+operations or separation assumptions.
 
 For a compact topological group `T`, a closed set `W` containing no nontrivial
 subgroup controls compact families of continuous homomorphisms: the homomorphisms
@@ -35,6 +46,16 @@ Arzela-Ascoli theorem, and canonical compact-open embedding. The latter composit
 follows Thomas Browning and Nailin Guan's compact-open hom formalization, using
 Anatole Dedecker's equicontinuity/Ascoli work and the topological-group and uniform
 space infrastructure of Johannes Hölzl, Patrick Massot and collaborators.
+
+The unital-magma locus generalizes the equation locus in Thomas Browning and
+Nailin Guan's compact-open hom formalization. Its compactness uses Reid Barton's
+compact-open comparison with the product topology for a discrete source.
+
+## References
+
+* Mathlib's `Topology.Algebra.ContinuousMonoidHom` and
+  `Topology.Algebra.Group.CompactOpen`, by Thomas Browning and Nailin Guan.
+* Mathlib's `Topology.CompactOpen`, by Reid Barton.
 -/
 
 public section
@@ -177,3 +198,138 @@ instance locallyCompactSpace_of_noSmallSubgroups [LocallyCompactSpace G]
   infer_instance
 
 end ContinuousMonoidHom
+
+namespace ContinuousMap
+
+variable (M : Type u) (D : Type v)
+  [MulOneClass M] [MulOneClass D] [TopologicalSpace M] [TopologicalSpace D]
+
+/-- Continuous maps preserving one and multiplication between unital magmas.
+The corresponding subtype has the subspace topology of the compact-open space. -/
+@[expose]
+def mulOneHomLocus : Set C(M, D) :=
+  {f : C(M, D) | f 1 = 1 ∧ ∀ x y : M, f (x * y) = f x * f y}
+
+variable {M D}
+
+/-- Membership in the unital-magma homomorphism locus is exactly preservation of
+one and multiplication. -/
+@[simp]
+theorem mem_mulOneHomLocus {f : C(M, D)} :
+    f ∈ mulOneHomLocus M D ↔ f 1 = 1 ∧ ∀ x y : M, f (x * y) = f x * f y :=
+  Iff.rfl
+
+/-- A map in the unital-magma homomorphism locus preserves one. -/
+@[simp]
+theorem mulOneHomLocus_map_one (f : ↥(mulOneHomLocus M D)) :
+    f.val (1 : M) = (1 : D) :=
+  (mem_mulOneHomLocus.mp f.property).1
+
+/-- A map in the unital-magma homomorphism locus preserves multiplication. -/
+@[simp]
+theorem mulOneHomLocus_map_mul (f : ↥(mulOneHomLocus M D)) (x y : M) :
+    f.val (x * y) = f.val x * f.val y :=
+  (mem_mulOneHomLocus.mp f.property).2 x y
+
+end ContinuousMap
+
+namespace ContinuousMonoidHom
+
+variable (M : Type u) (D : Type v)
+  [Monoid M] [Monoid D] [TopologicalSpace M] [TopologicalSpace D]
+
+/-- Continuous monoid homomorphisms are homeomorphic to the full unit- and
+multiplication-preserving locus in `C(M, D)`. Both directions preserve the
+continuous-map data and use the given compact-open and subspace topologies. -/
+@[expose]
+def homeoMulOneHomLocus : (M →ₜ* D) ≃ₜ ↥(ContinuousMap.mulOneHomLocus M D) where
+  toFun f := ⟨f.toContinuousMap,
+    ContinuousMap.mem_mulOneHomLocus.mpr
+      ⟨_root_.map_one f, fun x y => _root_.map_mul f x y⟩⟩
+  invFun g := { g.val with
+    map_one' := ContinuousMap.mulOneHomLocus_map_one g
+    map_mul' := ContinuousMap.mulOneHomLocus_map_mul g }
+  left_inv _ := ContinuousMonoidHom.ext fun _ => rfl
+  right_inv _ := Subtype.ext (ContinuousMap.ext fun _ => rfl)
+  continuous_toFun := (isEmbedding_toContinuousMap M D).continuous.subtype_mk _
+  continuous_invFun :=
+    (isInducing_toContinuousMap M D).continuous_iff.mpr continuous_subtype_val
+
+variable {M D}
+
+/-- The forward identification retains the continuous map. -/
+@[simp]
+theorem homeoMulOneHomLocus_apply_val (f : M →ₜ* D) :
+    (homeoMulOneHomLocus M D f).val = f.toContinuousMap :=
+  rfl
+
+/-- The inverse identification retains the continuous map. -/
+@[simp]
+theorem homeoMulOneHomLocus_symm_apply_toContinuousMap
+    (g : ↥(ContinuousMap.mulOneHomLocus M D)) :
+    ((homeoMulOneHomLocus M D).symm g : C(M, D)) = g.val :=
+  rfl
+
+/-- The forward identification is pointwise the same function. -/
+theorem homeoMulOneHomLocus_apply (f : M →ₜ* D) (x : M) :
+    (homeoMulOneHomLocus M D f).val x = f x :=
+  rfl
+
+/-- The inverse identification is pointwise the same function. -/
+theorem homeoMulOneHomLocus_symm_apply
+    (g : ↥(ContinuousMap.mulOneHomLocus M D)) (x : M) :
+    ((homeoMulOneHomLocus M D).symm g) x = g.val x :=
+  rfl
+
+end ContinuousMonoidHom
+
+namespace ContinuousMap
+
+section MulOneClass
+
+variable (M : Type u) (D : Type v)
+  [MulOneClass M] [MulOneClass D] [TopologicalSpace M] [TopologicalSpace D]
+
+/-- The unit- and multiplication-preserving continuous maps form a closed set
+in the compact-open topology when the target is Hausdorff with continuous multiplication. -/
+theorem isClosed_mulOneHomLocus [ContinuousMul D] [T2Space D] :
+    IsClosed (mulOneHomLocus M D) := by
+  have hlocus : mulOneHomLocus M D =
+      {f : C(M, D) | f 1 = 1} ∩
+        ⋂ x : M, ⋂ y : M, {f : C(M, D) | f (x * y) = f x * f y} := by
+    ext f
+    simp only [mem_mulOneHomLocus, Set.mem_inter_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  rw [hlocus]
+  refine (isClosed_eq (continuous_eval_const (1 : M)) continuous_const).inter ?_
+  exact isClosed_iInter fun x => isClosed_iInter fun y =>
+    isClosed_eq (continuous_eval_const (x * y))
+      ((continuous_eval_const x).mul (continuous_eval_const y))
+
+/-- For a discrete unital magma and a compact Hausdorff unital magma with
+continuous multiplication, the full homomorphism locus is compact in the
+compact-open topology. -/
+theorem isCompact_mulOneHomLocus [DiscreteTopology M] [CompactSpace D] [T2Space D]
+    [ContinuousMul D] : IsCompact (mulOneHomLocus M D) := by
+  let e : C(M, D) ≃ₜ (M → D) := homeoFnOfDiscrete
+  have himage : e.symm '' (Set.univ : Set (M → D)) = (Set.univ : Set C(M, D)) := by
+    ext f
+    constructor
+    · intro _
+      trivial
+    · intro _
+      exact ⟨e f, Set.mem_univ _, e.symm_apply_apply f⟩
+  have hcompact : IsCompact (Set.univ : Set C(M, D)) := by
+    rw [← himage]
+    exact isCompact_univ.image e.symm.continuous
+  let : CompactSpace C(M, D) := ⟨hcompact⟩
+  exact (isClosed_mulOneHomLocus M D).isCompact
+
+/-- The canonical subtype of unit- and multiplication-preserving continuous maps
+from a discrete unital magma to a compact Hausdorff unital magma is compact. -/
+instance compactSpace_mulOneHomLocus [DiscreteTopology M] [CompactSpace D] [T2Space D]
+    [ContinuousMul D] : CompactSpace ↥(mulOneHomLocus M D) :=
+  isCompact_iff_compactSpace.mp (isCompact_mulOneHomLocus M D)
+
+end MulOneClass
+
+end ContinuousMap
