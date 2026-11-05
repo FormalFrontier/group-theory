@@ -62,7 +62,8 @@ roots = [
   "GroupTheory.Topology.FreeAbelianGroup",
   "GroupTheory.Topology.HomContinuity",
   "GroupTheory.Topology.FreeGroup",
-  "GroupTheory.Topology.ContinuousMonoidHom.Quotient"
+  "GroupTheory.Topology.ContinuousMonoidHom.Quotient",
+  "GroupTheory.Topology.Algebra.ContinuousMonoidHom.DirectSum",
 ]
 
 [[lean_lib]]
