@@ -41,6 +41,7 @@ roots = [
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactlyGenerated",
   "GroupTheory.Topology.Algebra.MonoidHom.CompactBounds",
   "GroupTheory.Topology.Algebra.MonoidHom.CompactPowerControl",
+  "GroupTheory.Topology.Algebra.MonoidHom.DenseGenerators",
   "GroupTheory.Topology.ValueSubgroups",
   "GroupTheory.Topology.PontryaginDual.Discrete",
   "GroupTheory.Topology.Separation.Finite",
