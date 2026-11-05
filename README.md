@@ -479,6 +479,16 @@ also links the explicit index-two generators and nilpotence reflection on additi
 
 ### Topology and abstract homomorphisms
 
+**Compact subsemigroups and submonoids.** In a group with a given topology
+and continuous fixed left translations, a closed compact subsemigroup `S`
+satisfies `x ∈ S → x⁻¹ ∈ S`. Every element of a closed compact submonoid is
+a unit in that submonoid. In particular, a compact submonoid of a Hausdorff
+topological group has the same carrier as a subgroup, since compact subsets
+are closed. The closed compact results require neither continuous right
+translations nor continuous inversion. The versions for closed subsemigroups
+and submonoids with Noetherian induced topology follow from compactness. See
+the [subsemigroup module](GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
+
 For a subsemigroup `S` of a group with continuous fixed left translations,
 its topological closure is stable under inverses if that closure's induced
 topology is Noetherian and each right translation by a member of `S` is
@@ -698,6 +708,7 @@ claim is implied by this guidance.
 | Index-two subgroups, characters and explicit generators | [`Subgroup.IndexTwo`](GroupTheory/Subgroup/IndexTwo.lean), [`FreeGroup.IndexTwo`](GroupTheory/FreeGroup/IndexTwo.lean) |
 | Orbit inseparability for actions of preirreducible groups | [`MulAction.Irreducible`](GroupTheory/Topology/Algebra/MulAction/Irreducible.lean) |
 | Locally closed subgroups under separate continuity | [`Group.LocallyClosed`](GroupTheory/Topology/Algebra/Group/LocallyClosed.lean), [additive intersection client](GroupTheoryTest/Topology/Algebra/Group/LocallyClosed.lean) |
+| Closed compact subsemigroups and submonoids: inverse closure and units; Noetherian induced-topology variants | [`Group.Subsemigroup`](GroupTheory/Topology/Algebra/Group/Subsemigroup.lean) |
 | Inverses in Noetherian subsemigroup closures | [`Subsemigroup.inv_mem_closure_of_noetherianSpace`](GroupTheory/Topology/Algebra/Group/Subsemigroup/Closure.lean) |
 | Inverses in preirreducible closures under ambient irreducible-closed DCC | [`Subsemigroup.inv_mem_closure_of_isPreirreducible`](GroupTheory/Topology/Algebra/Group/Subsemigroup/Closure.lean) |
 | Closed self-embeddings with finitely many irreducible components | [`Topology.IsClosedEmbedding.surjective_of_finite_irreducibleComponents`](GroupTheory/Topology/ClosedEmbedding.lean) |
@@ -731,8 +742,8 @@ K. S. Brown, *Cohomology of Groups*, Graduate Texts in Mathematics 87,
 Springer, 1982, gives the classical finite-group cohomology vanishing theorem
 underlying the [crossed-map averaging results](GroupTheory/CocycleAveraging.lean).
 
-The inverse-closure idea using minimal left translates was developed by
-Formal Frontier Agents; see the
+The inverse-closure arguments using minimal left translates and compactness were
+developed by Formal Frontier Agents; see the
 [subsemigroup module](GroupTheory/Topology/Algebra/Group/Subsemigroup.lean).
 
 ## Credits and license
