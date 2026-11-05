@@ -106,4 +106,57 @@ theorem ContinuousMonoidHom.directSumEquivPi_symm_comp_induced
     ContinuousMonoidHom.directSumEquivPi_comp_induced,
     (ContinuousMonoidHom.directSumEquivPi B D).apply_symm_apply]
 
+/-- Additive coordinate maps determine a unique continuous extension of discrete
+sums, characterized by summand restrictions and natural under postcomposition. -/
+theorem ContinuousMonoidHom.existsUnique_directSumEquivPi_comp_induced
+    (σ : ι → κ) (α : ∀ i, A i →+ B (σ i)) :
+    ∃! (L : Multiplicative (⨁ i, A i) →ₜ* Multiplicative (⨁ j, B j)),
+      (∀ (i : ι) (a : A i),
+        ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j)) L i
+            (Multiplicative.ofAdd a) =
+          ContinuousMonoidHom.directSumEquivPi B (Multiplicative (⨁ j, B j))
+            (ContinuousMonoidHom.id (Multiplicative (⨁ j, B j))) (σ i)
+            (Multiplicative.ofAdd (α i a))) ∧
+      ∀ (F : Multiplicative (⨁ j, B j) →ₜ* D) (i : ι) (a : A i),
+        ContinuousMonoidHom.directSumEquivPi A D (F.comp L) i (Multiplicative.ofAdd a) =
+          ContinuousMonoidHom.directSumEquivPi B D F (σ i)
+            (Multiplicative.ofAdd (α i a)) := by
+  let β : ∀ i, Multiplicative (A i) →ₜ* Multiplicative (B (σ i)) := fun i =>
+    { toFun := fun a => Multiplicative.ofAdd (α i (Multiplicative.toAdd a))
+      map_one' := congrArg Multiplicative.ofAdd (map_zero (α i))
+      map_mul' := fun a b =>
+        congrArg Multiplicative.ofAdd
+          (map_add (α i) (Multiplicative.toAdd a) (Multiplicative.toAdd b))
+      continuous_toFun := continuous_of_discreteTopology }
+  let L :=
+    (ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j))).symm
+      (fun i =>
+        (ContinuousMonoidHom.directSumEquivPi B (Multiplicative (⨁ j, B j))
+          (ContinuousMonoidHom.id (Multiplicative (⨁ j, B j))) (σ i)).comp (β i))
+  have hL : ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j)) L =
+      fun i =>
+        (ContinuousMonoidHom.directSumEquivPi B (Multiplicative (⨁ j, B j))
+          (ContinuousMonoidHom.id (Multiplicative (⨁ j, B j))) (σ i)).comp (β i) :=
+    (ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j))).apply_symm_apply _
+  have hcoords : ∀ (i : ι) (a : A i),
+      ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j)) L i
+          (Multiplicative.ofAdd a) =
+        ContinuousMonoidHom.directSumEquivPi B (Multiplicative (⨁ j, B j))
+          (ContinuousMonoidHom.id (Multiplicative (⨁ j, B j))) (σ i)
+          (Multiplicative.ofAdd (α i a)) := by
+    intro i a
+    rw [hL]
+    rfl
+  refine ⟨L, ⟨hcoords, ?_⟩, ?_⟩
+  · intro F i a
+    exact congrArg (fun f => f i (Multiplicative.ofAdd a))
+      (ContinuousMonoidHom.directSumEquivPi_comp_induced A B σ β F)
+  · intro L' h'
+    apply (ContinuousMonoidHom.directSumEquivPi A (Multiplicative (⨁ j, B j))).injective
+    funext i
+    apply ContinuousMonoidHom.ext
+    intro a
+    exact (h'.1 i (Multiplicative.toAdd a)).trans
+      (hcoords i (Multiplicative.toAdd a)).symm
+
 end Source
