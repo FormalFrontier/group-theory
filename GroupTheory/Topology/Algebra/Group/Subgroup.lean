@@ -33,6 +33,14 @@ infinite), without a finiteness assumption. If there are finitely many component
 this subgroup is open and has finite index, still assuming only continuity of
 fixed left translations.
 
+A homomorphism from a group to a monoid is continuous exactly when its
+restriction to an open subgroup is continuous for the inherited topology. Only
+continuity of fixed left translations is required on the source and target. In
+particular, an existing algebraic extension of a continuous homomorphism on an
+open subgroup is continuous; no extension is constructed. The continuity-at-one
+argument also applies to multiplication-preserving maps into a multiplicative
+type, without a target identity or associativity assumption.
+
 The left-coset projection restricted to a dense set is surjective for any open
 subgroup, assuming only continuity of fixed left translations. The proof uses
 `Dense.exists_mem_open` on an open left coset. Consequently, restricting an open
@@ -83,7 +91,7 @@ transport.
 open Topology
 open scoped Pointwise
 
-universe u v
+universe u v w
 
 /-- A finite-index additive subgroup is open exactly when it is closed, assuming only
 continuity of fixed left additions. -/
@@ -113,6 +121,69 @@ theorem separatelyContinuousMul_of_continuous_const_mul [ContinuousInv G]
   continuous_mul_const {a} := by
     simpa only [Function.comp_def, mul_inv_rev, inv_inv] using
       continuous_inv.comp ((h a⁻¹).comp continuous_inv)
+
+section HomomorphismContinuity
+
+variable [ContinuousConstSMul G G]
+
+/-- A multiplication-preserving map from a group is continuous if it is continuous
+at the identity. Only continuity of fixed left multiplications is needed on the
+source and target; the target need not be a monoid. -/
+@[to_additive
+/-- An addition-preserving map from an additive group is continuous if it is continuous
+at zero. Only continuity of fixed left additions is needed on the source and target;
+the target need not be an additive monoid. -/]
+theorem MulHomClass.continuous_of_continuousAt_one
+    {D : Type v} [Mul D] [TopologicalSpace D] [ContinuousConstSMul D D]
+    {F : Type w} [FunLike F G D] [MulHomClass F G D]
+    (f : F) (hf : ContinuousAt f (1 : G)) : Continuous f := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  have hleft : ContinuousAt (fun y : G => x⁻¹ * y) x :=
+    (continuous_const_smul x⁻¹).continuousAt
+  have hf' : ContinuousAt f (x⁻¹ * x) := by
+    simpa only [inv_mul_cancel] using hf
+  have hlocal : ContinuousAt (fun y : G => f (x⁻¹ * y)) x := hf'.comp hleft
+  have htranslated : ContinuousAt (fun y : G => f x * f (x⁻¹ * y)) x :=
+    (continuous_const_smul (f x)).continuousAt.comp hlocal
+  simpa only [← map_mul, ← mul_assoc, mul_inv_cancel, one_mul] using htranslated
+
+variable {D : Type v} [Monoid D] [TopologicalSpace D] [ContinuousConstSMul D D]
+
+/-- A homomorphism is continuous exactly when its restriction to an open subgroup
+is continuous for the inherited topology. Only continuity of fixed left
+multiplications is required on the source and target. -/
+@[to_additive
+/-- An additive homomorphism is continuous exactly when its restriction to an open
+additive subgroup is continuous for the inherited topology. Only continuity of
+fixed left additions is required on the source and target. -/]
+theorem MonoidHom.continuous_iff_continuous_restrict_of_isOpen
+    (f : G →* D) (H : Subgroup G) (hH : IsOpen (H : Set G)) :
+    Continuous f ↔ Continuous (fun x : H => f x) := by
+  constructor
+  · exact fun hf => hf.comp continuous_subtype_val
+  · intro hf
+    apply MulHomClass.continuous_of_continuousAt_one f
+    have hwithin : ContinuousWithinAt f (H : Set G) (1 : G) :=
+      (continuousOn_iff_continuous_domRestrict.mpr hf) 1 H.one_mem
+    exact hwithin.continuousAt (hH.mem_nhds H.one_mem)
+
+/-- An existing algebraic extension of a continuous homomorphism on an open
+subgroup is continuous. The conclusion concerns the given global homomorphism,
+not the existence of an extension. -/
+@[to_additive
+/-- An existing algebraic extension of a continuous additive homomorphism on an
+open additive subgroup is continuous. The conclusion concerns the given global
+homomorphism, not the existence of an extension. -/]
+theorem MonoidHom.continuous_of_eq_on_open_subgroup
+    (f : G →* D) (H : Subgroup G) (hH : IsOpen (H : Set G))
+    (g : H →* D) (hg : Continuous g) (hfg : ∀ x : H, f x = g x) : Continuous f := by
+  apply (f.continuous_iff_continuous_restrict_of_isOpen H hH).mpr
+  have hrestrict : (fun x : H => f x) = (g : H → D) := funext hfg
+  rw [hrestrict]
+  exact hg
+
+end HomomorphismContinuity
 
 namespace Subgroup
 
