@@ -37,6 +37,7 @@ roots = [
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactNeighborhoods",
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactFamilies",
   "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactTarget",
+  "GroupTheory.Topology.Algebra.ContinuousMonoidHom.CompactlyGenerated",
   "GroupTheory.Topology.Algebra.MonoidHom.CompactBounds",
   "GroupTheory.Topology.Algebra.MonoidHom.CompactPowerControl",
   "GroupTheory.Topology.ValueSubgroups",

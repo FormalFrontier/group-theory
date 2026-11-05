@@ -8,6 +8,7 @@ public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.UniformSpace.Ascoli
 public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import GroupTheory.Topology.Algebra.MonoidHom.CompactPowerControl
 
 /-!
 # Compact families of continuous monoid homomorphisms
@@ -29,6 +30,10 @@ The proof uses the Arzelà–Ascoli framework in `Mathlib.Topology.UniformSpace.
 with Mathlib's compact-convergence comparison and preservation of equicontinuity under
 pointwise closure. The continuous-limit and closed-homomorphism arguments below provide the
 family-local bridge to the compact-open homomorphism space.
+
+For a source topological group, a common bound on an identity neighborhood in a compact
+subgroup-free set supplies the required equicontinuity. The resulting compactness criterion
+combines the left-difference criterion with algebraic compact power control.
 -/
 
 @[expose] public section
@@ -173,5 +178,52 @@ theorem isCompact_of_isClosed_of_leftEquicontinuous
       obtain ⟨Q, hQ, hbound⟩ := hpoint x
       exact ⟨Q, hQ, fun f => hbound f.val f.property⟩)
   exact isCompact_iff_compactSpace.mpr inferInstance
+
+/-- A closed family of continuous homomorphisms is compact if it has compact point
+containers and sends one common identity neighborhood into a compact set containing no
+nontrivial subgroup. No local compactness or global no-small-subgroups hypothesis is needed.
+
+Compact power control supplies common identity control; source translation then gives the
+left differences required by `isCompact_of_isClosed_of_leftEquicontinuous`. -/
+theorem isCompact_of_isClosed_of_mapsTo
+    {G : Type u} {D : Type v}
+    [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+    [Group D] [TopologicalSpace D] [IsTopologicalGroup D] [T2Space D]
+    (S : Set (G →ₜ* D)) (hS : IsClosed S)
+    {Q : Set G} (hQ : Q ∈ nhds (1 : G))
+    {K : Set D} (hK : IsCompact K)
+    (hK_subgroup : ∀ H : Subgroup D, (H : Set D) ⊆ K → H = ⊥)
+    (hSK : ∀ f ∈ S, Set.MapsTo f Q K)
+    (hpoint : ∀ x : G, ∃ P : Set D, IsCompact P ∧ ∀ f ∈ S, f x ∈ P) :
+    IsCompact S := by
+  have hcontrol : ∀ W : Set D, W ∈ nhds (1 : D) →
+      ∃ U : Set G, U ∈ nhds (1 : G) ∧ ∀ f ∈ S, MapsTo f U W := by
+    intro W hW
+    let A : Set (G →* D) :=
+      (fun f : G →ₜ* D => f.toMonoidHom) '' S
+    have hAbound : ∀ f ∈ A, MapsTo f Q K := by
+      rintro f ⟨g, hg, rfl⟩
+      exact hSK g hg
+    obtain ⟨U, hUnhds, hUbound⟩ :=
+      MonoidHom.exists_nhds_one_forall_mapsTo
+        hQ hK hK.isClosed hK_subgroup hAbound hW
+    refine ⟨U, hUnhds, ?_⟩
+    intro f hf
+    exact hUbound f.toMonoidHom ⟨f, hf, rfl⟩
+  have hleft : ∀ x : G, ∀ W : Set D, W ∈ nhds (1 : D) →
+      ∃ V : Set G, V ∈ nhds x ∧
+        ∀ f ∈ S, ∀ y ∈ V, (f x)⁻¹ * f y ∈ W := by
+    intro x W hW
+    obtain ⟨U, hUnhds, hUbound⟩ := hcontrol W hW
+    have htranslate : Continuous (fun y : G => x⁻¹ * y) :=
+      continuous_const.mul continuous_id
+    have hUat : U ∈ nhds (x⁻¹ * x) := by
+      simpa only [inv_mul_cancel] using hUnhds
+    refine ⟨(fun y : G => x⁻¹ * y) ⁻¹' U,
+      htranslate.continuousAt.preimage_mem_nhds hUat, ?_⟩
+    intro f hf y hy
+    have hvalue : f (x⁻¹ * y) ∈ W := hUbound f hf hy
+    simpa only [map_mul, map_inv] using hvalue
+  exact isCompact_of_isClosed_of_leftEquicontinuous S hS hleft hpoint
 
 end ContinuousMonoidHom
